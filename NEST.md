@@ -60,7 +60,7 @@ game-programming/ #can be called anything
 	nest-libs/    #nest-libs from that repository's releases page
 		windows/  #subdirectory name varies depending on platform
 		...
-	my-game0/     #fork or the base0 code; can be called anything
+	my-game/      #fork of this code; can be called anything
 		...
 	...           #eventually, you will have further subdirectories for other games
 ```
@@ -74,7 +74,7 @@ Here are a few worthwhile variations:
 ```
 # Note: Always build from the game's root folder:
   $ cd game-programming
-  $ cd my-game0
+  $ cd my-game
 
 # Simplest build command:
   $ jam
