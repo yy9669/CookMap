@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GL.hpp"
+#include "Load.hpp"
 
 //Shader program that draws transformed, vertices tinted with vertex colors:
 struct ColorTextureProgram {
@@ -17,3 +18,5 @@ struct ColorTextureProgram {
 	//Textures:
 	//TEXTURE0 - texture that is accessed by TexCoord
 };
+
+extern Load< ColorTextureProgram > color_texture_program;

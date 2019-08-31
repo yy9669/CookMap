@@ -3,7 +3,7 @@
 This and other 15-466 base code is built around a collection of useful libraries and functions which we will collectively call "nest".
 This name captures the goal of having the various parts and functions relatively easy to reconfigure (and remove), while still forming a good support for your game.
 
-## What Is Included
+## What Is Included + New
 
 Here is a quick overview of what is included. For further information, ☺read the code☺ !
 - Base code (files you will certainly edit):
@@ -12,8 +12,12 @@ Here is a quick overview of what is included. For further information, ☺read t
     - ```Jamfile``` responsible for telling FTJam how to build the project. Change this when you add additional .cpp files and to change your runtime executable's name.
     - ```.gitignore``` ignores generated files. You will need to change it if your executable name changes. (If you find yourself changing it to ignore, e.g., your editor's swap files you should probably, instead be investigating making this change in the global git configuration.)
 - Useful code (files you should investigate, but probably won't change):
+    - **New:** ```data_path.*pp``` get paths relative to the game's directory.
+    - **New:** ```Load.*pp``` deferred resource loading.
+    - **New:** ```read_write_chunk.hpp``` simple helper to load/save data arrays.
+    - **New:** ```Sprite.*pp``` runtime component of a sprite asset pipeline.
     - ```Mode.hpp``` base class for modes (things that recieve events and draw).
-    - ```ColorTextureProgram.hpp``` example OpenGL shader program, wrapped in a helper class.
+    - ```ColorTextureProgram.hpp``` example OpenGL shader program, wrapped in a helper class. **New:** `Load<>`'d at launch.
     - ```gl_compile_program.hpp``` helper function to compiles OpenGL shader programs.
     - ```load_save_png.hpp``` helper functions to load and save PNG images.
     - ```GL.hpp``` includes OpenGL 3.3 prototypes without the namespace pollution of (e.g.) SDL's OpenGL header; on Windows, deals with some function pointer wrangling.

@@ -72,12 +72,15 @@ if $(OS) = NT { #Windows
 #Store the names of all the .cpp files to build into a variable:
 GAME_NAMES =
 	PongMode
+	Sprite
+	data_path
 	main
 	load_save_png
 	gl_compile_program
 	ColorTextureProgram
 	Mode
 	GL
+	Load
 	;
 
 LOCATE_TARGET = objs ; #put objects in 'objs' directory

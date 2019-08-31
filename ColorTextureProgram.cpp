@@ -3,6 +3,8 @@
 #include "gl_compile_program.hpp"
 #include "gl_errors.hpp"
 
+Load< ColorTextureProgram > color_texture_program(LoadTagEarly);
+
 ColorTextureProgram::ColorTextureProgram() {
 	//Compile vertex and fragment shaders using the convenient 'gl_compile_program' helper function:
 	program = gl_compile_program(
@@ -54,3 +56,4 @@ ColorTextureProgram::~ColorTextureProgram() {
 	glDeleteProgram(program);
 	program = 0;
 }
+
