@@ -49,13 +49,13 @@ if $(OS) = NT { #Windows
 	NEST_LIBS = ../nest-libs/linux ;
 	C++ = g++ -no-pie ;
 	C++FLAGS =
-		-std=c++11 -g -Wall -Werror
+		-std=c++14 -g -Wall -Werror
 		`'$(NEST_LIBS)/SDL2/bin/sdl2-config' --prefix='$(NEST_LIBS)/SDL2' --cflags` #SDL2
 		-I$(NEST_LIBS)/glm/include                                                  #glm
 		-I$(NEST_LIBS)/libpng/include                                               #libpng
 		;
 	LINK = g++ -no-pie ;
-	LINKFLAGS = -std=c++11 -g -Wall -Werror ;
+	LINKFLAGS = -std=c++14 -g -Wall -Werror ;
 	LINKLIBS =
 		`'$(NEST_LIBS)/SDL2/bin/sdl2-config' --prefix='$(NEST_LIBS)/SDL2' --static-libs` -lGL #SDL2
 		-L$(NEST_LIBS)/libpng/lib -lpng                                                       #libpng
@@ -83,8 +83,15 @@ GAME_NAMES =
 	Load
 	;
 
+PACK_SPRITES_NAMES =
+	pack-sprites
+	;
+
 LOCATE_TARGET = objs ; #put objects in 'objs' directory
-Objects $(GAME_NAMES:S=.cpp) ;
+Objects $(GAME_NAMES:S=.cpp) $(PACK_SPRITES_NAMES:S=.cpp) ;
 
 LOCATE_TARGET = dist ; #put main in 'dist' directory
 MainFromObjects pong : $(GAME_NAMES:S=$(SUFOBJ)) ;
+
+LOCATE_TARGET = sprites ; #put pack-sprites utility in the 'sprites' directory:
+MainFromObjects pack-sprites : $(PACK_SPRITES_NAMES:S=$(SUFOBJ)) load_save_png$(SUFOBJ) ;

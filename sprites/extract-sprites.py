@@ -6,8 +6,9 @@ import subprocess
 import sys
 
 parser = argparse.ArgumentParser(description='Extract sprites listed in sprite_list to png files in out_directory.')
-parser.add_argument('sprite_list', help='file containing list of sprites as lines with "file [layer1 layer2 ..] minX minY maxX maxY anchorX anchorY name"')
+parser.add_argument('sprite_list', help='file containing list of sprites as lines with "file [layer1 layer2 ..] minX minY (maxX|+sizeX) (maxY|+sizeY) (anchorX|+anchorOfsX) (anchorY|+anchorOfsY) name"')
 parser.add_argument('out_directory', help='directory in which to place output sprites, named "name_ax_ay.png"')
+parser.add_argument('--gimp', help='path to the gimp executable', default='gimp')
 args = parser.parse_args()
 
 print("Reading sprite list from '" + args.sprite_list + "', writing results to '" + args.out_directory + "'.")
@@ -55,8 +56,20 @@ with open(args.sprite_list, 'r', encoding='utf8') as sprite_list:
 		if len(split) != 8:
 			raise Exception("Sprite file lines should contain exactly eight values; got:\n" + "|".join(split))
 		try:
-			for i in range(1,7):
-				split[i] = float(split[i])
+			split[1] = float(split[1])
+			split[2] = float(split[2])
+			#if any of maxX/maxY/anchorX/anchorY start with '+' interpret them relative to minX/minY
+			if split[3][0] == '+': split[3] = split[1] + float(split[3][1:])
+			else: split[3] = float(split[3])
+
+			if split[4][0] == '+': split[4] = split[2] + float(split[4][1:])
+			else: split[4] = float(split[4])
+
+			if split[5][0] == '+': split[5] = split[1] + float(split[5][1:])
+			else: split[5] = float(split[5])
+
+			if split[6][0] == '+': split[6] = split[2] + float(split[6][1:])
+			else: split[6] = float(split[6])
 		except:
 			raise Exception("Sprite file lines should be a filename, six numbers, and a sprite name; got:\n" + "|".join(split))
 
@@ -65,6 +78,30 @@ with open(args.sprite_list, 'r', encoding='utf8') as sprite_list:
 print("Will extract " + str(len(sprites)) + " sprites.")
 
 os.makedirs(args.out_directory, exist_ok=True)
+
+
+def encode_name(name):
+	#used to produce filenames from utf8 strings.
+	#for cross-platform reasons, will only use: 0-9, a-z, A-Z, '-', '.', '_'
+	#will use '_' for encoding:
+	# "_" => "__" <-- underscore to double-underscore
+	# "A" => "_a" <-- capital letters to lowercase letters with underscore prefix
+	# anything else not [0-9a-z-] => "_0HH" or "_0HHHH" or "_0HHHHHH" or "_0HHHHHHHH" <-- hex encoding of unicode bytes
+	out = ""
+	for c in name:
+		if c in "abcdefghijklmnopqrstuvwxyz0123456789-":
+			out += c
+		elif c == "_":
+			out += "__"
+		elif ord(c) >= ord("A") and ord(c) <= ord("Z"):
+			out += "_" + chr(ord(c)+(ord("a")-ord("A")))
+		else:
+			out += "_0" + bytes(c,'utf8').hex()
+	return out
+
+
+scripts = "";
+out_files = []
 
 for sprite in sprites:
 	source, min_x, min_y, max_x, max_y, anchor_x, anchor_y, name = sprite
@@ -78,12 +115,11 @@ for sprite in sprites:
 		source_layers = source[i+1:].split('&')
 
 	#compute output filename:
-	out_file = args.out_directory + "/" + name + "_" + str(anchor_x-min_x) + "_" + str(anchor_y-min_y) + ".png"
+	out_file = args.out_directory + "/" + encode_name(name) + "_" + str(anchor_x-min_x) + "_" + str(anchor_y-min_y) + ".png"
 
-	print(f"\n\n------- {source_file}: {' '.join(map(lambda x:'('+x+')', source_layers))} | [{str(min_x)},{str(max_x)}]x[{str(min_y)},{str(max_y)}] with anchor {str(anchor_x)}, {str(anchor_y)} => \"{out_file}\" -------")
+	print(f"  {source_file}: {' '.join(map(lambda x:'('+x+')', source_layers))} | \"{name}\" [{str(min_x)},{str(max_x)}]x[{str(min_y)},{str(max_y)}] with anchor {str(anchor_x)}, {str(anchor_y)} => \"{out_file}\"")
 
-	if os.path.exists(out_file):
-		os.unlink(out_file)
+	out_files.append(out_file)
 
 	#based on:
 	#https://stackoverflow.com/questions/5794640/how-to-convert-xcf-to-png-using-gimp-from-the-command-line
@@ -100,6 +136,7 @@ for sprite in sprites:
 				(layers 0)
 				(layer 0)
 			)
+			(write outfile) (newline)
 			(set! image (car (gimp-file-load RUN-NONINTERACTIVE file file) ) )
 			(gimp-image-crop image (- max_x min_x) (- max_y min_y) min_x min_y)
 	"""
@@ -135,18 +172,27 @@ for sprite in sprites:
 				)
 				(set! layers (cdr layers))
 			)
+			(gimp-image-delete image)
 		)
-		(gimp-quit TRUE)
 	"""
-		#(file-png-save2 RUN-NONINTERACTIVE image ?? "temp.png" "temp.png" FALSE 9 FALSE FALSE FALSE FALSE FALSE FALSE TRUE)
-	#print(script)
-	subprocess.run([
-		"gimp", "-n", "-i", "-b", "-"
-	], input=script, encoding="utf8", check=True)
+	scripts += script
 
+scripts += "(gimp-quit TRUE)"
+
+#Finally, actually run the extraction script:
+
+for out_file in out_files:
+	if os.path.exists(out_file):
+		os.unlink(out_file)
+
+print("---------  running GIMP  ----------")
+subprocess.run([
+	args.gimp, "-n", "-i", "-b", "-"
+], input=scripts, encoding="utf8", check=True)
+print("\n-----------------------------------")
+
+for out_file in out_files:
 	if not os.path.isfile(out_file):
 		sys.exit("ERROR: failed to extract sprite '" + name + "'")
 
-
-
-
+print("It appears that the sprite extraction was successful.")

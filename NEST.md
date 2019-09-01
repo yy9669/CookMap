@@ -22,6 +22,7 @@ Here is a quick overview of what is included. For further information, ☺read t
     - ```load_save_png.hpp``` helper functions to load and save PNG images.
     - ```GL.hpp``` includes OpenGL 3.3 prototypes without the namespace pollution of (e.g.) SDL's OpenGL header; on Windows, deals with some function pointer wrangling.
     - ```gl_errors.hpp``` provides a ```GL_ERRORS()``` macro.
+	- **New:** ```pack-sprites.cpp```, ```sprites/extract-sprites.py``` utilities used in the sprite asset pipeline. See [the README](sprites/README.md).
 - Here be dragons (files you probably don't need to look at):
     - ```make-GL.py``` does what it says on the tin. Included in case you are curious. You won't need to run it.
 	- ```glcorearb.h``` used by ```make-GL.py``` to produce ```GL.*pp```

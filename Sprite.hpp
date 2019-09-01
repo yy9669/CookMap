@@ -15,9 +15,9 @@
 
 struct Sprite {
 	//Sprites are rectangles in an atlas texture:
-	glm::vec2 min_px; //position of lower left corner (in pixels)
-	glm::vec2 max_px; //position of upper right corner (in pixels)
-	glm::vec2 anchor_px; //position of 'anchor' (in pixels)
+	glm::vec2 min_px; //position of lower left corner (in pixels; ll-origin)
+	glm::vec2 max_px; //position of upper right corner (in pixels; ll-origin)
+	glm::vec2 anchor_px; //position of 'anchor' (in pixels; ll-origin)
 
 	//NOTE:
 	//The 'anchor' is the "center" or "pivot point" of the sprite --
