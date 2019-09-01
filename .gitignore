@@ -3,3 +3,5 @@ dist/README-SDL.txt
 dist/SDL.dll
 dist/pong
 dist/pong.exe
+sprites/pack-sprites
+sprites/pack-sprites.exe
