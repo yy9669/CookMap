@@ -9,6 +9,7 @@
 #include <sstream>
 #include <algorithm>
 #include <random>
+#include <fstream>
 
 /*
  *pack sprites into an atlas texture and save an info file.
@@ -326,6 +327,42 @@ int main(int argc, char **argv) {
 
 	std::cout << "Saving " << outname << ".png ..."; std::cout.flush();
 	save_png(outname + ".png", packing.size, data.data(), LowerLeftOrigin);
+	std::cout << " done." << std::endl;
+
+	std::cout << "Saving " << outname << ".atlas ..."; std::cout.flush();
+	{ //store ".atlas" file describing final image:
+		std::vector< char > strings;
+
+		struct SpriteData {
+			uint32_t name_begin, name_end;
+			glm::vec2 min_px;
+			glm::vec2 max_px;
+			glm::vec2 anchor_px;
+		};
+		std::vector< SpriteData > datas;
+
+		for (uint32_t si = 0; si < sprites.size(); ++si) {
+			Sprite const &sprite = sprites[si];
+			glm::uvec2 const &ll = packing.lls[si];
+
+			datas.emplace_back();
+			auto &data = datas.back();
+			data.name_begin = strings.size();
+			strings.insert(strings.end(), sprite.name.begin(), sprite.name.end());
+			data.name_end = strings.size();
+			data.min_px = glm::vec2(ll);
+			data.max_px = glm::vec2(ll + sprite.size);
+			//convert anchor to ll-origin:
+			data.anchor_px = glm::vec2(
+				ll.x + sprite.anchor.x,
+				ll.y + sprite.size.y - sprite.anchor.y
+			);
+		}
+
+		std::ofstream out(outname + ".atlas", std::ios::binary);
+		write_chunk("str0", strings, &out);
+		write_chunk("spr0", datas, &out);
+	}
 	std::cout << " done." << std::endl;
 
 	return 0;
