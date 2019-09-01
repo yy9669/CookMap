@@ -20,3 +20,22 @@ The script uses GIMP to crop the image to the [minX,maxX]x[minY,maxY] rectangle 
 ![illustration of extract-sprites.py operation](README-export-sprites.svg)
 
 If layer names are given, only these layers will be shown. If no layer names are given, layer visibility will remain whatever the default is in the file.
+
+## Packing
+
+Sprite packing is done by `pack-sprites`, compiled from `../pack-sprites.cpp`:
+
+```
+./pack-sprites outfile in-directory/*.png
+```
+
+The program uses a first-fit, largest-first heuristic to pack the sprites into a rectangular (power-of-two-sized) texture, which it saves to `outfile.png`; it also writes the sprite atlas location information to `outfile.atlas`.
+
+## Name Encoding
+
+The files that `extract-sprites.py` writes and `pack-sprites` store the sprite name in the filename. This means that there must be some encoding mechanism in place to avoid problems on case-sensitive or utf-intolerant filesystems. The encoding used is the following "underscore encoding":
+
+ - any numbers, dashes, or lowercase letters (i.e., `[a-z0-9-]`) encode as themselves
+ - `_` encodes to `__`
+ - `_A` encodes to `_a` (and other capital letters similarly)
+ - anything else encodes as `_0HH`, `_0HHHH`, `_0HHHHHH`, or `_0HHHHHHHH` (where the `H...H` string is the UTF-8 encoding of the character)
