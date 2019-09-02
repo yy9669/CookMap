@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 
 #include <unordered_map>
+#include <string>
 
 struct Sprite {
 	//Sprites are rectangles in an atlas texture:
