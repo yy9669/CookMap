@@ -349,9 +349,9 @@ int main(int argc, char **argv) {
 
 			datas.emplace_back();
 			auto &data = datas.back();
-			data.name_begin = strings.size();
+			data.name_begin = uint32_t(strings.size());
 			strings.insert(strings.end(), sprite.name.begin(), sprite.name.end());
-			data.name_end = strings.size();
+			data.name_end = uint32_t(strings.size());
 			data.min_px = glm::vec2(ll);
 			data.max_px = glm::vec2(ll + sprite.size);
 			//convert anchor to ll-origin:

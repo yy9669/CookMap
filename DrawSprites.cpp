@@ -95,8 +95,8 @@ DrawSprites::DrawSprites(
 	if ((view_max.x - view_min.x) * drawable_size.y < drawable_size.x * (view_max.y - view_min.y)) {
 		//...need to stretch wider to match aspect:
 		float w = (view_max.y - view_min.y) * float(drawable_size.x) / float(drawable_size.y);
-		window_min.x = 0.5f * (view_min.x + view_max.x) - 0.5 * w;
-		window_max.x = 0.5f * (view_min.x + view_max.x) + 0.5 * w;
+		window_min.x = 0.5f * (view_min.x + view_max.x) - 0.5f * w;
+		window_max.x = 0.5f * (view_min.x + view_max.x) + 0.5f * w;
 		window_min.y = view_min.y;
 		window_max.y = view_max.y;
 	} else {
@@ -104,8 +104,8 @@ DrawSprites::DrawSprites(
 		window_min.x = view_min.x;
 		window_max.x = view_max.x;
 		float h = (view_max.x - view_min.x) * float(drawable_size.y) / float(drawable_size.x);
-		window_min.y = 0.5f * (view_min.y + view_max.y) - 0.5 * h;
-		window_max.y = 0.5f * (view_min.y + view_max.y) + 0.5 * h;
+		window_min.y = 0.5f * (view_min.y + view_max.y) - 0.5f * h;
+		window_max.y = 0.5f * (view_min.y + view_max.y) + 0.5f * h;
 	}
 
 	glm::vec2 scale = glm::vec2(2.0f) / (window_max - window_min);
