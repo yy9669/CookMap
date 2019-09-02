@@ -12,4 +12,8 @@ How To Play:
 
 (TODO: describe the controls and (if needed) goals/strategy.)
 
+Art Sources:
+
+(TODO: fill in information about the sources of any artwork you used in the game that you did not draw.)
+
 This game was built with [NEST](NEST.md).
