@@ -127,8 +127,8 @@ for sprite in sprites:
 	#... and a lot of trial-and-error
 	script = f"""
 		(let* (
-				(file "{source_file}")
-				(outfile "{out_file}")
+				(file "{os.getcwd() + '/' + source_file}")
+				(outfile "{os.getcwd() + '/' + out_file}")
 				(min_x {min_x})
 				(min_y {min_y})
 				(max_x {max_x})

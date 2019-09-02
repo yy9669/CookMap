@@ -76,26 +76,6 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
-	//extend view_min/view_max to match drawable's aspect ratio:
-	glm::vec2 window_min, window_max;
-	//if view_size.x / view_size.y < drawable_size.x / drawable_size.y...
-	if ((view_max.x - view_min.x) * drawable_size.y < drawable_size.x * (view_max.y - view_min.y)) {
-		//...need to stretch wider to match aspect:
-		float w = (view_max.y - view_min.y) * float(drawable_size.x) / float(drawable_size.y);
-		window_min.x = 0.5f * (view_min.x + view_max.x) - 0.5 * w;
-		window_max.x = 0.5f * (view_min.x + view_max.x) + 0.5 * w;
-		window_min.y = view_min.y;
-		window_max.y = view_max.y;
-	} else {
-		//...need to stretch taller to match aspect:
-		window_min.x = view_min.x;
-		window_max.x = view_max.x;
-		float h = (view_max.x - view_min.x) * float(drawable_size.y) / float(drawable_size.x);
-		window_min.y = 0.5f * (view_min.y + view_max.y) - 0.5 * h;
-		window_max.y = 0.5f * (view_min.y + view_max.y) + 0.5 * h;
-
-	}
-
 	//use alpha blending:
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -104,7 +84,7 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 
 	{ //draw the menu using DrawSprites:
 		assert(atlas && "it is an error to try to draw a menu without an atlas");
-		DrawSprites draw_sprites(*atlas, window_min, window_max, drawable_size, DrawSprites::AlignPixelPerfect);
+		DrawSprites draw_sprites(*atlas, view_min, view_max, drawable_size, DrawSprites::AlignPixelPerfect);
 
 		for (auto const &item : items) {
 			if (!item.sprite) continue;
