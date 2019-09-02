@@ -9,13 +9,15 @@ Here is a quick overview of what is included. For further information, ☺read t
 - Base code (files you will certainly edit):
     - ```main.cpp``` creates the game window and contains the main loop. Set your window title, size, and initial Mode here.
     - **New:** ```MenuMode.*pp``` declaration+definition for a sprite-based menu. You'll probably extend this to draw text.
+    - **New:** ```StoryMode.*pp``` declaration+definition for a menu-based story. You'll probably adapt this to tell a differnet story.
     - ```Jamfile``` responsible for telling FTJam how to build the project. Change this when you add additional .cpp files and to change your runtime executable's name.
     - ```.gitignore``` ignores generated files. You will need to change it if your executable name changes. (If you find yourself changing it to ignore, e.g., your editor's swap files you should probably, instead be investigating making this change in the global git configuration.)
 - Useful code (files you should investigate, but probably won't change):
-    - **New:** ```data_path.*pp``` get paths relative to the game's directory.
     - **New:** ```Load.*pp``` deferred resource loading.
+    - **New:** ```data_path.*pp``` get paths relative to the game's directory.
     - **New:** ```read_write_chunk.hpp``` simple helper to load/save data arrays.
     - **New:** ```Sprite.*pp``` runtime component of a sprite asset pipeline.
+    - **New:** ```DrawSprites.*pp``` helper for drawing `Sprite`s from the same `SpriteAtlas`.
     - ```Mode.hpp``` base class for modes (things that recieve events and draw).
     - ```ColorTextureProgram.hpp``` example OpenGL shader program, wrapped in a helper class. **New:** `Load<>`'d at launch.
     - ```gl_compile_program.hpp``` helper function to compiles OpenGL shader programs.
