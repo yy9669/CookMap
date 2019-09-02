@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
 			if (underscore != std::string::npos) {
 				std::istringstream ax_str(remain.substr(underscore + 1));
 				char temp;
-				if (!(ax_str >> sprite.anchor.y) || (ax_str >> temp)) {
+				if (!(ax_str >> sprite.anchor.x) || (ax_str >> temp)) {
 					std::cerr << "Failed to parse _ax part as float: \"" << filepath << "\"" << std::endl;
 					return 1;
 				}
@@ -294,6 +294,7 @@ int main(int argc, char **argv) {
 	std::cout << " done." << std::endl;
 	std::cout << "Got size " << packing.size.x << "x" << packing.size.y << "; trying some random other orders to see if this can be improved... "; std::cout.flush();
 
+	/* this doesn't seem to improve things in general:
 	//try some random-order packings to see if any are better:
 	for (uint32_t iter = 0; iter < 500; ++iter) {
 		Packing test = try_first_fit(true);
@@ -303,6 +304,7 @@ int main(int argc, char **argv) {
 		}
 	}
 	std::cout << " done." << std::endl;
+	*/
 
 	assert(packing.lls.size() == sprites.size());
 

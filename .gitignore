@@ -1,7 +1,8 @@
 objs/
 dist/README-SDL.txt
 dist/SDL.dll
-dist/pong
-dist/pong.exe
+dist/the-planet
+dist/the-planet.exe
 sprites/pack-sprites
 sprites/pack-sprites.exe
+sprites/the-planet/

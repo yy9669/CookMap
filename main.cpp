@@ -1,8 +1,11 @@
 //Mode.hpp declares the "Mode::current" static member variable, which is used to decide where event-handling, updating, and drawing events go:
 #include "Mode.hpp"
 
-//The 'GameMode' mode plays the game:
-#include "PongMode.hpp"
+//Starting mode:
+#include "StoryMode.hpp"
+
+//Deal with calling resource loading functions:
+#include "Load.hpp"
 
 //GL.hpp will include a non-namespace-polluting set of opengl prototypes:
 #include "GL.hpp"
@@ -47,7 +50,7 @@ int main(int argc, char **argv) {
 
 	//create window:
 	SDL_Window *window = SDL_CreateWindow(
-		"gp19 trade tower", //TODO: remember to set a title for your game!
+		"gp19 the planet of choices", //TODO: remember to set a title for your game!
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		640, 480, //TODO: modify window size if you'd like
 		SDL_WINDOW_OPENGL
@@ -90,7 +93,7 @@ int main(int argc, char **argv) {
 	call_load_functions();
 
 	//------------ create game mode + make current --------------
-	Mode::set_current(std::make_shared< PongMode >());
+	Mode::set_current(std::make_shared< StoryMode >());
 
 	//------------ main loop ------------
 

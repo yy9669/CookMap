@@ -28,14 +28,15 @@ SpriteAtlas::SpriteAtlas(std::string const &filebase) {
 	//set filtering and wrapping parameters:
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	//If you were doing pixel art, you'd probably want to filter like this:
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+	//If you were doing pixel art, you'd probably want to filter like this:
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
 	//For smoother artwork, this filtering makes more sense:
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//glGenerateMipmap(GL_TEXTURE_2D);
 
 	//unbind the texture object:
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -71,7 +72,7 @@ SpriteAtlas::SpriteAtlas(std::string const &filebase) {
 	for (auto const &data : datas) {
 
 		//first, use the name_begin and name_end fields to read the sprite's name from the strings table:
-		if (data.name_begin > data.name_end || data.name_end >= strings.size()) {
+		if (data.name_begin > data.name_end || data.name_end > strings.size()) {
 			throw std::runtime_error("Invalid name in sprite atlas '" + atlas_path + "'.");
 		}
 		std::string name(strings.begin() + data.name_begin, strings.begin() + data.name_end);
