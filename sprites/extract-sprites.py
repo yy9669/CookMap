@@ -124,6 +124,7 @@ for sprite in sprites:
 	#based on:
 	#https://stackoverflow.com/questions/5794640/how-to-convert-xcf-to-png-using-gimp-from-the-command-line
 	#https://github.com/pft/script-fu/blob/master/script-fu-save-layers-to-files.scm
+	#... and a lot of trial-and-error
 	script = f"""
 		(let* (
 				(file "{source_file}")
@@ -133,8 +134,28 @@ for sprite in sprites:
 				(max_x {max_x})
 				(max_y {max_y})
 				(image 0)
-				(layers 0)
-				(layer 0)
+			)
+			(define (forItems image fn)
+				(let* (
+						(layers (vector->list (cadr (gimp-image-get-layers image) ) ) )
+						(layer 0)
+						(children 0)
+					)
+					(while (pair? layers)
+						(set! layer (car layers))
+						(set! layers (cdr layers))
+						(if (= TRUE (car (gimp-item-is-group layer)))
+							(begin
+								(set! children (cadr (gimp-item-get-children layer)))
+								(set! layers (append (vector->list children) layers))
+								;DEBUG: (write layers) (newline)
+							)
+						)
+						(begin
+							(fn layer)
+						)
+					)
+				)
 			)
 			(write outfile) (newline)
 			(set! image (car (gimp-file-load RUN-NONINTERACTIVE file file) ) )
@@ -143,35 +164,41 @@ for sprite in sprites:
 	if len(source_layers) != 0:
 		script += f"""
 			; set only the target layers visible:
-			(set! layers (vector->list (cadr (gimp-image-get-layers image) ) ) )
-			(while (pair? layers)
-				(gimp-item-set-visible (car layers) FALSE)
-				(set! layers (cdr layers))
-			)
+			(forItems image (lambda (item) (begin
+				(gimp-item-set-visible item FALSE)
+			) ) )
 		"""
 		for layer_name in source_layers:
 			script += f"""
-			(set! layer (car (gimp-image-get-layer-by-name image "{layer_name}") ) )
-			(gimp-item-set-visible layer TRUE)
+			(let *
+				(
+					(layer (car (gimp-image-get-layer-by-name image "{layer_name}") ) )
+				)
+				(write "set visible {layer_name}") (write layer) (newline)
+				(gimp-item-set-visible layer TRUE) ;doing this in order to cause an error when layer name not defined
+				(while (not (= layer -1))
+					(gimp-item-set-visible layer TRUE)
+					(set! layer (car (gimp-item-get-parent layer)))
+					;DEBUG: (write layer) (newline)
+				)
+			)
 		"""
 	
 	script += """
 			(gimp-image-merge-visible-layers image CLIP-TO-IMAGE)
-			(set! layers (vector->list (cadr (gimp-image-get-layers image) ) ) )
-			;(write "layers: ") (write layers) (newline)
-			(while (pair? layers)
-				(set! layer (car layers))
-				;(write "layer: ") (write layer) (newline)
-				;(write "  visible: ") (write (car (gimp-item-get-visible layer))) (newline)
-				;(write "  name: ") (write (car (gimp-item-get-name layer))) (newline)
-				(if (= TRUE (car (gimp-item-get-visible layer))) ;if layer is visible
-					(begin
-						;(write "   writing!") (newline)
-						(file-png-save2 RUN-NONINTERACTIVE image layer outfile outfile FALSE 9 FALSE FALSE FALSE FALSE FALSE FALSE TRUE)
+			(forItems image (lambda (item) (begin
+				;(write "layer: ") (write item) (newline)
+				;(write "  visible: ") (write (car (gimp-item-get-visible item))) (newline)
+				;(write "  name: ") (write (car (gimp-item-get-name item))) (newline)
+				(if (= TRUE (car (gimp-item-is-layer item))) (begin
+					(if (= TRUE (car (gimp-item-get-visible item))) ;if layer is visible
+						(begin
+							(write "   writing") (newline)
+							(file-png-save2 RUN-NONINTERACTIVE image item outfile outfile FALSE 9 FALSE FALSE FALSE FALSE FALSE FALSE TRUE)
+						)
 					)
-				)
-				(set! layers (cdr layers))
-			)
+				))
+			)))
 			(gimp-image-delete image)
 		)
 	"""
@@ -184,6 +211,10 @@ scripts += "(gimp-quit TRUE)"
 for out_file in out_files:
 	if os.path.exists(out_file):
 		os.unlink(out_file)
+
+#DEBUG:
+#with open('script.scheme', 'w') as f:
+#	f.write(scripts)
 
 print("---------  running GIMP  ----------")
 subprocess.run([
