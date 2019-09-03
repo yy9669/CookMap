@@ -1,8 +1,10 @@
 objs/
 dist/README-SDL.txt
-dist/SDL.dll
+dist/SDL2.dll
 dist/the-planet
 dist/the-planet.exe
 sprites/pack-sprites
 sprites/pack-sprites.exe
+sprites/pack-sprites.pdb
+sprites/pack-sprites.ilk
 sprites/the-planet/

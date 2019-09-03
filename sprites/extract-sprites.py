@@ -103,6 +103,39 @@ def encode_name(name):
 scripts = "";
 out_files = []
 
+
+#Because GIMP doesn't read from stdin on windows for some reason, I need to pass all script commands on the command line, which can exceed the character limit of window's CreateProcess.
+#Have I mentioned that trying to get work done on windows is quite frustrating sometimes?
+#Regardless, this run_scripts() is designed to be used to incrementally run & clear the scripts variable when it starts getting too large.
+def run_scripts():
+	global scripts
+	global out_files
+
+	scripts += "(gimp-quit TRUE)"
+
+	for out_file in out_files:
+		if os.path.exists(out_file):
+			os.unlink(out_file)
+
+	#DEBUG:
+	#with open('script.scheme', 'w') as f:
+	#	f.write(scripts)
+
+	print("---------  running GIMP  ----------")
+	subprocess.run([
+		args.gimp, "-n", "-i", "-b", scripts
+	], encoding="utf8", check=True)
+	print("\n-----------------------------------")
+
+	for out_file in out_files:
+		if not os.path.isfile(out_file):
+			sys.exit("ERROR: failed to extract sprite '" + name + "'")
+
+	scripts = ""
+	out_files = []
+
+
+
 for sprite in sprites:
 	source, min_x, min_y, max_x, max_y, anchor_x, anchor_y, name = sprite
 
@@ -119,7 +152,8 @@ for sprite in sprites:
 
 	print(f"  {source_file}: {' '.join(map(lambda x:'('+x+')', source_layers))} | \"{name}\" [{str(min_x)},{str(max_x)}]x[{str(min_y)},{str(max_y)}] with anchor {str(anchor_x)}, {str(anchor_y)} => \"{out_file}\"")
 
-	out_files.append(out_file)
+	source_file_for_script = os.path.normpath(os.getcwd() + '/' + source_file).replace('\\','\\\\').replace('"','\\"')
+	out_file_for_script = os.path.normpath(os.getcwd() + '/' + out_file).replace('\\','\\\\').replace('"','\\"')
 
 	#based on:
 	#https://stackoverflow.com/questions/5794640/how-to-convert-xcf-to-png-using-gimp-from-the-command-line
@@ -127,8 +161,8 @@ for sprite in sprites:
 	#... and a lot of trial-and-error
 	script = f"""
 		(let* (
-				(file "{os.getcwd() + '/' + source_file}")
-				(outfile "{os.getcwd() + '/' + out_file}")
+				(file "{source_file_for_script}")
+				(outfile "{out_file_for_script}")
 				(min_x {min_x})
 				(min_y {min_y})
 				(max_x {max_x})
@@ -202,28 +236,13 @@ for sprite in sprites:
 			(gimp-image-delete image)
 		)
 	"""
+	if os.name == "nt" and len(scripts + script) > 30000:
+		run_scripts();
+	
 	scripts += script
+	out_files.append(out_file)
 
-scripts += "(gimp-quit TRUE)"
-
-#Finally, actually run the extraction script:
-
-for out_file in out_files:
-	if os.path.exists(out_file):
-		os.unlink(out_file)
-
-#DEBUG:
-#with open('script.scheme', 'w') as f:
-#	f.write(scripts)
-
-print("---------  running GIMP  ----------")
-subprocess.run([
-	args.gimp, "-n", "-i", "-b", "-"
-], input=scripts, encoding="utf8", check=True)
-print("\n-----------------------------------")
-
-for out_file in out_files:
-	if not os.path.isfile(out_file):
-		sys.exit("ERROR: failed to extract sprite '" + name + "'")
+if scripts != "":
+	run_scripts()
 
 print("It appears that the sprite extraction was successful.")

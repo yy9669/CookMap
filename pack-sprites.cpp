@@ -22,6 +22,9 @@
 std::string decode_name(std::string const &name);
 
 int main(int argc, char **argv) {
+#ifdef _WIN32
+	try { //windows doesn't print nice errors for unhandled exceptions, so we need to.
+#endif
 	if (argc < 2) {
 		std::cerr << "Usage:\n\t./pack-sprites <outname> [sprite1.png] [sprite2.png] ...\n";
 		std::cerr << " will create \"outname.atlas\" and \"outname.png\" from sprites sprite1.png, ...\n";
@@ -368,6 +371,12 @@ int main(int argc, char **argv) {
 	std::cout << " done." << std::endl;
 
 	return 0;
+#ifdef _WIN32
+	} catch (std::exception &e) {
+		std::cerr << "UNHANDLED EXCEPTION:\n" << e.what() << std::endl;
+		return 1;
+	}
+#endif
 	
 }
 
