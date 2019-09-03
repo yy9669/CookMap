@@ -41,3 +41,10 @@ The files that `extract-sprites.py` writes and `pack-sprites` store the sprite n
  - `_` encodes to `__`
  - `_A` encodes to `_a` (and other capital letters similarly)
  - anything else encodes as `_0HH`, `_0HHHH`, `_0HHHHHH`, or `_0HHHHHHHH` (where the `H...H` string is the UTF-8 encoding of the character)
+
+
+## Windows Note
+
+Windows (and, to be fair, the windows port of GIMP) is broken in a number of ways which make productive command-line use discouragingly difficult. Despite this, I have included a `make-sprites-win.py` to work around these issues and allow you to run the sprite processing pipeline on Windows. You will likely need to edit the file to get the path to `gimp-console.exe` set properly.
+
+I am assured that powershell works around all of these limitations.
