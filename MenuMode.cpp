@@ -87,12 +87,26 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 		DrawSprites draw_sprites(*atlas, view_min, view_max, drawable_size, DrawSprites::AlignPixelPerfect);
 
 		for (auto const &item : items) {
-			if (!item.sprite) continue;
+			glm::u8vec4 color = (is_selected ? glm::u8vec4(0xff, 0x00, 0xff, 0xff) : glm::u8vec4(0xff, 0xff, 0xff, 0xff));
+			float left, right;
+			if (!item.sprite) {
+				//draw item.name as text:
+				draw_sprites.draw_text(
+					item.name, item.at, item.scale, color
+				);
+				glm::vec2 min,max;
+				draw_sprites.get_text_extents(
+					item.name, item.at, item.scale, &min, &max
+				);
+				left = min.x;
+				right = max.x;
+			} else {
+				draw_sprites.draw(*item.sprite, item.at, item.scale, color);
+				left = item.at.x + item.scale * (item.sprite->min_px.x - item.sprite->anchor_px.x);
+				right = item.at.x + item.scale * (item.sprite->max_px.x - item.sprite->anchor_px.x);
+			}
 			bool is_selected = (&item == &items[0] + selected);
-			draw_sprites.draw(*item.sprite, item.at, item.scale, (is_selected ? glm::u8vec4(0xff, 0x00, 0xff, 0xff) : glm::u8vec4(0xff, 0xff, 0xff, 0xff)));
 			if (is_selected) {
-				float left = item.at.x + item.scale * (item.sprite->min_px.x - item.sprite->anchor_px.x);
-				float right = item.at.x + item.scale * (item.sprite->max_px.x - item.sprite->anchor_px.x);
 				if (left_select) {
 					draw_sprites.draw(*left_select, glm::vec2(left, item.at.y), item.scale);
 				}
