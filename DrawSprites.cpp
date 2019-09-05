@@ -141,6 +141,18 @@ void DrawSprites::draw(Sprite const &sprite, glm::vec2 const &center, float scal
 
 }
 
+void DrawSprites::draw_text(std::string const &name, glm::vec2 const &anchor, float scale, glm::u8vec4 const &color) {
+	glm::vec2 moving_anchor = anchor;
+	for (size_t pos = 0; pos < name.size(); pos++){
+		Sprite const &chr = atlas.lookup(name.substr(pos,1));
+		draw(chr, moving_anchor, scale, color);
+		moving_anchor.x += (chr.max_px.x - chr.min_px.x) * scale;
+	}
+}
+
+void DrawSprites::get_text_extents(std::string const &name, glm::vec2 const &anchor, float scale, glm::vec2 *min, glm::vec2 *max) {
+}
+
 DrawSprites::~DrawSprites() {
 	if (attribs.empty()) return;
 

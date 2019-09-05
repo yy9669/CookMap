@@ -110,13 +110,13 @@ void StoryMode::enter_scene() {
 	glm::vec2 at(3.0f, view_max.y - 3.0f);
 	auto add_text = [&items,&at](Sprite const *text) {
 		assert(text);
-		items.emplace_back("", text, 1.0f, nullptr, at);
+		items.emplace_back("TEST TEXT", nullptr, 1.0f, nullptr, at);
 		at.y -= text->max_px.y - text->min_px.y;
 		at.y -= 4.0f;
 	};
 	auto add_choice = [&items,&at](Sprite const *text, std::function< void(MenuMode::Item const &) > const &fn) {
 		assert(text);
-		items.emplace_back("", text, 1.0f, fn, at + glm::vec2(8.0f, 0.0f));
+		items.emplace_back("TEST CHOICE", nullptr, 1.0f, fn, at + glm::vec2(8.0f, 0.0f));
 		at.y -= text->max_px.y - text->min_px.y;
 		at.y -= 4.0f;
 	};
