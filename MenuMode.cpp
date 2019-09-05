@@ -87,6 +87,7 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 		DrawSprites draw_sprites(*atlas, view_min, view_max, drawable_size, DrawSprites::AlignPixelPerfect);
 
 		for (auto const &item : items) {
+			bool is_selected = (&item == &items[0] + selected);
 			glm::u8vec4 color = (is_selected ? glm::u8vec4(0xff, 0x00, 0xff, 0xff) : glm::u8vec4(0xff, 0xff, 0xff, 0xff));
 			float left, right;
 			if (!item.sprite) {
@@ -105,7 +106,6 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 				left = item.at.x + item.scale * (item.sprite->min_px.x - item.sprite->anchor_px.x);
 				right = item.at.x + item.scale * (item.sprite->max_px.x - item.sprite->anchor_px.x);
 			}
-			bool is_selected = (&item == &items[0] + selected);
 			if (is_selected) {
 				if (left_select) {
 					draw_sprites.draw(*left_select, glm::vec2(left, item.at.y), item.scale);
