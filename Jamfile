@@ -71,6 +71,8 @@ if $(OS) = NT { #Windows
 
 #Store the names of all the .cpp files to build into a variable:
 GAME_NAMES =
+	Sound
+	load_wav
 	DrawSprites
 	MenuMode
 	StoryMode

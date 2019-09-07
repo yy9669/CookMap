@@ -8,23 +8,23 @@ This name captures the goal of having the various parts and functions relatively
 Here is a quick overview of what is included. For further information, ☺read the code☺ !
 - Base code (files you will certainly edit):
     - ```main.cpp``` creates the game window and contains the main loop. Set your window title, size, and initial Mode here.
-    - **New:** ```MenuMode.*pp``` declaration+definition for a sprite-based menu. You'll probably extend this to draw text.
-    - **New:** ```StoryMode.*pp``` declaration+definition for a menu-based story. You'll probably adapt this to tell a differnet story.
+    - ```MenuMode.*pp``` declaration+definition for a sprite-based menu. **New:** text drawing included.
+    - ```BeatsMode.*pp``` declaration+definition for demo beats playground. You'll probably adapt this to do something else entirely.
     - ```Jamfile``` responsible for telling FTJam how to build the project. Change this when you add additional .cpp files and to change your runtime executable's name.
     - ```.gitignore``` ignores generated files. You will need to change it if your executable name changes. (If you find yourself changing it to ignore, e.g., your editor's swap files you should probably, instead be investigating making this change in the global git configuration.)
 - Useful code (files you should investigate, but probably won't change):
-    - **New:** ```Load.*pp``` deferred resource loading.
-    - **New:** ```data_path.*pp``` get paths relative to the game's directory.
-    - **New:** ```read_write_chunk.hpp``` simple helper to load/save data arrays.
-    - **New:** ```Sprite.*pp``` runtime component of a sprite asset pipeline.
-    - **New:** ```DrawSprites.*pp``` helper for drawing `Sprite`s from the same `SpriteAtlas`.
+    - ```Load.*pp``` deferred resource loading.
+    - ```data_path.*pp``` get paths relative to the game's directory.
+    - ```read_write_chunk.hpp``` simple helper to load/save data arrays.
+    - ```Sprite.*pp``` runtime component of a sprite asset pipeline.
+    - ```DrawSprites.*pp``` helper for drawing `Sprite`s from the same `SpriteAtlas`. **New:** `draw_text` included.
     - ```Mode.hpp``` base class for modes (things that recieve events and draw).
-    - ```ColorTextureProgram.hpp``` example OpenGL shader program, wrapped in a helper class. **New:** `Load<>`'d at launch.
+    - ```ColorTextureProgram.hpp``` example OpenGL shader program, wrapped in a helper class.
     - ```gl_compile_program.hpp``` helper function to compiles OpenGL shader programs.
     - ```load_save_png.hpp``` helper functions to load and save PNG images.
     - ```GL.hpp``` includes OpenGL 3.3 prototypes without the namespace pollution of (e.g.) SDL's OpenGL header; on Windows, deals with some function pointer wrangling.
     - ```gl_errors.hpp``` provides a ```GL_ERRORS()``` macro.
-	- **New:** ```pack-sprites.cpp```, ```sprites/extract-sprites.py``` utilities used in the sprite asset pipeline. See [the README](sprites/README.md).
+	- ```pack-sprites.cpp```, ```sprites/extract-sprites.py``` utilities used in the sprite asset pipeline. See [the README](sprites/README.md).
 - Here be dragons (files you probably don't need to look at):
     - ```make-GL.py``` does what it says on the tin. Included in case you are curious. You won't need to run it.
 	- ```glcorearb.h``` used by ```make-GL.py``` to produce ```GL.*pp```
@@ -52,9 +52,9 @@ Setup for your development environment should be relatively simple:
 	- MacOS: e.g. `brew install ftjam`
 	- Windows: (skip this step; jam for windows is included in the nest-libs package)
  3. Extract an appropriate release of [nest-libs](https://github.com/15-466/nest-libs) to a sibling of this folder:
-    - Linux: https://github.com/15-466/nest-libs/releases/download/v0.0/nest-libs-linux-v0.0.tar.gz
-	- MacOS: https://github.com/15-466/nest-libs/releases/download/v0.0/nest-libs-macos-v0.0.tar.gz
-	- Windows: https://github.com/15-466/nest-libs/releases/download/v0.0/nest-libs-windows-v0.0.zip
+    - Linux: https://github.com/15-466/nest-libs/releases/download/v0.1/nest-libs-linux-v0.1.tar.gz
+	- MacOS: https://github.com/15-466/nest-libs/releases/download/v0.1/nest-libs-macos-v0.1.tar.gz
+	- Windows: https://github.com/15-466/nest-libs/releases/download/v0.1/nest-libs-windows-v0.1.zip
 
 Once you are finished, your directory tree should looks something like this:
 
