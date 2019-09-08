@@ -27,7 +27,7 @@ namespace {
 //public-facing data:
 
 //global volume control:
-Sound::Ramp< float > Sound::volume;
+Sound::Ramp< float > Sound::volume = Sound::Ramp< float >(1.0f);
 
 //This audio-mixing callback is defined below:
 void mix_audio(void *, Uint8 *buffer_, int len);
@@ -87,6 +87,17 @@ void Sound::init() {
 	}
 }
 
+
+void Sound::shutdown() {
+	if (device != 0) {
+		//stop audio playback:
+		SDL_PauseAudioDevice(device, 1);
+		SDL_CloseAudioDevice(device);
+		device = 0;
+	}
+}
+
+
 void Sound::lock() {
 	if (device) SDL_LockAudioDevice(device);
 }
@@ -94,6 +105,15 @@ void Sound::lock() {
 void Sound::unlock() {
 	if (device) SDL_UnlockAudioDevice(device);
 }
+
+std::shared_ptr< Sound::PlayingSample > Sound::play(Sample const &sample, float pan, float volume) {
+	std::shared_ptr< Sound::PlayingSample > playing_sample = std::make_shared< Sound::PlayingSample >(sample, pan, volume);
+	lock();
+	playing_samples.emplace_back(playing_sample);
+	unlock();
+	return playing_sample;
+}
+
 
 void Sound::stop_all_samples() {
 	lock();
@@ -212,6 +232,14 @@ void mix_audio(void *, Uint8 *buffer_, int len) {
 			++si;
 		}
 	}
+
+	/*//DEBUG: report output power:
+	float max_power = 0.0f;
+	for (uint32_t s = 0; s < MIX_SAMPLES; ++s) {
+		max_power = std::max(max_power, (buffer[s].l * buffer[s].l + buffer[s].r * buffer[s].r));
+	}
+	std::cout << "Max Power: " << std::sqrt(max_power) << "; playing samples: " << playing_samples.size() << std::endl; //DEBUG
+	*/
 
 }
 

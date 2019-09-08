@@ -181,6 +181,8 @@ int main(int argc, char **argv) {
 
 	//------------  teardown ------------
 
+	Sound::shutdown();
+
 	SDL_GL_DeleteContext(context);
 	context = 0;
 

@@ -6,7 +6,38 @@
 //for easy sprite drawing:
 #include "DrawSprites.hpp"
 
+//for playing movement sounds:
+#include "Sound.hpp"
+
+//for loading:
+#include "Load.hpp"
+
 #include <random>
+
+Load< Sound::Sample > sound_click(LoadTagDefault, []() -> Sound::Sample *{
+	std::vector< float > data(size_t(48000 * 0.2f), 0.0f);
+	for (uint32_t i = 0; i < data.size(); ++i) {
+		float t = i / float(48000);
+		//phase-modulated sine wave (creates some metal-like sound):
+		data[i] = std::sin(3.1415926f * 2.0f * 440.0f * t + std::sin(3.1415926f * 2.0f * 450.0f * t));
+		//quadratic falloff:
+		data[i] *= std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
+	}
+	return new Sound::Sample(data);
+});
+
+Load< Sound::Sample > sound_clonk(LoadTagDefault, []() -> Sound::Sample *{
+	std::vector< float > data(size_t(48000 * 0.2f), 0.0f);
+	for (uint32_t i = 0; i < data.size(); ++i) {
+		float t = i / float(48000);
+		//phase-modulated sine wave (creates some metal-like sound):
+		data[i] = std::sin(3.1415926f * 2.0f * 220.0f * t + std::sin(3.1415926f * 2.0f * 200.0f * t));
+		//quadratic falloff:
+		data[i] *= std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
+	}
+	return new Sound::Sample(data);
+});
+
 
 MenuMode::MenuMode(std::vector< Item > const &items_) : items(items_) {
 
@@ -29,6 +60,7 @@ bool MenuMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			for (uint32_t i = selected - 1; i < items.size(); --i) {
 				if (items[i].on_select) {
 					selected = i;
+					Sound::play(*sound_click);
 					break;
 				}
 			}
@@ -38,12 +70,14 @@ bool MenuMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			for (uint32_t i = selected + 1; i < items.size(); ++i) {
 				if (items[i].on_select) {
 					selected = i;
+					Sound::play(*sound_click);
 					break;
 				}
 			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_RETURN) {
 			if (selected < items.size() && items[selected].on_select) {
+				Sound::play(*sound_clonk);
 				items[selected].on_select(items[selected]);
 				return true;
 			}

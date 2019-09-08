@@ -49,8 +49,8 @@ struct Ramp {
 struct PlayingSample {
 	//change the panning or volume of a playing sample (and do proper locking);
 	// value will change over 'ramp' seconds to avoid creating audible artifacts:
-	void set_pan(float new_pan, float ramp = 1.0f / 60.0f);
 	void set_volume(float new_volume, float ramp = 1.0f / 60.0f);
+	void set_pan(float new_pan, float ramp = 1.0f / 60.0f);
 
 	//'stop' will fade sample out over 'ramp' seconds and then remove it from the active samples:
 	void stop(float ramp = 1.0f / 60.0f);
@@ -63,16 +63,18 @@ struct PlayingSample {
 	bool loop = false; //should playback loop after data runs out?
 	bool stopped = false; //was playback stopped (either by running out of sample, or by stop())?
 
-	Ramp< float > pan = Ramp< float >(0.0f);
 	Ramp< float > volume = Ramp< float >(1.0f);
+	Ramp< float > pan = Ramp< float >(0.0f);
 
-	PlayingSample(Sample const *sample_, float pan_, float volume_)
-		: data(sample_->data), pan(pan_), volume(volume_) { }
+	PlayingSample(Sample const &sample_, float volume_, float pan_)
+		: data(sample_.data), volume(volume_), pan(pan_) { }
 };
 
 // ------- global functions -------
 
 void init(); //call Sound::init() from main.cpp before using any member functions
+
+void shutdown(); //call Sound::shutdown() from main.cpp to gracefully(-ish) exit
 
 //Call 'Sound::play' to play a sample once.
 //  if you hang on to the return value, you can change the panning, volume, or stop playback early.
