@@ -27,13 +27,16 @@ struct MenuMode : Mode {
 			std::string const &name_,
 			Sprite const *sprite_ = nullptr,
 			float scale_ = 1.0f,
+			glm::u8vec4 const &tint_ = glm::u8vec4(0xff),
 			std::function< void(Item const &) > const &on_select_ = nullptr,
 			glm::vec2 const &at_ = glm::vec2(0.0f)
-			) : name(name_), sprite(sprite_), scale(scale_), on_select(on_select_), at(at_) {
+			) : name(name_), sprite(sprite_), scale(scale_), tint(tint_), selected_tint(tint_), on_select(on_select_), at(at_) {
 		}
 		std::string name;
 		Sprite const *sprite; //sprite drawn for item
 		float scale; //scale for sprite
+		glm::u8vec4 tint; //tint for sprite (unselected)
+		glm::u8vec4 selected_tint; //tint for sprite (selected)
 		std::function< void(Item const &) > on_select; //if set, item is selectable
 		glm::vec2 at; //location to draw item
 	};
@@ -42,6 +45,9 @@ struct MenuMode : Mode {
 	//if set, used to highlight the current selection:
 	Sprite const *left_select = nullptr;
 	Sprite const *right_select = nullptr;
+
+	glm::u8vec4 left_select_tint = glm::u8vec4(0xff);
+	glm::u8vec4 right_select_tint = glm::u8vec4(0xff);
 
 	//must be set to the atlas from which all the sprites used herein are taken:
 	SpriteAtlas const *atlas = nullptr;

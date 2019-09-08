@@ -22,27 +22,6 @@ Sprite const *sprite_hill_bg = nullptr;
 Sprite const *sprite_hill_traveller = nullptr;
 Sprite const *sprite_hill_missing = nullptr;
 
-Sprite const *text_dunes_landing = nullptr;
-Sprite const *text_dunes_return = nullptr;
-Sprite const *text_dunes_wont_leave = nullptr;
-Sprite const *text_dunes_do_leave = nullptr;
-Sprite const *text_dunes_do_walk_east = nullptr;
-Sprite const *text_dunes_do_walk_west = nullptr;
-
-Sprite const *text_oasis_intro = nullptr;
-Sprite const *text_oasis_stone = nullptr;
-Sprite const *text_oasis_plain = nullptr;
-Sprite const *text_oasis_stone_taken = nullptr;
-Sprite const *text_oasis_do_take_stone = nullptr;
-Sprite const *text_oasis_do_return = nullptr;
-
-Sprite const *text_hill_intro = nullptr;
-Sprite const *text_hill_inactive = nullptr;
-Sprite const *text_hill_active = nullptr;
-Sprite const *text_hill_stone_added = nullptr;
-Sprite const *text_hill_do_add_stone = nullptr;
-Sprite const *text_hill_do_return = nullptr;
-
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("the-planet"));
 
@@ -60,27 +39,6 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	sprite_hill_bg = &ret->lookup("hill-bg");
 	sprite_hill_traveller = &ret->lookup("hill-traveller");
 	sprite_hill_missing = &ret->lookup("hill-missing");
-
-	text_dunes_landing = &ret->lookup("dunes-text-landing");
-	text_dunes_return = &ret->lookup("dunes-text-return");
-	text_dunes_wont_leave = &ret->lookup("dunes-text-won't-leave");
-	text_dunes_do_leave = &ret->lookup("dunes-text-do-leave");
-	text_dunes_do_walk_east = &ret->lookup("dunes-text-do-walk-east");
-	text_dunes_do_walk_west = &ret->lookup("dunes-text-do-walk-west");
-
-	text_oasis_intro = &ret->lookup("oasis-text-intro");
-	text_oasis_stone = &ret->lookup("oasis-text-stone");
-	text_oasis_plain = &ret->lookup("oasis-text-plain");
-	text_oasis_stone_taken = &ret->lookup("oasis-text-stone-taken");
-	text_oasis_do_take_stone = &ret->lookup("oasis-text-do-take-stone");
-	text_oasis_do_return = &ret->lookup("oasis-text-do-return");
-
-	text_hill_intro = &ret->lookup("hill-text-intro");
-	text_hill_inactive = &ret->lookup("hill-text-inactive");
-	text_hill_active = &ret->lookup("hill-text-active");
-	text_hill_stone_added = &ret->lookup("hill-text-stone-added");
-	text_hill_do_add_stone = &ret->lookup("hill-text-do-add-stone");
-	text_hill_do_return = &ret->lookup("hill-text-do-return");
 
 	return ret;
 });
@@ -107,42 +65,55 @@ void StoryMode::update(float elapsed) {
 void StoryMode::enter_scene() {
 	//just entered this scene, adjust flags and build menu as appropriate:
 	std::vector< MenuMode::Item > items;
-	glm::vec2 at(3.0f, view_max.y - 3.0f);
-	auto add_text = [&items,&at](Sprite const *text) {
-		assert(text);
-		items.emplace_back("TEST TEXT", nullptr, 1.0f, nullptr, at);
-		at.y -= text->max_px.y - text->min_px.y;
+	glm::vec2 at(3.0f, view_max.y - 3.0f - 11.0f);
+	auto add_text = [&items,&at](std::string text) {
+		while (text.size()) {
+			auto end = text.find('\n');
+			items.emplace_back(text.substr(0, end), nullptr, 1.0f, glm::u8vec4(0x00, 0x00, 0x00, 0xff), nullptr, at);
+			at.y -= 13.0f;
+			if (end == std::string::npos) break;
+			text = text.substr(end+1);
+		}
 		at.y -= 4.0f;
 	};
-	auto add_choice = [&items,&at](Sprite const *text, std::function< void(MenuMode::Item const &) > const &fn) {
-		assert(text);
-		items.emplace_back("TEST CHOICE", nullptr, 1.0f, fn, at + glm::vec2(8.0f, 0.0f));
-		at.y -= text->max_px.y - text->min_px.y;
+	auto add_choice = [&items,&at](std::string const &text, std::function< void(MenuMode::Item const &) > const &fn) {
+		items.emplace_back(text, nullptr, 1.0f, glm::u8vec4(0x00, 0x00, 0x00, 0x88), fn, at + glm::vec2(12.0f, 0.0f));
+		items.back().selected_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
+		at.y -= 13.0f;
 		at.y -= 4.0f;
 	};
 
 	if (location == Dunes) {
 		if (dunes.wont_leave) {
 			dunes.wont_leave = false;
-			add_text(text_dunes_wont_leave);
+			add_text(
+				"Something remains to accomplish.\n"
+				"I won't leave."
+			);
 		}
 		if (dunes.first_visit) {
 			dunes.first_visit = false;
-			add_text(text_dunes_landing);
+			add_text(
+				"The landing is turbulent.\n"
+				"As the sand settles, I see there is\n"
+				"nobody here to meet me."
+			);
 		} else {
-			add_text(text_dunes_return);
+			add_text(
+				"There is still nobody here to meet me."
+			);
 		}
 		at.y -= 8.0f; //gap before choices
-		add_choice(text_dunes_do_walk_west, [this](MenuMode::Item const &){
+		add_choice("Walk West", [this](MenuMode::Item const &){
 			location = Hill;
 			Mode::current = shared_from_this();
 		});
-		add_choice(text_dunes_do_walk_east, [this](MenuMode::Item const &){
+		add_choice("Walk East", [this](MenuMode::Item const &){
 			location = Oasis;
 			Mode::current = shared_from_this();
 		});
 		if (!dunes.first_visit) {
-			add_choice(text_dunes_do_leave, [this](MenuMode::Item const &){
+			add_choice("Leave", [this](MenuMode::Item const &){
 				if (added_stone) {
 					//TODO: some sort of victory animation?
 					Mode::current = nullptr;
@@ -155,53 +126,77 @@ void StoryMode::enter_scene() {
 	} else if (location == Oasis) {
 		if (oasis.took_stone) {
 			oasis.took_stone = false;
-			add_text(text_oasis_stone_taken);
+			add_text(
+				"The stone fits snugly in my pocket."
+			);
 		}
 		if (oasis.first_visit) {
 			oasis.first_visit = false;
-			add_text(text_oasis_intro);
+			add_text(
+				"I search east, walking in ever-\n"
+				"greater circles. Just over the next\n"
+				"dune, I find an oasis."
+			);
 		} else {
-			add_text(text_oasis_plain);
+			add_text(
+				"The oasis sparkles in the sunlight."
+			);
 		}
 		if (!have_stone) {
-			add_text(text_oasis_stone);
+			add_text(
+				"Sitting in the glass-clear water is a\n"
+				"single blue gemstone."
+			);
 		}
 		at.y -= 8.0f; //gap before choices
 		if (!have_stone) {
-			add_choice(text_oasis_do_take_stone, [this](MenuMode::Item const &){
+			add_choice("Take Stone", [this](MenuMode::Item const &){
 				have_stone = true;
 				oasis.took_stone = true;
 				Mode::current = shared_from_this();
 			});
 		}
-		add_choice(text_oasis_do_return, [this](MenuMode::Item const &){
+		add_choice("Return to the Ship", [this](MenuMode::Item const &){
 			location = Dunes;
 			Mode::current = shared_from_this();
 		});
 	} else if (location == Hill) {
 		if (hill.added_stone) {
 			hill.added_stone = false;
-			add_text(text_hill_stone_added);
+			add_text(
+				"I add the blue stone to the circle.\n"
+				"Something trembles deep underground."
+			);
 		}
 		if (hill.first_visit) {
 			hill.first_visit = false;
-			add_text(text_hill_intro);
+			add_text(
+				"I set off confidently to the west.\n"
+				"At the top of the third dune, a circle\n"
+				"of stones surrounds a shallow\n"
+				"depression in the ground."
+			);
 		} else {
 			if (added_stone) {
-				add_text(text_hill_active);
+				add_text(
+					"The circle of stones stands silently."
+				);
 			} else {
-				add_text(text_hill_inactive);
+				add_text(
+					"The circle of stones stands\n"
+					"expectantly."
+				);
 			}
 		}
 		at.y -= 8.0f; //gap before choices
 		if (have_stone && !added_stone) {
-			add_choice(text_hill_do_add_stone, [this](MenuMode::Item const &){
+			add_choice("Add Blue Stone", [this](MenuMode::Item const &){
 				added_stone = true;
 				hill.added_stone = true;
 				Mode::current = shared_from_this();
 			});
 		}
-		add_choice(text_hill_do_return, [this](MenuMode::Item const &){
+		add_choice("Return to the Ship", [this](MenuMode::Item const &){
 			location = Dunes;
 			Mode::current = shared_from_this();
 		});
@@ -210,6 +205,8 @@ void StoryMode::enter_scene() {
 	menu->atlas = sprites;
 	menu->left_select = sprite_left_select;
 	menu->right_select = sprite_right_select;
+	menu->left_select_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
+	menu->right_select_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
 	menu->view_min = view_min;
 	menu->view_max = view_max;
 	menu->background = shared_from_this();

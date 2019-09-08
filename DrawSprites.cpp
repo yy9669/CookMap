@@ -141,16 +141,35 @@ void DrawSprites::draw(Sprite const &sprite, glm::vec2 const &center, float scal
 
 }
 
-void DrawSprites::draw_text(std::string const &name, glm::vec2 const &anchor, float scale, glm::u8vec4 const &color) {
+void DrawSprites::draw_text(std::string const &text, glm::vec2 const &anchor, float scale, glm::u8vec4 const &tint, glm::vec2 *anchor_out) {
 	glm::vec2 moving_anchor = anchor;
-	for (size_t pos = 0; pos < name.size(); pos++){
-		Sprite const &chr = atlas.lookup(name.substr(pos,1));
-		draw(chr, moving_anchor, scale, color);
-		moving_anchor.x += (chr.max_px.x - chr.min_px.x) * scale;
+	for (size_t pos = 0; pos < text.size(); pos++){
+		Sprite const &chr = atlas.lookup(text.substr(pos,1));
+		draw(chr, moving_anchor, scale, tint);
+		moving_anchor.x += (chr.max_px.x - chr.min_px.x + 1) * scale;
+	}
+
+	if (anchor_out) {
+		*anchor_out = moving_anchor;
 	}
 }
 
-void DrawSprites::get_text_extents(std::string const &name, glm::vec2 const &anchor, float scale, glm::vec2 *min, glm::vec2 *max) {
+void DrawSprites::get_text_extents(std::string const &text, glm::vec2 const &anchor, float scale, glm::vec2 *min_, glm::vec2 *max_) {
+	assert(min_);
+	auto &min = *min_;
+	assert(max_);
+	auto &max = *max_;
+
+	min = glm::vec2(std::numeric_limits< float >::infinity());
+	max = glm::vec2(-std::numeric_limits< float >::infinity());
+
+	glm::vec2 moving_anchor = anchor;
+	for (size_t pos = 0; pos < text.size(); pos++){
+		Sprite const &chr = atlas.lookup(text.substr(pos,1));
+		min = glm::min(min, moving_anchor + (chr.min_px - chr.anchor_px) * scale);
+		max = glm::max(max, moving_anchor + (chr.max_px - chr.anchor_px) * scale);
+		moving_anchor.x += (chr.max_px.x - chr.min_px.x + 1) * scale;
+	}
 }
 
 DrawSprites::~DrawSprites() {

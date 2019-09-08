@@ -238,6 +238,8 @@ for sprite in sprites:
 	"""
 	if os.name == "nt" and len(scripts + script) > 30000:
 		run_scripts();
+	elif len(scripts + script) > 130000:
+		run_scripts();
 	
 	scripts += script
 	out_files.append(out_file)

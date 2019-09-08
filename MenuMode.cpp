@@ -122,7 +122,7 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 
 		for (auto const &item : items) {
 			bool is_selected = (&item == &items[0] + selected);
-			glm::u8vec4 color = (is_selected ? glm::u8vec4(0xff, 0x00, 0xff, 0xff) : glm::u8vec4(0xff, 0xff, 0xff, 0xff));
+			glm::u8vec4 color = (is_selected ? item.selected_tint : item.tint);
 			float left, right;
 			if (!item.sprite) {
 				//draw item.name as text:
@@ -142,10 +142,10 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 			}
 			if (is_selected) {
 				if (left_select) {
-					draw_sprites.draw(*left_select, glm::vec2(left, item.at.y), item.scale);
+					draw_sprites.draw(*left_select, glm::vec2(left, item.at.y), item.scale, left_select_tint);
 				}
 				if (right_select) {
-					draw_sprites.draw(*right_select, glm::vec2(right, item.at.y), item.scale);
+					draw_sprites.draw(*right_select, glm::vec2(right, item.at.y), item.scale, right_select_tint);
 				}
 			}
 			
