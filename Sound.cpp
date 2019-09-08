@@ -8,6 +8,7 @@
 #include <cassert>
 #include <exception>
 #include <iostream>
+#include <algorithm>
 
 //local (to this file) data used by the audio system:
 namespace {

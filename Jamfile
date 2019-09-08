@@ -6,27 +6,58 @@
 if $(OS) = NT { #Windows
 	NEST_LIBS = ..\\nest-libs\\windows ;
 	C++FLAGS = /nologo /Z7 /c /EHsc /W3 /WX /MD
-		/I"$(NEST_LIBS)/SDL2/include"
-		/I"$(NEST_LIBS)/glm/include"
-		/I"$(NEST_LIBS)/libpng/include"
 		#disable a few warnings:
 		/wd4146 #-1U is still unsigned
 		/wd4297 #unforunately SDLmain is nothrow
+		#/wd4267 #loss of precision warning is a bit too annoying sometimes
 	;
 	LINKFLAGS = /nologo /SUBSYSTEM:CONSOLE /DEBUG:FASTLINK
-		/LIBPATH:"$(NEST_LIBS)/SDL2/lib"
-		/LIBPATH:"$(NEST_LIBS)/libpng/lib"
-		/LIBPATH:"$(NEST_LIBS)/zlib/lib"
 	;
 	LINKLIBS =
-		SDL2main.lib SDL2.lib OpenGL32.lib
-		libpng.lib zlib.lib
 	;
 
-	File SDL2.dll : $(NEST_LIBS)\\SDL2\\dist\\SDL2.dll ;
+	#SDL2:
+	C++FLAGS += /I"$(NEST_LIBS)/SDL2/include" ;
+	LINKLIBS += SDL2main.lib SDL2.lib OpenGL32.lib ;
+	LINKFLAGS += /LIBPATH:"$(NEST_LIBS)/SDL2/lib" ;
 	File README-SDL.txt : $(NEST_LIBS)\\SDL2\\dist\\README-SDL.txt ;
-	MakeLocate SDL2.dll : dist ;
 	MakeLocate README-SDL.txt : dist ;
+	File SDL2.dll : $(NEST_LIBS)\\SDL2\\dist\\SDL2.dll ;
+	MakeLocate SDL2.dll : dist ;
+
+	#glm:
+	C++FLAGS += /I"$(NEST_LIBS)/glm/include" ;
+	File README-glm.txt : $(NEST_LIBS)\\glm\\dist\\README-glm.txt ;
+	MakeLocate README-glm.txt : dist ;
+
+	#libpng:
+	C++FLAGS += /I"$(NEST_LIBS)/libpng/include" ;
+	LINKLIBS += libpng.lib zlib.lib ;
+	LINKFLAGS += /LIBPATH:"$(NEST_LIBS)/libpng/lib" /LIBPATH:"$(NEST_LIBS)/zlib/lib" ;
+	File README-libpng.txt : $(NEST_LIBS)\\libpng\\dist\\README-libpng.txt ;
+	MakeLocate README-libpng.txt : dist ;
+
+	#opusfile:
+	C++FLAGS += /I"$(NEST_LIBS)/opusfile/include" ;
+	LINKLIBS += opusfile.lib ;
+	LINKFLAGS += /LIBPATH:"$(NEST_LIBS)/opusfile/lib" ;
+	File README-opusfile.txt : $(NEST_LIBS)\\opusfile\\dist\\README-opusfile.txt ;
+	MakeLocate README-opusfile.txt : dist ;
+
+	#libogg:
+	C++FLAGS += /I"$(NEST_LIBS)/libogg/include" ;
+	LINKLIBS += libogg.lib ;
+	LINKFLAGS += /LIBPATH:"$(NEST_LIBS)/libogg/lib" ;
+	File README-libogg.txt : $(NEST_LIBS)\\libogg\\dist\\README-libogg.txt ;
+	MakeLocate README-libogg.txt : dist ;
+
+	#libopus:
+	C++FLAGS += /I"$(NEST_LIBS)/libopus/include" ;
+	LINKLIBS += opus.lib ;
+	LINKFLAGS += /LIBPATH:"$(NEST_LIBS)/libopus/lib" ;
+	File README-libopus.txt : $(NEST_LIBS)\\libopus\\dist\\README-libopus.txt ;
+	MakeLocate README-libopus.txt : dist ;
+
 } else if $(OS) = MACOSX { #MacOS
 	NEST_LIBS = ../nest-libs/macos ;
 	C++ = clang++ ;
@@ -58,36 +89,36 @@ if $(OS) = NT { #Windows
 	#SDL2:
 	C++FLAGS += `'$(NEST_LIBS)/SDL2/bin/sdl2-config' --prefix='$(NEST_LIBS)/SDL2' --cflags` ;
 	LINKLIBS += `'$(NEST_LIBS)/SDL2/bin/sdl2-config' --prefix='$(NEST_LIBS)/SDL2' --static-libs` -lGL ;
-	File dist/README-SDL.txt : $(NEST_LIBS)/SDL2/dist/README-SDL.txt ;
+	File README-SDL.txt : $(NEST_LIBS)/SDL2/dist/README-SDL.txt ;
 	MakeLocate README-SDL.txt : dist ;
 
 	#glm:
 	C++FLAGS += -I$(NEST_LIBS)/glm/include ;
-	File dist/README-glm.txt : $(NEST_LIBS)/glm/dist/README-glm.txt ;
+	File README-glm.txt : $(NEST_LIBS)/glm/dist/README-glm.txt ;
 	MakeLocate README-glm.txt : dist ;
 
 	#libpng:
 	C++Flags += -I$(NEST_LIBS)/libpng/include ;
 	LINKLIBS += -L$(NEST_LIBS)/libpng/lib -lpng -L$(NEST_LIBS)/zlib/lib -lz ;
-	File dist/README-libpng.txt : $(NEST_LIBS)/libpng/dist/README-libpng.txt ;
+	File README-libpng.txt : $(NEST_LIBS)/libpng/dist/README-libpng.txt ;
 	MakeLocate README-libpng.txt : dist ;
 
 	#opusfile:
 	C++FLAGS += -I$(NEST_LIBS)/opusfile/include ;
 	LINKLIBS += -L$(NEST_LIBS)/opusfile/lib -lopusfile ;
-	File dist/README-opusfile.txt : $(NEST_LIBS)/opusfile/dist/README-opusfile.txt ;
+	File README-opusfile.txt : $(NEST_LIBS)/opusfile/dist/README-opusfile.txt ;
 	MakeLocate README-opusfile.txt : dist ;
 
 	#libogg:
 	C++FLAGS += -I$(NEST_LIBS)/libogg/include ;
 	LINKLIBS += -L$(NEST_LIBS)/libogg/lib -logg ;
-	File dist/README-libogg.txt : $(NEST_LIBS)/libogg/dist/README-libogg.txt ;
+	File README-libogg.txt : $(NEST_LIBS)/libogg/dist/README-libogg.txt ;
 	MakeLocate README-libogg.txt : dist ;
 
 	#libopus:
 	C++FLAGS += -I$(NEST_LIBS)/libopus/include ;
 	LINKLIBS += -L$(NEST_LIBS)/libopus/lib -lopus ;
-	File dist/README-libopus.txt : $(NEST_LIBS)/libopus/dist/README-libopus.txt ;
+	File README-libopus.txt : $(NEST_LIBS)/libopus/dist/README-libopus.txt ;
 	MakeLocate README-libopus.txt : dist ;
 
 }

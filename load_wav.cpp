@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 constexpr uint32_t AUDIO_RATE = 48000;
 
