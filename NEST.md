@@ -13,6 +13,8 @@ Here is a quick overview of what is included. For further information, ☺read t
     - ```Jamfile``` responsible for telling FTJam how to build the project. Change this when you add additional .cpp files and to change your runtime executable's name.
     - ```.gitignore``` ignores generated files. You will need to change it if your executable name changes. (If you find yourself changing it to ignore, e.g., your editor's swap files you should probably, instead be investigating making this change in the global git configuration.)
 - Useful code (files you should investigate, but probably won't change):
+    - **New:** ```load_wav.*pp``` load audio data from wav files.
+    - **New:** ```Sound.*pp``` a basic game audio system.
     - ```Load.*pp``` deferred resource loading.
     - ```data_path.*pp``` get paths relative to the game's directory.
     - ```read_write_chunk.hpp``` simple helper to load/save data arrays.

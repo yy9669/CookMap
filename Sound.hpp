@@ -82,6 +82,9 @@ std::shared_ptr< PlayingSample > play(
 	float pan = 0.0f //-1.0f == hard left, 1.0f == hard right
 );
 
+//"panic button" to shut off all currently playing sounds:
+void stop_all_samples();
+
 //set global volume:
 void set_volume(float new_volume, float ramp = 1.0f / 60.0f);
 extern Ramp< float > volume;

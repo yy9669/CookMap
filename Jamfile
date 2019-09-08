@@ -73,6 +73,7 @@ if $(OS) = NT { #Windows
 GAME_NAMES =
 	Sound
 	load_wav
+	load_opus
 	DrawSprites
 	MenuMode
 	StoryMode

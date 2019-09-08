@@ -10,6 +10,9 @@
 //GL.hpp will include a non-namespace-polluting set of opengl prototypes:
 #include "GL.hpp"
 
+//Sound subsystem:
+#include "Sound.hpp"
+
 //for screenshots:
 #include "load_save_png.hpp"
 
@@ -85,6 +88,9 @@ int main(int argc, char **argv) {
 			std::cerr << "NOTE: couldn't set vsync (" << SDL_GetError() << ")." << std::endl;
 		}
 	}
+
+	//set up sound output:
+	Sound::init();
 
 	//Hide mouse cursor (note: showing can be useful for debugging):
 	//SDL_ShowCursor(SDL_DISABLE);

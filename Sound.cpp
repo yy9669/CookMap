@@ -1,20 +1,117 @@
 #include "Sound.hpp"
+#include "load_wav.hpp"
+#include "load_opus.hpp"
 
 #include <SDL.h>
 
 #include <list>
 #include <cassert>
+#include <exception>
+#include <iostream>
 
-//------------------------ internals --------------------------------
+//local (to this file) data used by the audio system:
+namespace {
 
-constexpr uint32_t const AUDIO_RATE = 48000;
-constexpr uint32_t const MIX_SAMPLES = 1024;
+	//handy constants:
+	constexpr uint32_t const AUDIO_RATE = 48000; //sampling rate
+	constexpr uint32_t const MIX_SAMPLES = 1024; //number of samples to mix per call of mix_audio callback; n.b. SDL requires this to be a power of two
+
+	//The audio device:
+	SDL_AudioDeviceID device = 0;
+
+	//list of all currently playing samples:
+	std::list< std::shared_ptr< Sound::PlayingSample > > playing_samples;
+
+}
+
+//public-facing data:
 
 //global volume control:
 Sound::Ramp< float > Sound::volume;
 
-//list of all currently playing samples:
-std::list< std::shared_ptr< Sound::PlayingSample > > playing_samples;
+//This audio-mixing callback is defined below:
+void mix_audio(void *, Uint8 *buffer_, int len);
+
+//------------------------ public-facing --------------------------------
+
+Sound::Sample::Sample(std::string const &filename) {
+	if (filename.size() >= 4 && filename.substr(filename.size()-4) == ".png") {
+		load_wav(filename, &data);
+	} else if (filename.size() >= 5 && filename.substr(filename.size()-5) == ".opus") {
+		load_opus(filename, &data);
+	} else {
+		throw std::runtime_error("Sample '" + filename + "' doesn't end in either \".png\" or \".opus\" -- unsure how to load.");
+	}
+}
+
+Sound::Sample::Sample(std::vector< float > const &data_) : data(data_) {
+}
+
+void Sound::PlayingSample::stop(float ramp) {
+	lock();
+	if (!stopped) {
+		stopped = true;
+		volume.target = 0.0f;
+		volume.ramp = ramp;
+	} else {
+		volume.ramp = std::min(volume.ramp, ramp);
+	}
+	unlock();
+}
+
+
+void Sound::init() {
+	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
+		std::cerr << "Failed to initialize SDL audio subsytem:\n" << SDL_GetError() << std::endl;
+		std::cerr << "  (Will continue without audio.)\n" << std::endl;
+		return;
+	}
+
+	//Based on the example on https://wiki.libsdl.org/SDL_OpenAudioDevice
+	SDL_AudioSpec want, have;
+	SDL_zero(want);
+	want.freq = AUDIO_RATE;
+	want.format = AUDIO_F32SYS;
+	want.channels = 2;
+	want.samples = MIX_SAMPLES;
+	want.callback = mix_audio;
+
+	device = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
+	if (device == 0) {
+		std::cerr << "Failed to open audio device:\n" << SDL_GetError() << std::endl;
+		std::cerr << "  (Will continue without audio.)\n" << std::endl;
+	} else {
+		//start audio playback:
+		SDL_PauseAudioDevice(device, 0);
+		std::cout << "Audio output initialized." << std::endl;
+	}
+}
+
+void Sound::lock() {
+	if (device) SDL_LockAudioDevice(device);
+}
+
+void Sound::unlock() {
+	if (device) SDL_UnlockAudioDevice(device);
+}
+
+void Sound::stop_all_samples() {
+	lock();
+	for (auto &s : playing_samples) {
+		s->stop();
+	}
+	unlock();
+}
+
+void Sound::set_volume(float new_volume, float ramp) {
+	lock();
+	volume.set(new_volume, ramp);
+	unlock();
+}
+
+
+//------------------------ internals --------------------------------
+
 
 //helper: equal-power panning
 inline void compute_pan_weights(float pan, float *left, float *right) {
