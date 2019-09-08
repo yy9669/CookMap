@@ -1,5 +1,10 @@
 objs/
 dist/README-SDL.txt
+dist/README-glm.txt
+dist/README-libogg.txt
+dist/README-libopus.txt
+dist/README-libpng.txt
+dist/README-opusfile.txt
 dist/SDL2.dll
 dist/the-planet
 dist/the-planet.exe
