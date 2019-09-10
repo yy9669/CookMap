@@ -12,6 +12,8 @@
 //for glm::to_string():
 #include <glm/gtx/string_cast.hpp>
 
+#include <algorithm>
+
 //All DrawSprites instances share a vertex array object and vertex buffer, initialized at load time:
 
 //n.b. declared static so they don't conflict with similarly named global variables elsewhere:
@@ -91,30 +93,62 @@ DrawSprites::DrawSprites(
 	mode(mode_) {
 
 	glm::vec2 window_min, window_max;
-	//if view_size.x / view_size.y < drawable_size.x / drawable_size.y...
-	if ((view_max.x - view_min.x) * drawable_size.y < drawable_size.x * (view_max.y - view_min.y)) {
-		//...need to stretch wider to match aspect:
-		float w = (view_max.y - view_min.y) * float(drawable_size.x) / float(drawable_size.y);
-		window_min.x = 0.5f * (view_min.x + view_max.x) - 0.5f * w;
-		window_max.x = 0.5f * (view_min.x + view_max.x) + 0.5f * w;
-		window_min.y = view_min.y;
-		window_max.y = view_max.y;
-	} else {
-		//...need to stretch taller to match aspect:
-		window_min.x = view_min.x;
-		window_max.x = view_max.x;
-		float h = (view_max.x - view_min.x) * float(drawable_size.y) / float(drawable_size.x);
-		window_min.y = 0.5f * (view_min.y + view_max.y) - 0.5f * h;
-		window_max.y = 0.5f * (view_min.y + view_max.y) + 0.5f * h;
-	}
 
-	glm::vec2 scale = glm::vec2(2.0f) / (window_max - window_min);
-	to_clip = glm::mat4( //n.b. column major(!)
-		scale.x, 0.0f, 0.0f, 0.0f,
-		0.0f, scale.y, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		scale.x * -0.5f * (window_min.x + window_max.x), scale.y * -0.5f * (window_min.y + window_max.y), 0.0f, 1.0f
-	);
+	if (mode == AlignPixelPerfect) {
+		//figure out the largest view can be while still mapping 1-1 to pixels:
+		float scale = std::min(
+			drawable_size.x / (view_max.x-view_min.x),
+			drawable_size.y / (view_max.y-view_min.y)
+		);
+		//unless scaling down, make scale an integer (pixels -> pixels):
+		if (scale > 1.0f) scale = std::floor(scale);
+
+		//map view center pixel's lower-left to center pixel's lower-left:
+		glm::vec2 offset =
+			- glm::vec2( //map view center pixel's lower-left:
+				std::floor(scale * (view_max.x + view_min.x)*0.5f),
+				std::floor(scale * (view_max.y + view_min.y)*0.5f)
+			) + glm::vec2( //to window center pixel's lower-left:
+				std::floor(0.5f * drawable_size.x),
+				std::floor(0.5f * drawable_size.y)
+			) - glm::vec2( //.. relative to window center:
+				0.5f * drawable_size.x,
+				0.5f * drawable_size.y
+			);
+
+		to_clip = glm::mat4( //n.b. column major(!)
+			scale * 2.0f / float(drawable_size.x), 0.0f, 0.0f, 0.0f,
+			0.0f, scale * 2.0f / float(drawable_size.y), 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			2.0f / float(drawable_size.x) * offset.x, 2.0f / float(drawable_size.y) * offset.y, 0.0f, 1.0f
+		);
+
+	} else {
+		//if view_size.x / view_size.y < drawable_size.x / drawable_size.y...
+		if ((view_max.x - view_min.x) * drawable_size.y < drawable_size.x * (view_max.y - view_min.y)) {
+			//...need to stretch wider to match aspect:
+			float w = (view_max.y - view_min.y) * float(drawable_size.x) / float(drawable_size.y);
+			window_min.x = 0.5f * (view_min.x + view_max.x) - 0.5f * w;
+			window_max.x = 0.5f * (view_min.x + view_max.x) + 0.5f * w;
+			window_min.y = view_min.y;
+			window_max.y = view_max.y;
+		} else {
+			//...need to stretch taller to match aspect:
+			window_min.x = view_min.x;
+			window_max.x = view_max.x;
+			float h = (view_max.x - view_min.x) * float(drawable_size.y) / float(drawable_size.x);
+			window_min.y = 0.5f * (view_min.y + view_max.y) - 0.5f * h;
+			window_max.y = 0.5f * (view_min.y + view_max.y) + 0.5f * h;
+		}
+
+		glm::vec2 scale = glm::vec2(2.0f) / (window_max - window_min);
+		to_clip = glm::mat4( //n.b. column major(!)
+			scale.x, 0.0f, 0.0f, 0.0f,
+			0.0f, scale.y, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			scale.x * -0.5f * (window_min.x + window_max.x), scale.y * -0.5f * (window_min.y + window_max.y), 0.0f, 1.0f
+		);
+	}
 
 	//DEBUG: std::cout << glm::to_string(to_clip) << std::endl;
 }
@@ -126,7 +160,20 @@ void DrawSprites::draw(Sprite const &sprite, glm::vec2 const &center, float scal
 	glm::vec2 max_tc = sprite.max_px / glm::vec2(atlas.tex_size);
 
 	if (mode == AlignPixelPerfect) {
-		//TODO: nudge min/max so that pixels line just ~just so~
+		//nudge min/max so that pixels line up just ~just so~
+		//notably, want nearest pixel center to anchor to line up on a pixel center:
+		glm::vec2 c = center;
+		glm::vec2 ofs = (glm::floor(sprite.anchor_px) + glm::vec2(0.5f)) - sprite.anchor_px;
+		//move c to nearest pixel center:
+		c += ofs * scale;
+		//make sure c is on a pixel center:
+		c = glm::floor(c) + glm::vec2(0.5f);
+		//move c back to anchor:
+		c -= ofs * scale;
+
+		//recompute sprite location:
+		min = c + scale * (sprite.min_px - sprite.anchor_px);
+		max = c + scale * (sprite.max_px - sprite.anchor_px);
 	}
 
 	//you may recognize this from draw_rectangle in base0:

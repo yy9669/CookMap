@@ -6,6 +6,7 @@
 #include "data_path.hpp"
 #include "gl_errors.hpp"
 #include "MenuMode.hpp"
+#include "Sound.hpp"
 
 Sprite const *sprite_left_select = nullptr;
 Sprite const *sprite_right_select = nullptr;
@@ -43,6 +44,10 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	return ret;
 });
 
+Load< Sound::Sample > music_cold_dunes(LoadTagDefault, []() -> Sound::Sample * {
+	return new Sound::Sample(data_path("cold-dunes.opus"));
+});
+
 StoryMode::StoryMode() {
 }
 
@@ -59,6 +64,10 @@ void StoryMode::update(float elapsed) {
 	if (Mode::current.get() == this) {
 		//there is no menu displayed! Make one:
 		enter_scene();
+	}
+
+	if (!background_music || background_music->stopped) {
+		background_music = Sound::play(*music_cold_dunes, 1.0f);
 	}
 }
 
@@ -77,7 +86,7 @@ void StoryMode::enter_scene() {
 		at.y -= 4.0f;
 	};
 	auto add_choice = [&items,&at](std::string const &text, std::function< void(MenuMode::Item const &) > const &fn) {
-		items.emplace_back(text, nullptr, 1.0f, glm::u8vec4(0x00, 0x00, 0x00, 0x88), fn, at + glm::vec2(12.0f, 0.0f));
+		items.emplace_back(text, nullptr, 1.0f, glm::u8vec4(0x00, 0x00, 0x00, 0x88), fn, at + glm::vec2(16.0f, 0.0f));
 		items.back().selected_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
 		at.y -= 13.0f;
 		at.y -= 4.0f;
@@ -205,6 +214,7 @@ void StoryMode::enter_scene() {
 	menu->atlas = sprites;
 	menu->left_select = sprite_left_select;
 	menu->right_select = sprite_right_select;
+	menu->select_bounce_amount = 4.0f;
 	menu->left_select_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
 	menu->right_select_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
 	menu->view_min = view_min;

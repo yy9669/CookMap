@@ -5,6 +5,7 @@
  */
 
 #include "Mode.hpp"
+#include "Sound.hpp"
 
 struct StoryMode : Mode {
 	StoryMode();
@@ -40,4 +41,7 @@ struct StoryMode : Mode {
 	
 	glm::vec2 view_min = glm::vec2(0,0);
 	glm::vec2 view_max = glm::vec2(256, 224);
+
+	//------ background music -------
+	std::shared_ptr< Sound::PlayingSample > background_music;
 };

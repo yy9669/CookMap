@@ -92,7 +92,8 @@ bool MenuMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 
 void MenuMode::update(float elapsed) {
 
-	//TODO: selection bounce update
+	select_bounce_acc = select_bounce_acc + elapsed / 0.7f;
+	select_bounce_acc -= std::floor(select_bounce_acc);
 
 	if (background) {
 		background->update(elapsed);
@@ -115,6 +116,8 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//don't use the depth test:
 	glDisable(GL_DEPTH_TEST);
+
+	float bounce = (0.25f - (select_bounce_acc - 0.5f) * (select_bounce_acc - 0.5f)) / 0.25f * select_bounce_amount;
 
 	{ //draw the menu using DrawSprites:
 		assert(atlas && "it is an error to try to draw a menu without an atlas");
@@ -142,10 +145,10 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 			}
 			if (is_selected) {
 				if (left_select) {
-					draw_sprites.draw(*left_select, glm::vec2(left, item.at.y), item.scale, left_select_tint);
+					draw_sprites.draw(*left_select, glm::vec2(left - bounce, item.at.y), item.scale, left_select_tint);
 				}
 				if (right_select) {
-					draw_sprites.draw(*right_select, glm::vec2(right, item.at.y), item.scale, right_select_tint);
+					draw_sprites.draw(*right_select, glm::vec2(right + bounce, item.at.y), item.scale, right_select_tint);
 				}
 			}
 			

@@ -6,11 +6,14 @@
 #include <memory>
 #include <cmath>
 #include <stdexcept>
+#include <iostream>
 
 void load_opus(std::string const &filename, std::vector< float > *data_) {
 	assert(data_);
 	auto &data = *data_;
 	data.clear();
+
+	std::cout << "loading '" << filename << "'..."; std::cout.flush();
 
 	//will hold opusfile * int a std::unique_ptr so that it will automatically be deleted:
 	int err = 0;
@@ -37,5 +40,5 @@ void load_opus(std::string const &filename, std::vector< float > *data_) {
 		}
 	}
 
-
+	std::cout << " done." << std::endl;
 }

@@ -49,6 +49,9 @@ struct MenuMode : Mode {
 	glm::u8vec4 left_select_tint = glm::u8vec4(0xff);
 	glm::u8vec4 right_select_tint = glm::u8vec4(0xff);
 
+	float select_bounce_amount = 0.0f;
+	float select_bounce_acc = 0.0f;
+
 	//must be set to the atlas from which all the sprites used herein are taken:
 	SpriteAtlas const *atlas = nullptr;
 
