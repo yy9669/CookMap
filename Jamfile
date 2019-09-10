@@ -61,21 +61,47 @@ if $(OS) = NT { #Windows
 } else if $(OS) = MACOSX { #MacOS
 	NEST_LIBS = ../nest-libs/macos ;
 	C++ = clang++ ;
-	C++FLAGS =
-		-std=c++14 -g -Wall -Werror
-		`'$(NEST_LIBS)/SDL2/bin/sdl2-config' --prefix='$(NEST_LIBS)/SDL2' --cflags` #SDL2
-		-I$(NEST_LIBS)/glm/include                                                  #glm
-		-I$(NEST_LIBS)/libpng/include
-		;
+	C++FLAGS = -std=c++14 -g -Wall -Werror ;
 	LINK = clang++ ;
 	LINKFLAGS = -std=c++14 -g -Wall -Werror ;
-	LINKLIBS =
-		`'$(NEST_LIBS)/SDL2/bin/sdl2-config' --prefix='$(NEST_LIBS)/SDL2' --static-libs` -framework OpenGL #SDL2
-		-L$(NEST_LIBS)/libpng/lib -lpng                                                       #libpng
-		-L$(NEST_LIBS)/zlib/lib -lz  
-		;
+	LINKLIBS = ;
+	
+	#SDL2:
+	C++FLAGS += `'$(NEST_LIBS)/SDL2/bin/sdl2-config' --prefix='$(NEST_LIBS)/SDL2' --cflags` ;
+	LINKLIBS += `'$(NEST_LIBS)/SDL2/bin/sdl2-config' --prefix='$(NEST_LIBS)/SDL2' --static-libs` -framework OpenGL ;
 	File README-SDL.txt : $(NEST_LIBS)/SDL2/dist/README-SDL.txt ;
 	MakeLocate README-SDL.txt : dist ;
+
+
+	#glm:
+	C++FLAGS += -I$(NEST_LIBS)/glm/include ;
+	File README-glm.txt : $(NEST_LIBS)/glm/dist/README-glm.txt ;
+	MakeLocate README-glm.txt : dist ;
+
+	#libpng:
+	C++Flags += -I$(NEST_LIBS)/libpng/include ;
+	LINKLIBS += -L$(NEST_LIBS)/libpng/lib -lpng -L$(NEST_LIBS)/zlib/lib -lz ;
+	File README-libpng.txt : $(NEST_LIBS)/libpng/dist/README-libpng.txt ;
+	MakeLocate README-libpng.txt : dist ;
+
+	#opusfile:
+	C++FLAGS += -I$(NEST_LIBS)/opusfile/include ;
+	LINKLIBS += -L$(NEST_LIBS)/opusfile/lib -lopusfile ;
+	File README-opusfile.txt : $(NEST_LIBS)/opusfile/dist/README-opusfile.txt ;
+	MakeLocate README-opusfile.txt : dist ;
+
+	#libogg:
+	C++FLAGS += -I$(NEST_LIBS)/libogg/include ;
+	LINKLIBS += -L$(NEST_LIBS)/libogg/lib -logg ;
+	File README-libogg.txt : $(NEST_LIBS)/libogg/dist/README-libogg.txt ;
+	MakeLocate README-libogg.txt : dist ;
+
+	#libopus:
+	C++FLAGS += -I$(NEST_LIBS)/libopus/include ;
+	LINKLIBS += -L$(NEST_LIBS)/libopus/lib -lopus ;
+	File README-libopus.txt : $(NEST_LIBS)/libopus/dist/README-libopus.txt ;
+	MakeLocate README-libopus.txt : dist ;
+
 } else if $(OS) = LINUX { #Linux
 	NEST_LIBS = ../nest-libs/linux ;
 	C++ = g++ -no-pie ;

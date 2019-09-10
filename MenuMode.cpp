@@ -21,7 +21,7 @@ Load< Sound::Sample > sound_click(LoadTagDefault, []() -> Sound::Sample *{
 		//phase-modulated sine wave (creates some metal-like sound):
 		data[i] = std::sin(3.1415926f * 2.0f * 440.0f * t + std::sin(3.1415926f * 2.0f * 450.0f * t));
 		//quadratic falloff:
-		data[i] *= std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
+		data[i] *= 0.3f * std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
 	}
 	return new Sound::Sample(data);
 });
@@ -33,7 +33,7 @@ Load< Sound::Sample > sound_clonk(LoadTagDefault, []() -> Sound::Sample *{
 		//phase-modulated sine wave (creates some metal-like sound):
 		data[i] = std::sin(3.1415926f * 2.0f * 220.0f * t + std::sin(3.1415926f * 2.0f * 200.0f * t));
 		//quadratic falloff:
-		data[i] *= std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
+		data[i] *= 0.3f * std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
 	}
 	return new Sound::Sample(data);
 });

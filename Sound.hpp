@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <cmath>
 
 //Game audio system. Simplified from f18-base3.
 //Uses 48kHz sampling rate.
