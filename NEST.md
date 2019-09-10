@@ -8,18 +8,19 @@ This name captures the goal of having the various parts and functions relatively
 Here is a quick overview of what is included. For further information, ☺read the code☺ !
 - Base code (files you will certainly edit):
     - ```main.cpp``` creates the game window and contains the main loop. Set your window title, size, and initial Mode here.
-    - ```MenuMode.*pp``` declaration+definition for a sprite-based menu. **New:** text drawing included.
-    - ```BeatsMode.*pp``` declaration+definition for demo beats playground. You'll probably adapt this to do something else entirely.
+    - ```MenuMode.*pp``` declaration+definition for a sprite-based menu. **New:** text drawing included. **New:** menu movement sounds.
+    - ```StoryMode.*pp``` declaration+definition for demo story mode. You'll probably adapt this to do something else entirely. **New:** background music loading and playing.
+    - **New:** ```Sound.*pp``` a basic game audio system. You may wish to add extra parameters (like looping) to sounds.
     - ```Jamfile``` responsible for telling FTJam how to build the project. Change this when you add additional .cpp files and to change your runtime executable's name.
     - ```.gitignore``` ignores generated files. You will need to change it if your executable name changes. (If you find yourself changing it to ignore, e.g., your editor's swap files you should probably, instead be investigating making this change in the global git configuration.)
 - Useful code (files you should investigate, but probably won't change):
     - **New:** ```load_wav.*pp``` load audio data from wav files.
-    - **New:** ```Sound.*pp``` a basic game audio system.
+    - **New:** ```load_opus.*pp``` load audio data from opus files.
     - ```Load.*pp``` deferred resource loading.
     - ```data_path.*pp``` get paths relative to the game's directory.
     - ```read_write_chunk.hpp``` simple helper to load/save data arrays.
     - ```Sprite.*pp``` runtime component of a sprite asset pipeline.
-    - ```DrawSprites.*pp``` helper for drawing `Sprite`s from the same `SpriteAtlas`. **New:** `draw_text` included.
+    - ```DrawSprites.*pp``` helper for drawing `Sprite`s from the same `SpriteAtlas`. **New:** `draw_text` included. **New:** pixel-perfect alignment mode included.
     - ```Mode.hpp``` base class for modes (things that recieve events and draw).
     - ```ColorTextureProgram.hpp``` example OpenGL shader program, wrapped in a helper class.
     - ```gl_compile_program.hpp``` helper function to compiles OpenGL shader programs.
