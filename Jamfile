@@ -79,7 +79,7 @@ if $(OS) = NT { #Windows
 	MakeLocate README-glm.txt : dist ;
 
 	#libpng:
-	C++Flags += -I$(NEST_LIBS)/libpng/include ;
+	C++FLAGS += -I$(NEST_LIBS)/libpng/include ;
 	LINKLIBS += -L$(NEST_LIBS)/libpng/lib -lpng -L$(NEST_LIBS)/zlib/lib -lz ;
 	File README-libpng.txt : $(NEST_LIBS)/libpng/dist/README-libpng.txt ;
 	MakeLocate README-libpng.txt : dist ;
@@ -124,7 +124,7 @@ if $(OS) = NT { #Windows
 	MakeLocate README-glm.txt : dist ;
 
 	#libpng:
-	C++Flags += -I$(NEST_LIBS)/libpng/include ;
+	C++FLAGS += -I$(NEST_LIBS)/libpng/include ;
 	LINKLIBS += -L$(NEST_LIBS)/libpng/lib -lpng -L$(NEST_LIBS)/zlib/lib -lz ;
 	File README-libpng.txt : $(NEST_LIBS)/libpng/dist/README-libpng.txt ;
 	MakeLocate README-libpng.txt : dist ;
