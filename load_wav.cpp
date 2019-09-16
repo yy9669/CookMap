@@ -30,7 +30,7 @@ void load_wav(std::string const &filename, std::vector< float > *data_) {
 		cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
 		SDL_memcpy(cvt.buf, audio_buf, audio_len);
 		SDL_ConvertAudio(&cvt);
-		int final_size = int(cvt.len_ratio * cvt.len);
+		int final_size = cvt.len_cvt;
 		assert(final_size >= 0 && final_size <= cvt.len && "Converted audio should fit in buffer.");
 		assert(final_size % 4 == 0 && "Converted audio should consist of 4-byte elements.");
 		data.assign(reinterpret_cast< float * >(cvt.buf), reinterpret_cast< float * >(cvt.buf + final_size));
