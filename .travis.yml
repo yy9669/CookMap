@@ -1,0 +1,47 @@
+language: cpp
+matrix:
+  include:
+  - name: linux
+    os: linux
+    compiler: gcc
+    addons:
+      apt:
+        packages:
+        - ftjam
+        - libgl1-mesa-dev
+    before_install:
+    - wget -c https://github.com/15-466/nest-libs/releases/download/v0.2/nest-libs-linux-v0.2.tar.gz
+    - tar -zxvf nest-libs-linux-v0.2.tar.gz
+    - mv nest-libs ..
+    - mkdir -p dist
+    script: jam
+  - name: mac
+    os: osx
+    compiler: clang
+    addons:
+            homebrew:
+                    packages:
+                            - ftjam
+                    update: true
+    before_install:
+    - brew install ftjam
+    - wget -c https://github.com/15-466/nest-libs/releases/download/v0.2/nest-libs-macos-v0.2.tar.gz
+    - tar -xzvf nest-libs-macos-v0.2.tar.gz
+    - mv nest-libs ..
+    - mkdir -p dist
+script:
+- jam
+
+after_success:
+- tar -czvf $TRAVIS_OS_NAME-build.tar.gz dist/*
+- ls
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  overwrite: true
+  api_key:
+    secure: lulhFtxtHmGXeMAawZsYNtrQtuepqVlx15J9PH8aHVKA2sIFwTIRaUXoY3uq3SfhkEuakJBxsq7gnhsZvrkR9Fn1h/44ScuAja+LMRDIidbv9Ijlr+xl9NgZx4vqtTP3Cnbzfn9sWjMbU13kTbjHG8EWAFSStNXX/1CsT9DxmMKGlF+9UxZPJM3nA5Y2UNktF32bo3V9yV/e8evvp4nC4CrZMTqjcOYw+Muo/D/8COeG/XfSJkiOFrbLGdndJwE2WMeEkdLm6S7g74g3JSJz+l9b+Tcr71KKQVZpOCBwTb23ubSC+t4Kz1Y+n28qGIFQjXEUknvoWnlpTw4uxeI8ZQOoSJz1ZXo83rATykmfoaSSuPaXwF/2HhaviIqKmzvOp6XzuLlOmCb3MVQsQGwQtAXpV0qug2CJQVMoxdhqbYNo3c6uKszkV0Dilcn5v2OhlaxbJmTVOsnNvlWx5xrQh2oDiboB8qWtNokFzz/e/WI1HHpSC0RocY7jyPV6cxpFcojFGA59xjohSI4zHnJ51LPon2JVUGlMSDeeJikdwI7ZHv0ee8FNBL4mDfyt74e5SGX0H4AWyvxLiJRKm4CSC1YmayAdKcq2Pol4N451YTAChOUbYap4vJXUlSgqyNgv5RP3AXCx43k784k+dLztmbP77D2d0/dQBuq3jVdfqIY=
+  file: $TRAVIS_OS_NAME-build.tar.gz
+  on:
+    tags: true
