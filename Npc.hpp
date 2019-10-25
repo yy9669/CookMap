@@ -1,16 +1,21 @@
 #pragma once
 
-#include "Part.hpp"
+#include "GL.hpp"
+#include <glm/glm.hpp>
 
-class Npc : Part {
-    Npc();
-	virtual ~Npc();
+enum npc_type {
+    npc0, npc1, npc2, npc3
+};
 
-    glm::vec2 position = glm::vec2(0.0f, 0.0f);
-    glm::vec2 velocity = glm::vec2(0.0f, 0.0f);
-    glm::vec2 radius = glm::vec2(48.0f, 48.0f);
-
-    part_type id() {
-        return npc_type;
+class Npc {
+public:
+    Npc(npc_type type_, float x, float y) {
+        type = type_;
+        position = glm::vec2(x, y);
+        radius = glm::vec2(48.0f, 48.0f);
     }
+	virtual ~Npc() {}
+
+    npc_type type;
+    glm::vec2 position, radius, velocity = glm::vec2(0.0f, 0.0f);
 };
