@@ -72,8 +72,8 @@ bool load_map_file(const string& filename, StoryMode* mode) {
     // player start position
     float start_x, start_y;
     f >> start_x >> start_y;
-    mode->player.position.x = start_x;
-    mode->player.position.y = start_y;
+    mode->player.position.x = TILE_SIZE*start_x;
+    mode->player.position.y = TILE_SIZE*start_y;
 
     // npc definition
     int npc_num, npc_type_;
@@ -88,7 +88,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
     mode->npcs.resize(npc_num);
     for (int i = 0; i < npc_num; ++i) {
         f >> npc_type_ >> npc_x >> npc_y;
-        mode->npcs[i] = new Npc((npc_type)npc_type_, npc_x, npc_y);
+        mode->npcs[i] = new Npc((npc_type)npc_type_, TILE_SIZE*npc_x, TILE_SIZE*npc_y);
     }
 
     // fill in the parts map
@@ -118,7 +118,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                     cerr << "Error: map type unrecognized" << endl;
                     return false;
             }
-            part->set_pos(x, height-1-y);
+            part->set_pos(TILE_SIZE*x, TILE_SIZE*(height-1-y));
         }
     }
 

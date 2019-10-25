@@ -3,6 +3,7 @@
 #include "GL.hpp"
 #include <glm/glm.hpp>
 
+const float TILE_SIZE = 48.0f;
 
 enum part_type {
     part_ingredient_type,
@@ -17,9 +18,9 @@ public:
 	virtual ~Part() {}
     virtual part_type id() = 0;
     void set_pos(int x, int y) {
-        position = glm::vec2(48.0f*x, 48.0f*y);
+        position = glm::vec2(x, y);
     }
 
     glm::vec2 position = glm::vec2(0.0f, 0.0f);
-    glm::vec2 radius = glm::vec2(24.0f, 24.0f);
+    glm::vec2 radius = glm::vec2(0.5f*TILE_SIZE, 0.5f*TILE_SIZE);
 };
