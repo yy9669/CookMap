@@ -181,13 +181,14 @@ void StoryMode::enter_scene(float elapsed) {
 			//also: gravity
 			velocity.y - 10.0f * elapsed
 		);
+        position = position + velocity * elapsed;
+
 		//---- collision handling ----
 		for (unsigned i = 0; i < parts.size(); i++) {
 			for (unsigned j = 0; j < parts[i].size(); j++) {
 				glm::vec2 box = glm::vec2(parts[i][j]->position.x, parts[i][j]->position.y);
 				glm::vec2 box_radius = glm::vec2(parts[i][j]->radius.x, parts[i][j]->radius.y);
-                box = box + box_radius;
-				glm::vec2 min = glm::max(box - box_radius, position - radius);
+				glm::vec2 min = glm::max(box, position);
 				glm::vec2 max = glm::min(box + box_radius, position + radius);
 				if (min.x <= max.x && min.y <= max.y) {
                     Ingredient *ingre;
@@ -195,27 +196,27 @@ void StoryMode::enter_scene(float elapsed) {
 					{
 					case part_ground_type:
 						// y direction
-						if (position.y < box.y + box_radius.y + radius.y) {
-							position.y = box.y + box_radius.y + radius.y;
+						if (position.y < box.y + box_radius.y) {
+							position.y = box.y + box_radius.y;
 							if (velocity.y < 0.0f) {
 								velocity.y = 0.0f;
 							}
 						}
-						else if (position.y > box.y - box_radius.y - radius.y) {
-							position.y = box.y - box_radius.y - radius.y;
+						else if (position.y > box.y - radius.y) {
+							position.y = box.y - radius.y;
 							if (velocity.y > 0.0f) {
 								velocity.y = 0.0f;
 							}
 						}
 						// x direction
-						if (position.x < box.x + box_radius.x + radius.x) {
-							position.x = box.x + box_radius.x + radius.x;
+						if (position.x < box.x + box_radius.x) {
+							position.x = box.x + box_radius.x;
 							if (velocity.x < 0.0f) {
 								velocity.x = 0.0f;
 							}
 						}
-						else if (position.x > box.x - box_radius.x - radius.x) {
-							position.x = box.x - box_radius.x - radius.x;
+						else if (position.x > box.x - radius.x) {
+							position.x = box.x - radius.x;
 							if (velocity.x > 0.0f) {
 								velocity.x = 0.0f;
 							}
@@ -238,8 +239,6 @@ void StoryMode::enter_scene(float elapsed) {
 				}
 			}
 		}
-
-        position = position + velocity * elapsed;
 	}
 	
 }

@@ -22,5 +22,5 @@ public:
     }
 
     glm::vec2 position = glm::vec2(0.0f, 0.0f);
-    glm::vec2 radius = glm::vec2(0.5f*TILE_SIZE, 0.5f*TILE_SIZE);
+    glm::vec2 radius = glm::vec2(TILE_SIZE, TILE_SIZE);
 };

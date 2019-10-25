@@ -13,6 +13,6 @@ public:
 
     glm::vec2 position = glm::vec2(0.0f, 0.0f);
     glm::vec2 velocity = glm::vec2(0.0f, 0.0f);
-    glm::vec2 radius = glm::vec2(15.0f, 30.0f);
+    glm::vec2 radius = glm::vec2(30.0f, 60.0f);
     int health = 100;
 };
