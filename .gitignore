@@ -6,10 +6,10 @@ dist/README-libopus.txt
 dist/README-libpng.txt
 dist/README-opusfile.txt
 dist/SDL2.dll
-dist/the-planet
-dist/the-planet.exe
-dist/the-planet.ilk
-dist/the-planet.pdb
+dist/CookMap
+dist/CookMap.exe
+dist/CookMap.ilk
+dist/CookMap.pdb
 sprites/pack-sprites
 sprites/pack-sprites.exe
 sprites/pack-sprites.ilk
