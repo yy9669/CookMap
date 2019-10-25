@@ -12,10 +12,9 @@ public:
     Npc(npc_type type_, float x, float y) {
         type = type_;
         position = glm::vec2(x, y);
-        radius = glm::vec2(48.0f, 48.0f);
     }
 	virtual ~Npc() {}
 
     npc_type type;
-    glm::vec2 position, radius, velocity = glm::vec2(0.0f, 0.0f);
+    glm::vec2 position, radius = glm::vec2(25.0f, 45.0f), velocity = glm::vec2(0.0f, 0.0f);
 };

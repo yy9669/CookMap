@@ -72,8 +72,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
     // player start position
     float start_x, start_y;
     f >> start_x >> start_y;
-    mode->player.position.x = TILE_SIZE*start_x;
-    mode->player.position.y = TILE_SIZE*start_y;
+    mode->player.set_pos(TILE_SIZE*start_x, TILE_SIZE*start_y);
 
     // npc definition
     int npc_num, npc_type_;
@@ -127,7 +126,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
 }
 
 StoryMode::StoryMode() {
-    load_map_file("map_1.txt", this);
+    load_map_file(data_path("map_1.txt"), this);
 }
 
 StoryMode::~StoryMode() {
@@ -182,7 +181,6 @@ void StoryMode::enter_scene(float elapsed) {
 			//also: gravity
 			velocity.y - 10.0f * elapsed
 		);
-		position = position + velocity * elapsed;
 		//---- collision handling ----
 		for (unsigned i = 0; i < parts.size(); i++) {
 			for (unsigned j = 0; j < parts[i].size(); j++) {
@@ -240,6 +238,8 @@ void StoryMode::enter_scene(float elapsed) {
 				}
 			}
 		}
+
+        position = position + velocity * elapsed;
 	}
 	
 }
