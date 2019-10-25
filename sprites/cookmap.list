@@ -1,4 +1,4 @@
-cookmap.xcf?background 0 0 1024 768 0 0 background
+cookmap.xcf?background 0 0 1024 768 0 +768 background
 cookmap.xcf?chef 100 100 +30 +60 +0 +60 chef
 cookmap.xcf?item_1 100 200 +48 +48 +0 +48 item_1
 cookmap.xcf?item_2 100 300 +48 +48 +0 +48 item_2
