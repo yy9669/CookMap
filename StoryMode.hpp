@@ -6,6 +6,12 @@
 
 #include "Mode.hpp"
 #include "Sound.hpp"
+#include "Part.hpp"
+#include "Chef.hpp"
+#include "Npc.hpp"
+#include "Ingredient.hpp"
+#include "Dish.hpp"
+#include <map>
 
 struct StoryMode : Mode {
 	StoryMode();
@@ -20,27 +26,27 @@ struct StoryMode : Mode {
 
 	//------ story state -------
 	enum {
-		Dunes,
-		Oasis,
-		Hill
-	} location = Dunes;
-	bool have_stone = false;
-	bool added_stone = false;
-	struct {
-		bool first_visit = true;
-		bool wont_leave = false;
-	} dunes;
-	struct {
-		bool first_visit = true;
-		bool took_stone = false;
-	} oasis;
-	struct {
-		bool first_visit = true;
-		bool added_stone = false;
-	} hill;
+		Walking,
+		Cooking
+	} game_mode = Walking;
 	
+	std::vector< std::vector <Part*> > parts;
+	std::vector< Npc > Npcs;
+	
+	Chef player;
+	std::map< Ingredient, int > backpack;
+	std::map< Dish, int > dishes;
+
+	//Current control signals:
+	struct {
+		bool left = false;
+		bool right = false;
+		bool up = false;
+		bool down = false;
+	} controls;
+
 	glm::vec2 view_min = glm::vec2(0,0);
-	glm::vec2 view_max = glm::vec2(256, 224);
+	glm::vec2 view_max = glm::vec2(1024, 768);
 
 	//------ background music -------
 	std::shared_ptr< Sound::PlayingSample > background_music;

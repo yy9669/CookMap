@@ -55,7 +55,19 @@ StoryMode::~StoryMode() {
 }
 
 bool StoryMode::handle_event(SDL_Event const &, glm::uvec2 const &window_size) {
-	if (Mode::current.get() != this) return false;
+
+	if (evt.type == SDL_KEYDOWN || evt.type == SDL_KEYUP) {
+		if (evt.key.keysym.scancode == SDL_SCANCODE_A) {
+			controls.left = (evt.type == SDL_KEYDOWN);
+			return true;
+		} else if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
+			controls.right = (evt.type == SDL_KEYDOWN);
+			return true;
+		} else if (evt.key.keysym.sym == SDLK_SPACE) {
+			controls.up = (evt.type == SDL_KEYDOWN);
+			return true;
+		}
+	}
 
 	return false;
 }
@@ -63,7 +75,7 @@ bool StoryMode::handle_event(SDL_Event const &, glm::uvec2 const &window_size) {
 void StoryMode::update(float elapsed) {
 	if (Mode::current.get() == this) {
 		//there is no menu displayed! Make one:
-		enter_scene();
+		enter_scene(elapsed);
 	}
 
 	if (!background_music || background_music->stopped) {
@@ -71,156 +83,87 @@ void StoryMode::update(float elapsed) {
 	}
 }
 
-void StoryMode::enter_scene() {
-	//just entered this scene, adjust flags and build menu as appropriate:
-	std::vector< MenuMode::Item > items;
-	glm::vec2 at(3.0f, view_max.y - 3.0f - 11.0f);
-	auto add_text = [&items,&at](std::string text) {
-		while (text.size()) {
-			auto end = text.find('\n');
-			items.emplace_back(text.substr(0, end), nullptr, 1.0f, glm::u8vec4(0x00, 0x00, 0x00, 0xff), nullptr, at);
-			at.y -= 13.0f;
-			if (end == std::string::npos) break;
-			text = text.substr(end+1);
-		}
-		at.y -= 4.0f;
-	};
-	auto add_choice = [&items,&at](std::string const &text, std::function< void(MenuMode::Item const &) > const &fn) {
-		items.emplace_back(text, nullptr, 1.0f, glm::u8vec4(0x00, 0x00, 0x00, 0x88), fn, at + glm::vec2(16.0f, 0.0f));
-		items.back().selected_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
-		at.y -= 13.0f;
-		at.y -= 4.0f;
-	};
+void StoryMode::enter_scene(float elapsed) {
+	{
+		//player motion:
+		//build a shove from controls:
 
-	if (location == Dunes) {
-		if (dunes.wont_leave) {
-			dunes.wont_leave = false;
-			add_text(
-				"Something remains to accomplish.\n"
-				"I won't leave."
-			);
-		}
-		if (dunes.first_visit) {
-			dunes.first_visit = false;
-			add_text(
-				"The landing is turbulent.\n"
-				"As the sand settles, I see there is\n"
-				"nobody here to meet me."
-			);
-		} else {
-			add_text(
-				"There is still nobody here to meet me."
-			);
-		}
-		at.y -= 8.0f; //gap before choices
-		add_choice("Walk West", [this](MenuMode::Item const &){
-			location = Hill;
-			Mode::current = shared_from_this();
-		});
-		add_choice("Walk East", [this](MenuMode::Item const &){
-			location = Oasis;
-			Mode::current = shared_from_this();
-		});
-		if (!dunes.first_visit) {
-			add_choice("Leave", [this](MenuMode::Item const &){
-				if (added_stone) {
-					//TODO: some sort of victory animation?
-					Mode::current = nullptr;
-				} else {
-					dunes.wont_leave = true;
-					Mode::current = shared_from_this();
+		glm::vec2 shove = glm::vec2(0.0f);
+		if (controls.left) shove.x -= 1.0f;
+		if (controls.right) shove.x += 1.0f;
+		if (controls.up) shove.y += 1.0f;
+		if (controls.down) shove.y -= 1.0f;
+		shove *= 10.0f;
+
+		glm::vec2 &position = player.position;
+		glm::vec2 &velocity = player.velocity;
+		glm::vec2 &radius = player.radius;
+
+		velocity = glm::vec2(
+			//decay existing velocity toward shove:
+			glm::mix(shove, velocity, std::pow(0.5f, elapsed / 0.25f)).x,
+			//also: gravity
+			velocity.y - 10.0f * elapsed
+		);
+		position = position + velocity * elapsed;
+		//---- collision handling ----
+		for (int i = 0; i < parts.size(); i++) {
+			for (int j = 0; j < parts[i].size(); j++) {
+				glm::vec2 box = glm::vec2(parts[i][j]->position.x, parts[i][j]->position.y);
+				glm::vec2 box_radius = glm::vec2(parts[i][j]->radius.x, parts[i][j]->radius.y);
+				glm::vec2 min = glm::max(box - box_radius, position - radius);
+				glm::vec2 max = glm::min(box + box_radius, position + radius);
+				if (min.x <= max.x && min.y <= max.y) {
+					switch (parts[i][j]->id())
+					{
+					case Part::npc_type:
+						break;
+					
+					case Part::ground_type:
+						// y direction
+						if (position.y < box.y + box_radius.y + radius.y) {
+							position.y = box.y + box_radius.y + radius.y;
+							if (velocity.y < 0.0f) {
+								velocity.y = 0.0f;
+							}
+						}
+						else if (position.y > box.y - box_radius.y - radius.y) {
+							position.y = box.y - box_radius.y - radius.y;
+							if (velocity.y > 0.0f) {
+								velocity.y = 0.0f;
+							}
+						}
+						// x direction
+						if (position.x < box.x + box_radius.x + radius.x) {
+							position.x = box.x + box_radius.x + radius.x;
+							if (velocity.x < 0.0f) {
+								velocity.x = 0.0f;
+							}
+						}
+						else if (position.x > box.x - box_radius.x - radius.x) {
+							position.x = box.x - box_radius.x - radius.x;
+							if (velocity.x > 0.0f) {
+								velocity.x = 0.0f;
+							}
+						}
+						break;
+
+					case Part::empty_type:
+						break;
+
+					case Part::ingredient_type:
+						// y direction
+						parts[i][j]->obtained = true;
+						break;
+
+					default:
+						break;
+					}
 				}
-			});
-		}
-	} else if (location == Oasis) {
-		if (oasis.took_stone) {
-			oasis.took_stone = false;
-			add_text(
-				"The stone fits snugly in my pocket."
-			);
-		}
-		if (oasis.first_visit) {
-			oasis.first_visit = false;
-			add_text(
-				"I search east, walking in ever-\n"
-				"greater circles. Just over the next\n"
-				"dune, I find an oasis."
-			);
-		} else {
-			add_text(
-				"The oasis sparkles in the sunlight."
-			);
-		}
-		if (!have_stone) {
-			add_text(
-				"Sitting in the glass-clear water is a\n"
-				"single blue gemstone."
-			);
-		}
-		at.y -= 8.0f; //gap before choices
-		if (!have_stone) {
-			add_choice("Take Stone", [this](MenuMode::Item const &){
-				have_stone = true;
-				oasis.took_stone = true;
-				Mode::current = shared_from_this();
-			});
-		}
-		add_choice("Return to the Ship", [this](MenuMode::Item const &){
-			location = Dunes;
-			Mode::current = shared_from_this();
-		});
-	} else if (location == Hill) {
-		if (hill.added_stone) {
-			hill.added_stone = false;
-			add_text(
-				"I add the blue stone to the circle.\n"
-				"Something trembles deep underground."
-			);
-		}
-		if (hill.first_visit) {
-			hill.first_visit = false;
-			add_text(
-				"I set off confidently to the west.\n"
-				"At the top of the third dune, a circle\n"
-				"of stones surrounds a shallow\n"
-				"depression in the ground."
-			);
-		} else {
-			if (added_stone) {
-				add_text(
-					"The circle of stones stands silently."
-				);
-			} else {
-				add_text(
-					"The circle of stones stands\n"
-					"expectantly."
-				);
 			}
 		}
-		at.y -= 8.0f; //gap before choices
-		if (have_stone && !added_stone) {
-			add_choice("Add Blue Stone", [this](MenuMode::Item const &){
-				added_stone = true;
-				hill.added_stone = true;
-				Mode::current = shared_from_this();
-			});
-		}
-		add_choice("Return to the Ship", [this](MenuMode::Item const &){
-			location = Dunes;
-			Mode::current = shared_from_this();
-		});
 	}
-	std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >(items);
-	menu->atlas = sprites;
-	menu->left_select = sprite_left_select;
-	menu->right_select = sprite_right_select;
-	menu->select_bounce_amount = 4.0f;
-	menu->left_select_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
-	menu->right_select_tint = glm::u8vec4(0x00, 0x00, 0x00, 0xff);
-	menu->view_min = view_min;
-	menu->view_max = view_max;
-	menu->background = shared_from_this();
-	Mode::current = menu;
+	
 }
 
 void StoryMode::draw(glm::uvec2 const &drawable_size) {
