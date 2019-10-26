@@ -197,15 +197,17 @@ void StoryMode::enter_scene(float elapsed) {
 					{
 					case part_ground_type:
 						// y direction
-						if (position.y < box.y + box_radius.y &&
+						if (position.y < box.y + box_radius.y && 
+                            position.y > box.y + box_radius.y - 5.0f &&
 						    box.y + box_radius.y <= position.y + radius.y) {
 							position.y = box.y + box_radius.y;
 							if (velocity.y < 0.0f) {
 								velocity.y = 0.0f;
 							}
 						}
-						else if (position.y > box.y - radius.y &&
-                                box.y >= position.y) {
+						else if (position.y > box.y - radius.y && 
+                            position.y < box.y - radius.y + 5.0f &&
+                            box.y >= position.y) {
 							position.y = box.y - radius.y;
 							if (velocity.y > 0.0f) {
 								velocity.y = 0.0f;
@@ -247,8 +249,23 @@ void StoryMode::enter_scene(float elapsed) {
 				}
 			}
 		}
+        if (position.x + radius.x > parts[0].size() * TILE_SIZE) {
+            position.x = parts[0].size() * TILE_SIZE - radius.x;
+            velocity.x = 0.0f;
+        }
+        if (position.x < 0) {
+            position.x = 0;
+            velocity.x = 0.0f;
+        }
 	}
-	
+	{
+        // slide viewport window
+        float left_border = max(player.position.x - 512.0f, 0.0f);
+        left_border = min(left_border, parts[0].size() * TILE_SIZE - 1024);
+
+        view_min = glm::vec2(left_border, 0);
+        view_max = glm::vec2(left_border + 1024.0f, view_max.y);
+    }
 }
 
 void StoryMode::draw(glm::uvec2 const &drawable_size) {
@@ -331,13 +348,13 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             for (unsigned i = 0; i < backpack.size(); i++) {
                 switch (backpack[i]) {
                     case Tomato:
-                        draw.draw(*sprite_item_1, backpack_pos[i]);
+                        draw.draw(*sprite_item_1, backpack_pos[i]+view_min);
                         break;
                     case Potato:
-                        draw.draw(*sprite_item_2, backpack_pos[i]);
+                        draw.draw(*sprite_item_2, backpack_pos[i]+view_min);
                         break;
                     case Onion:
-                        draw.draw(*sprite_item_3, backpack_pos[i]);
+                        draw.draw(*sprite_item_3, backpack_pos[i]+view_min);
                         break;
                 }
             }
@@ -346,21 +363,21 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 //TODO: replace item with dish
                 switch (dishes[i]) {
                     case Dish1:
-                        draw.draw(*sprite_item_1, dishes_pos[i]);
+                        draw.draw(*sprite_item_1, dishes_pos[i]+view_min);
                         break;
                     case Dish2:
-                        draw.draw(*sprite_item_2, dishes_pos[i]);
+                        draw.draw(*sprite_item_2, dishes_pos[i]+view_min);
                         break;
                     case Dish3:
-                        draw.draw(*sprite_item_3, dishes_pos[i]);
+                        draw.draw(*sprite_item_3, dishes_pos[i]+view_min);
                         break;
                 }
             }
 
             draw.draw(*sprite_chef, player.position);
             glm::vec2 health_pos = glm::vec2(50.0f, 726.0f);
-            for (unsigned h = 0; h < player.health; h++) {
-                draw.draw(*sprite_health_box, health_pos);
+            for (int h = 0; h < player.health; h++) {
+                draw.draw(*sprite_health_box, health_pos+view_min);
                 health_pos.x += 20.0f;
             }
 
