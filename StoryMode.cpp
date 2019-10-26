@@ -145,8 +145,9 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 			return true;
 		}
 	}
-                if (evt.button.clicks == 1 && evt.button.x>= 866&& evt.button.x<=1005 && evt.button.y>=5 && evt.button.y<=69) 
-                        proto_cook=true;
+    if (evt.button.clicks == 1 && evt.button.x>= 866+view_min.x && 
+        evt.button.x<=1005+view_min.x && evt.button.y>=5 && evt.button.y<=69) 
+            proto_cook=true;
 
 	return false;
 }
@@ -347,9 +348,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 }
             }
 
-            if(proto_cook && dishes.size()==0){
+            if(proto_cook && dishes.size() < 2 && backpack.size() > 0){
                 backpack.clear();
                 dishes.push_back(Dish1);
+                proto_cook = false;
             }
 
             for (unsigned i = 0; i < backpack.size(); i++) {
