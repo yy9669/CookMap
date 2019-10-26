@@ -11,6 +11,6 @@ Screen Shot:
 How To Play: Press A/D to move left/right. Press SPACE to jump. Click "Cook" with mouse to make some dish. Drag your cooked dish to the Guard to bribe him and pass.
 
 Sources:
-The assests mainly comes from GIMP-2.10 and Kenny.nl (https://www.kenney.nl)
+The assests mainly come from GIMP-2.10 and Kenny.nl (https://www.kenney.nl)
 
 This game was built with [NEST](NEST.md).
