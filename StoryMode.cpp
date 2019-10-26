@@ -452,7 +452,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
             if (winning) {
                 // 'I' is too thin...
-                draw.draw_text("YOU  W I N!", glm::vec2(160.0f, 330.0f), 0.4);
+                draw.draw_text("YOU  W I N!", glm::vec2(160.0f, 330.0f)+view_min, 0.4);
             }
 		} else {
             // cooking
