@@ -296,7 +296,7 @@ void StoryMode::enter_scene(float elapsed) {
             if (collision(position, radius, box, box_radius)) {
                 resolve_collision(position, radius, box, box_radius, velocity);
                 player.health-=1;
-                player.health=max(0,player.health)
+                player.health=max(0,player.health);
             }
         }
 
