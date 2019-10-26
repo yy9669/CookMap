@@ -291,7 +291,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 	glDisable(GL_DEPTH_TEST);
 
 	{ //use a DrawSprites to do the drawing:
-		DrawSprites draw(*sprites, view_min, view_max, drawable_size, DrawSprites::AlignPixelPerfect);
+		DrawSprites draw(*sprites, view_min, view_max, drawable_size, DrawSprites::AlignSloppy);
 		glm::vec2 bl = glm::vec2(view_min.x, view_min.y);
 
 		if (game_mode == Walking) {
