@@ -17,4 +17,5 @@ public:
 
     npc_type type;
     glm::vec2 position, radius = glm::vec2(80.0f, 120.0f), velocity = glm::vec2(0.0f, 0.0f);
+    bool eat=false;
 };

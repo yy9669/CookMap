@@ -61,6 +61,9 @@ struct StoryMode : Mode {
 
 	bool proto_cook = false;
 	bool winning = false;
+	bool dish_drag = false;
+	glm::vec2 dish_drag_pos = glm::vec2(0,0);
+
 	//------ background music -------
 	std::shared_ptr< Sound::PlayingSample > background_music;
 };
