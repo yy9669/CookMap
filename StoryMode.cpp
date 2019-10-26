@@ -145,11 +145,27 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 			return true;
 		}
 	}
-    if (evt.type== SDL_MOUSEBUTTONDOWN && evt.button.x>= 866 && 
+    if (evt.type== SDL_MOUSEBUTTONDOWN){
+        if(evt.button.x>= 866 && 
         evt.button.x<=1005 && evt.button.y>=5 && evt.button.y<=69) {
             proto_cook=true;
-            return true;
+        }else if (evt.button.x>= 740 && 
+        evt.button.x<=843 && (evt.button.x-740)%55<48 && evt.button.y>=10 && evt.button.y<=58 && (evt.button.x-740)/55 <dishes.size()  ) {
+                            dishes.erase(dishes.begin()+(evt.button.x-740)/55 );
+                            dish_drag=true;
         }
+                    return true;
+    }
+    if(evt.type== SDL_MOUSEMOTION && dish_drag==true){
+        dish_drag_pos=glm::vec2(evt.x,evt.y)
+        return true;
+    }
+    if (evt.type== SDL_MOUSEBUTTONUP && dish_drag==true){
+        dish_drag==false;
+        
+        return true;
+    }
+
         return false;
 }
 
@@ -383,6 +399,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                         draw.draw(*sprite_dish_1, dishes_pos[i]+view_min);
                         break;
                 }
+            }
+
+            if(dish_drag){
+                draw.draw(*sprite_dish_1, dish_drag_pos)
             }
 
             draw.draw(*sprite_chef, player.position);
