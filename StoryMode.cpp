@@ -134,6 +134,9 @@ StoryMode::~StoryMode() {
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
+    if (winning) {
+        return false;
+    }
 	if (evt.type == SDL_KEYDOWN || evt.type == SDL_KEYUP) {
 		if (evt.key.keysym.scancode == SDL_SCANCODE_A) {
 			controls.left = (evt.type == SDL_KEYDOWN);
@@ -266,9 +269,6 @@ void StoryMode::enter_scene(float elapsed) {
 						resolve_collision(position, radius, box, box_radius, velocity);
 						break;
 
-					case part_empty_type:
-						break;
-
 					case part_ingredient_type:
                         ingre = reinterpret_cast<Ingredient*>(parts[i][j]);
                         if (!ingre->obtained && backpack.size() < 5) {
@@ -278,7 +278,9 @@ void StoryMode::enter_scene(float elapsed) {
 						break;
 
                     case part_goal_type:
+                        winning = true;
                         break;
+
 					default:
 						break;
 					}
@@ -450,6 +452,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 health_pos.x += 20.0f;
             }
 
+            if (winning) {
+                // 'I' is too thin...
+                draw.draw_text("YOU  W I N!", glm::vec2(160.0f, 330.0f)+view_min, 0.4);
+            }
 		} else {
             // cooking
 		}
