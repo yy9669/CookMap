@@ -60,6 +60,7 @@ struct StoryMode : Mode {
 	glm::vec2 view_max = glm::vec2(1024, 768);
 
 	bool proto_cook = false;
+	bool winning = false;
 	//------ background music -------
 	std::shared_ptr< Sound::PlayingSample > background_music;
 };
