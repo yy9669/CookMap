@@ -326,7 +326,11 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
 
             draw.draw(*sprite_chef, player.position);
-//            draw.draw(*sprite_health_box, );
+            glm::vec2 health_pos = glm::vec2(50.0f, 726.0f);
+            for (unsigned h = 0; h < player.health; h++) {
+                draw.draw(*sprite_health_box, health_pos);
+                health_pos.x += 20.0f;
+            }
 
 		} else {
             // cooking
