@@ -165,22 +165,22 @@ void StoryMode::enter_scene(float elapsed) {
 		//player motion:
 		//build a shove from controls:
 
+        glm::vec2 &position = player.position;
+        glm::vec2 &velocity = player.velocity;
+        glm::vec2 &radius = player.radius;
+
 		glm::vec2 shove = glm::vec2(0.0f);
-		if (controls.left) shove.x -= 1.0f;
-		if (controls.right) shove.x += 1.0f;
-		if (controls.up) shove.y += 1.0f;
+		if (controls.left) shove.x -= 15.0f;
+		if (controls.right) shove.x += 15.0f;
+		if (controls.up && abs(velocity.y) < 1e-4) {
+		    shove.y += 20.0f;
+            controls.up = false;
+		}
 		shove *= 10.0f;
 
-		glm::vec2 &position = player.position;
-		glm::vec2 &velocity = player.velocity;
-		glm::vec2 &radius = player.radius;
+		auto tmp = glm::mix(shove, velocity, std::pow(0.5f, elapsed / 0.25f));
+		velocity = glm::vec2(tmp.x, velocity.y + shove.y - 200.0f * elapsed);
 
-		velocity = glm::vec2(
-			//decay existing velocity toward shove:
-			glm::mix(shove, velocity, std::pow(0.5f, elapsed / 0.25f)).x,
-			//also: gravity
-			velocity.y - 10.0f * elapsed
-		);
         position = position + velocity * elapsed;
 
 		//---- collision handling ----
@@ -188,34 +188,39 @@ void StoryMode::enter_scene(float elapsed) {
 			for (unsigned j = 0; j < parts[i].size(); j++) {
 				glm::vec2 box = glm::vec2(parts[i][j]->position.x, parts[i][j]->position.y);
 				glm::vec2 box_radius = glm::vec2(parts[i][j]->radius.x, parts[i][j]->radius.y);
-				glm::vec2 min = glm::max(box, position);
-				glm::vec2 max = glm::min(box + box_radius, position + radius);
-				if (min.x <= max.x && min.y <= max.y) {
+                glm::vec2 posmin = glm::vec2(max(box.x, position.x), max(box.y, position.y));
+                glm::vec2 posmax = glm::vec2(min(box.x+box_radius.x, position.x+radius.x),
+                                             min(box.y+box_radius.y, position.y+radius.y));
+				if (posmin.x < posmax.x && posmin.y < posmax.y) {
                     Ingredient *ingre;
 					switch (parts[i][j]->id())
 					{
 					case part_ground_type:
 						// y direction
-						if (position.y < box.y + box_radius.y) {
+						if (position.y < box.y + box_radius.y &&
+						    box.y + box_radius.y <= position.y + radius.y) {
 							position.y = box.y + box_radius.y;
 							if (velocity.y < 0.0f) {
 								velocity.y = 0.0f;
 							}
 						}
-						else if (position.y > box.y - radius.y) {
+						else if (position.y > box.y - radius.y &&
+                                box.y >= position.y) {
 							position.y = box.y - radius.y;
 							if (velocity.y > 0.0f) {
 								velocity.y = 0.0f;
 							}
 						}
 						// x direction
-						if (position.x < box.x + box_radius.x) {
+						else if (position.x < box.x + box_radius.x &&
+						    box.x + box_radius.x <= position.x + radius.x) {
 							position.x = box.x + box_radius.x;
 							if (velocity.x < 0.0f) {
 								velocity.x = 0.0f;
 							}
 						}
-						else if (position.x > box.x - radius.x) {
+						else if (position.x > box.x - radius.x &&
+						    box.x >= position.x) {
 							position.x = box.x - radius.x;
 							if (velocity.x > 0.0f) {
 								velocity.x = 0.0f;
