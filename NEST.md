@@ -92,7 +92,7 @@ Here are a few worthwhile variations:
   $ jam -q
 
 # Variation: run game if build succeeds:
-  $ jam && dist/pong
+  $ jam && dist/CookMap
 
 # Variation: show commands being run (useful for debugging the Jamfile):
   $ jam -dx
@@ -101,7 +101,7 @@ Here are a few worthwhile variations:
   $ jam -h
 
 # Variation: this is what I generally use:
-  $ jam -q -j6 && dist/pong
+  $ jam -q -j6 && dist/CookMap
 
 # Useful: delete all built files:
   $ jam clean
