@@ -150,19 +150,24 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         evt.button.x<=1005 && evt.button.y>=5 && evt.button.y<=69) {
             proto_cook=true;
         }else if (evt.button.x>= 740 && 
-        evt.button.x<=843 && (evt.button.x-740)%55<48 && evt.button.y>=10 && evt.button.y<=58 && (evt.button.x-740)/55 <dishes.size()  ) {
+        evt.button.x<=843 && (evt.button.x-740)%55<48 && evt.button.y>=10 && evt.button.y<=58 && int((evt.button.x-740)/55) <int(dishes.size() ) ) {
                             dishes.erase(dishes.begin()+(evt.button.x-740)/55 );
                             dish_drag=true;
+                            dish_drag_pos=glm::vec2(evt.button.x,768-evt.button.y)+view_min;
         }
                     return true;
     }
     if(evt.type== SDL_MOUSEMOTION && dish_drag==true){
-        dish_drag_pos=glm::vec2(evt.x,evt.y)
+        dish_drag_pos=glm::vec2(evt.motion.x,768-evt.motion.y)+view_min;
         return true;
     }
     if (evt.type== SDL_MOUSEBUTTONUP && dish_drag==true){
-        dish_drag==false;
-        
+        dish_drag=false;
+        if(collision(dish_drag_pos, glm::vec2(48,48), npcs[0]->position, npcs[0]->radius )){
+            npcs[0]->eat=true;
+        }else{
+            dishes.push_back(Dish1);
+        }
         return true;
     }
 
@@ -283,6 +288,8 @@ void StoryMode::enter_scene(float elapsed) {
         for (unsigned i = 0; i < npcs.size(); i++) {
             glm::vec2 box = npcs[i]->position;
             glm::vec2 box_radius = npcs[i]->radius;
+            if(npcs[i]->eat)
+                continue;
             if (collision(position, radius, box, box_radius)) {
                 resolve_collision(position, radius, box, box_radius, velocity);
             }
@@ -421,7 +428,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
 
             if(dish_drag){
-                draw.draw(*sprite_dish_1, dish_drag_pos)
+                draw.draw(*sprite_dish_1, dish_drag_pos);
             }
 
             draw.draw(*sprite_chef, player.position);
