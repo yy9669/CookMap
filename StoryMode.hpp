@@ -14,7 +14,6 @@
 #include "Npc.hpp"
 #include "Ingredient.hpp"
 #include "Dish.hpp"
-#include <map>
 
 struct StoryMode : Mode {
 	StoryMode();
@@ -27,6 +26,12 @@ struct StoryMode : Mode {
 	//called to create menu for current scene:
 	void enter_scene(float elapsed);
 
+	//------ constants ---------
+	const std::vector<glm::vec2> backpack_pos = {{360, 710}, {415, 710}, 
+		{470, 710}, {525, 710}, {580, 710}};
+	const std::vector<glm::vec2> dishes_pos = {{740, 710}, {795, 710}};
+
+
 	//------ story state -------
 	enum {
 		Walking,
@@ -37,8 +42,8 @@ struct StoryMode : Mode {
 	std::vector<Npc*> npcs;
 	
 	Chef player;
-	std::map< Ingredient, int > backpack;
-	std::map< Dish, int > dishes;
+	std::vector<ingredient_type> backpack;
+	std::vector<dish_type> dishes;
 
 	//Current control signals:
 	struct {

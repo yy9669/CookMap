@@ -233,7 +233,10 @@ void StoryMode::enter_scene(float elapsed) {
 
 					case part_ingredient_type:
                         ingre = reinterpret_cast<Ingredient*>(parts[i][j]);
-                        ingre->obtained = true;
+                        if (!ingre->obtained && backpack.size() < 5) {
+                            ingre->obtained = true;
+                            backpack.push_back(ingre->type);
+                        }
 						break;
 
                     case part_goal_type:
@@ -321,6 +324,35 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                         draw.draw(*sprite_npc_1, npcs[i]->position);
                         break;
                     default:
+                        break;
+                }
+            }
+
+            for (unsigned i = 0; i < backpack.size(); i++) {
+                switch (backpack[i]) {
+                    case Tomato:
+                        draw.draw(*sprite_item_1, backpack_pos[i]);
+                        break;
+                    case Potato:
+                        draw.draw(*sprite_item_2, backpack_pos[i]);
+                        break;
+                    case Onion:
+                        draw.draw(*sprite_item_3, backpack_pos[i]);
+                        break;
+                }
+            }
+
+            for (unsigned i = 0; i < dishes.size(); i++) {
+                //TODO: replace item with dish
+                switch (dishes[i]) {
+                    case Dish1:
+                        draw.draw(*sprite_item_1, dishes_pos[i]);
+                        break;
+                    case Dish2:
+                        draw.draw(*sprite_item_2, dishes_pos[i]);
+                        break;
+                    case Dish3:
+                        draw.draw(*sprite_item_3, dishes_pos[i]);
                         break;
                 }
             }
