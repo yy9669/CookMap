@@ -145,6 +145,8 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 			return true;
 		}
 	}
+                if (evt.button.clicks == 1 && evt.button.x>= 866&& evt.button.x<=1005 && evt.button.y>=5 && evt.button.y<=69) 
+                        proto_cook=true;
 
 	return false;
 }
@@ -328,6 +330,11 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 }
             }
 
+            if(proto_cook && dishes.size()==0){
+                backpack.clear();
+                dishes.push_back(Dish1);
+            }
+
             for (unsigned i = 0; i < backpack.size(); i++) {
                 switch (backpack[i]) {
                     case Tomato:
@@ -346,20 +353,20 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 //TODO: replace item with dish
                 switch (dishes[i]) {
                     case Dish1:
-                        draw.draw(*sprite_item_1, dishes_pos[i]);
+                        draw.draw(*sprite_dish_1, dishes_pos[i]);
                         break;
                     case Dish2:
-                        draw.draw(*sprite_item_2, dishes_pos[i]);
+                        draw.draw(*sprite_dish_1, dishes_pos[i]);
                         break;
                     case Dish3:
-                        draw.draw(*sprite_item_3, dishes_pos[i]);
+                        draw.draw(*sprite_dish_1, dishes_pos[i]);
                         break;
                 }
             }
 
             draw.draw(*sprite_chef, player.position);
             glm::vec2 health_pos = glm::vec2(50.0f, 726.0f);
-            for (unsigned h = 0; h < player.health; h++) {
+            for (int h = 0; h < player.health; h++) {
                 draw.draw(*sprite_health_box, health_pos);
                 health_pos.x += 20.0f;
             }
