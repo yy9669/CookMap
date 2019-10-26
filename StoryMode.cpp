@@ -25,7 +25,7 @@ Sprite const *sprite_npc_1 = nullptr;
 Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
 Sprite const *sprite_tile_1 = nullptr;
-
+Sprite const *sprite_tile_2 = nullptr;
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
@@ -40,6 +40,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_health_box = &ret->lookup("health_box");
     sprite_exit = &ret->lookup("exit");
     sprite_tile_1 = &ret->lookup("tile_1");
+    sprite_tile_2 = &ret->lookup("tile_2");
 
 	return ret;
 });
@@ -104,8 +105,8 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                 case 'e':
                     part = new Empty();
                     break;
-                case 'g':
-                    part = new Ground();
+                case 'g': case 'w':
+                    part = new Ground(s[x]);
                     break;
                 case '*':
                     part = new Goal();
@@ -300,10 +301,19 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             for (unsigned i = 0; i < parts.size(); i++) {
                 for (unsigned j = 0; j < parts[i].size(); j++) {
                     Ingredient *ingre;
+                    Ground *grd;
                     switch (parts[i][j]->id())
                     {
                         case part_ground_type:
-                            draw.draw(*sprite_tile_1, parts[i][j]->position);
+                            grd = reinterpret_cast<Ground*>(parts[i][j]);
+                            switch (grd->g_type) {
+                            case 'g':
+                                draw.draw(*sprite_tile_1, parts[i][j]->position);
+                                break;
+                            case 'w':
+                                draw.draw(*sprite_tile_2, parts[i][j]->position);
+                                break;
+                            }
                             break;
 
                         case part_empty_type:
