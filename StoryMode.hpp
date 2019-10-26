@@ -25,6 +25,9 @@ struct StoryMode : Mode {
 
 	//called to create menu for current scene:
 	void enter_scene(float elapsed);
+	bool collision(glm::vec2 pos1, glm::vec2 radius1, glm::vec2 pos2, glm::vec2 radius2);
+	void resolve_collision(glm::vec2 &position, glm::vec2 radius, 
+    	glm::vec2 box, glm::vec2 box_radius, glm::vec2 &velocity);
 
 	//------ constants ---------
 	const std::vector<glm::vec2> backpack_pos = {{360, 710}, {415, 710}, 
