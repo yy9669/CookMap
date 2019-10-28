@@ -1,7 +1,6 @@
 #include "StoryMode.hpp"
 
 #include "Sprite.hpp"
-#include "DrawSprites.hpp"
 #include "Load.hpp"
 #include "data_path.hpp"
 #include "gl_errors.hpp"
@@ -26,7 +25,8 @@ Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
 Sprite const *sprite_tile_1 = nullptr;
 Sprite const *sprite_tile_2 = nullptr;
-Sprite const *helper = nullptr;
+Sprite const *sprite_instruction_panel = nullptr;
+Sprite const *sprite_helper = nullptr;
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
@@ -42,7 +42,8 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_exit = &ret->lookup("exit");
     sprite_tile_1 = &ret->lookup("tile_1");
     sprite_tile_2 = &ret->lookup("tile_2");
-    helper = &ret->lookup("help");
+    sprite_instruction_panel = &ret->lookup("panel_1");
+    sprite_helper = &ret->lookup("help");
 	return ret;
 });
 
@@ -484,7 +485,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
             draw.draw(*sprite_chef, player.position);
 
-            draw.draw(*helper, glm::vec2(0.0f, 668.0f)+view_min);
+            draw.draw(*sprite_helper, glm::vec2(0.0f, 668.0f)+view_min);
 
             glm::vec2 health_pos = glm::vec2(50.0f, 726.0f);
             for (int h = 0; h < player.health; h++) {
@@ -499,10 +500,30 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             if (lose) {
                 draw.draw_text("YOU   LOSE...", glm::vec2(90.0f, 330.0f)+view_min, 0.4);
             }
+
+            if (instruction) {
+                draw_instruction(draw);
+            }
 		} else {
             // cooking
 		}
 
 	}
 	GL_ERRORS(); //did the DrawSprites do something wrong?
+}
+
+
+void StoryMode::draw_instruction(DrawSprites& draw) {
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            draw.draw(*sprite_instruction_panel,
+                    glm::vec2(5+48.f*i, 615-48.f*j)+view_min);
+        }
+    }
+    draw.draw_text(
+            "a,d   to   move   left,right\n"
+            "space   to   jump\n"
+            "click   COOK   to   make   dish\n"
+            "drag   dish   to   enemy   to   pass",
+            glm::vec2(15, 630)+view_min, 0.068);
 }
