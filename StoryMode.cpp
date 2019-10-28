@@ -523,7 +523,7 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
     draw.draw_text(
             "a,d   to   move   left,right\n"
             "space   to   jump\n"
-            "click   COOK   to   make   dish\n"
-            "drag   dish   to   enemy   to   pass",
+            "click   COOK!   to   make   dish\n"
+            "drag   dish   to   enemy   to   bribe",
             glm::vec2(15, 630)+view_min, 0.068);
 }
