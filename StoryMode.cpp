@@ -514,9 +514,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
 
 void StoryMode::draw_instruction(DrawSprites& draw) {
-    for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            draw.draw(*sprite_instruction_panel, glm::vec2(10+48.f*i, 650-48.f*j));
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            draw.draw(*sprite_instruction_panel,
+                    glm::vec2(5+48.f*i, 615-48.f*j)+view_min);
         }
     }
     draw.draw_text(
@@ -524,5 +525,5 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
             "space   to   jump\n"
             "click   COOK   to   make   dish\n"
             "drag   dish   to   enemy   to   pass",
-            glm::vec2(10, 650)+view_min, 0.06);
+            glm::vec2(15, 630)+view_min, 0.068);
 }
