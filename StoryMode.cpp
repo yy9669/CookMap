@@ -134,7 +134,7 @@ StoryMode::~StoryMode() {
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
-    if (winning) {
+    if (winning || lose) {
         return false;
     }
 	if (evt.type == SDL_KEYDOWN || evt.type == SDL_KEYUP) {
@@ -278,7 +278,9 @@ void StoryMode::enter_scene(float elapsed) {
 						break;
 
                     case part_goal_type:
-                        winning = true;
+                        if (!lose) {
+                            winning = true;
+                        }
                         break;
 
 					default:
@@ -317,13 +319,16 @@ void StoryMode::enter_scene(float elapsed) {
         view_min = glm::vec2(left_border, 0);
         view_max = glm::vec2(left_border + 1024.0f, view_max.y);
     }
-            if(proto_cook){
-                proto_cook = false;
-                if(dishes.size() < 2 && backpack.size() > 0){
-                    backpack.clear();
-                    dishes.push_back(Dish1);
-                }
+    if (proto_cook) {
+        proto_cook = false;
+        if (dishes.size() < 2 && backpack.size() > 0) {
+            backpack.clear();
+            dishes.push_back(Dish1);
         }
+    }
+    if (!winning && player.health == 0) {
+        lose = true;
+    }
 }
 
 void StoryMode::draw(glm::uvec2 const &drawable_size) {
@@ -455,6 +460,9 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             if (winning) {
                 // 'I' is too thin...
                 draw.draw_text("YOU  W I N!", glm::vec2(160.0f, 330.0f)+view_min, 0.4);
+            }
+            if (lose) {
+                draw.draw_text("YOU   LOSE...", glm::vec2(90.0f, 330.0f)+view_min, 0.4);
             }
 		} else {
             // cooking

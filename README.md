@@ -11,6 +11,10 @@ Screen Shot:
 How To Play: Press A/D to move left/right. Press SPACE to jump. Click "Cook" with mouse to make some dish. Drag your cooked dish to the Guard to bribe him and pass.
 
 Sources:
+
+Font comes from https://sourceforge.net/projects/rods-custom-font-xcf-files/, it's free to use.
+
 The assests mainly come from GIMP-2.10 and Kenny.nl (https://www.kenney.nl)
+
 
 This game was built with [NEST](NEST.md).
