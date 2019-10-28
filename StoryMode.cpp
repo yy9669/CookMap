@@ -26,6 +26,7 @@ Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
 Sprite const *sprite_tile_1 = nullptr;
 Sprite const *sprite_tile_2 = nullptr;
+Sprite const *helper = nullptr;
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
@@ -41,7 +42,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_exit = &ret->lookup("exit");
     sprite_tile_1 = &ret->lookup("tile_1");
     sprite_tile_2 = &ret->lookup("tile_2");
-
+    helper = &ret->lookup("help");
 	return ret;
 });
 
@@ -158,6 +159,9 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                             dishes.erase(dishes.begin()+(evt.button.x-740)/55 );
                             dish_drag=true;
                             dish_drag_pos=glm::vec2(evt.button.x,768-evt.button.y)+view_min;
+        }else if (evt.button.x>= 0 && 
+        evt.button.x<=50 && evt.button.y>=50 && evt.button.y<=100) {
+            instruction=!instruction;
         }
                     return true;
     }
@@ -479,6 +483,9 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
 
             draw.draw(*sprite_chef, player.position);
+
+            draw.draw(*helper, glm::vec2(0.0f, 668.0f)+view_min);
+
             glm::vec2 health_pos = glm::vec2(50.0f, 726.0f);
             for (int h = 0; h < player.health; h++) {
                 draw.draw(*sprite_health_box, health_pos+view_min);

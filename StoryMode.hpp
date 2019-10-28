@@ -62,6 +62,8 @@ struct StoryMode : Mode {
 	bool proto_cook = false;
 	bool winning = false, lose = false;
 	bool dish_drag = false;
+	bool instruction = true;
+
 	glm::vec2 dish_drag_pos = glm::vec2(0,0);
 
 	//------ background music -------
