@@ -239,9 +239,33 @@ void StoryMode::resolve_collision(glm::vec2 &position, glm::vec2 radius,
 
 void StoryMode::enter_scene(float elapsed) {
 	{
+        //Npc motion:
+        for (unsigned i = 0; i < npcs.size(); i++) {
+            glm::vec2 &position_i = npcs[i]->position;
+            glm::vec2 &init_position_i = npcs[i]->init_position;
+            glm::vec2 &velocity_i = npcs[i]->velocity;
+            switch (npcs[i]->type)
+            {
+                //TODO: add different motions for npc
+                case npc0:
+                case npc1:
+                case npc2:
+                case npc3:
+                default:
+                    position_i = position_i + velocity_i * elapsed;
+                    if (position_i.y <= init_position_i.y) {
+                        position_i.y = init_position_i.y;
+                        velocity_i.y = -velocity_i.y;
+                    } else if (position_i.y > init_position_i.y 
+                        && position_i.y - init_position_i.y > 240.0f) {
+                        velocity_i.y = -velocity_i.y;
+                    }
+                    break;
+            }
+        }
+
 		//player motion:
 		//build a shove from controls:
-
         glm::vec2 &position = player.position;
         glm::vec2 &velocity = player.velocity;
         glm::vec2 &radius = player.radius;
@@ -260,7 +284,23 @@ void StoryMode::enter_scene(float elapsed) {
 
         position = position + velocity * elapsed;
 
-		//---- collision handling ----
+        //---- collision handling ----
+        // Npc detection
+        for (unsigned i = 0; i < npcs.size(); i++) {
+            glm::vec2 box = npcs[i]->position;
+            glm::vec2 box_radius = npcs[i]->radius;
+            if(npcs[i]->eat)
+                continue;
+            if (collision(position, radius, box, box_radius)) {
+                resolve_collision(position, radius, box, box_radius, velocity);
+                player.health-=1;
+                player.health=max(0,player.health);
+                position.x = npcs[i]->init_position.x - radius.x * 2;
+                position.y = npcs[i]->init_position.y;
+            }
+        }
+
+		// Environment detection
 		for (unsigned i = 0; i < parts.size(); i++) {
 			for (unsigned j = 0; j < parts[i].size(); j++) {
                 glm::vec2 box = parts[i][j]->position;
@@ -293,18 +333,6 @@ void StoryMode::enter_scene(float elapsed) {
 				}
 			}
 		}
-        // Npc detection
-        for (unsigned i = 0; i < npcs.size(); i++) {
-            glm::vec2 box = npcs[i]->position;
-            glm::vec2 box_radius = npcs[i]->radius;
-            if(npcs[i]->eat)
-                continue;
-            if (collision(position, radius, box, box_radius)) {
-                resolve_collision(position, radius, box, box_radius, velocity);
-                player.health-=1;
-                player.health=max(0,player.health);
-            }
-        }
 
         if (position.x + radius.x > parts[0].size() * TILE_SIZE) {
             position.x = parts[0].size() * TILE_SIZE - radius.x;
