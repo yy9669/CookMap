@@ -14,7 +14,6 @@ Sources:
 
 Font comes from https://sourceforge.net/projects/rods-custom-font-xcf-files/, it's free to use.
 
-The assests mainly come from GIMP-2.10 and Kenny.nl (https://www.kenney.nl)
-
+The assests mainly come from GIMP-2.10, Kenny.nl (https://www.kenney.nl), Flaticon (www.flaticon.com).
 
 This game was built with [NEST](NEST.md).
