@@ -1,20 +1,20 @@
-# (TODO: your game's title)
+# CookMap
 
-Author: (TODO: your name)
+Author: Xuyang Fang, Zihao He, Junjie Wang, Haomin Wang
 
-Design: (TODO: In two sentences or fewer, describe what is new and interesting about your game.)
+Design: This is a 2D adventure game where palyer has to collect ingredients, try out different recipes and find the ultimate delicacy.
 
 Screen Shot:
 
 ![Screen Shot](screenshot.png)
 
-How To Play:
-
-(TODO: describe the controls and (if needed) goals/strategy.)
+How To Play: Press A/D to move left/right. Press SPACE to jump. Click "Cook" with mouse to make some dish. Drag your cooked dish to the Guard to bribe him and pass.
 
 Sources:
 
 Font comes from https://sourceforge.net/projects/rods-custom-font-xcf-files/, it's free to use.
-(TODO: fill in information about the sources of any **artwork** or **sounds** you used in the game that you did not create yourself. Feel free to also credit yourself for things you did make.)
+
+The assests mainly come from GIMP-2.10 and Kenny.nl (https://www.kenney.nl)
+
 
 This game was built with [NEST](NEST.md).
