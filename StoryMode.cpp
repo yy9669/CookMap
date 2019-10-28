@@ -21,6 +21,7 @@ Sprite const *sprite_item_2 = nullptr;
 Sprite const *sprite_item_3 = nullptr;
 Sprite const *sprite_dish_1 = nullptr;
 Sprite const *sprite_npc_1 = nullptr;
+Sprite const *sprite_npc_1_idle = nullptr;
 Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
 Sprite const *sprite_tile_1 = nullptr;
@@ -38,6 +39,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_item_3 = &ret->lookup("item_3");
     sprite_dish_1 = &ret->lookup("dish_1");
     sprite_npc_1 = &ret->lookup("guard_1");
+    sprite_npc_1_idle = &ret->lookup("guard_1_idle");
     sprite_health_box = &ret->lookup("health_box");
     sprite_exit = &ret->lookup("exit");
     sprite_tile_1 = &ret->lookup("tile_1");
@@ -253,13 +255,15 @@ void StoryMode::enter_scene(float elapsed) {
                 case npc2:
                 case npc3:
                 default:
-                    position_i = position_i + velocity_i * elapsed;
-                    if (position_i.y <= init_position_i.y) {
-                        position_i.y = init_position_i.y;
-                        velocity_i.y = -velocity_i.y;
-                    } else if (position_i.y > init_position_i.y 
-                        && position_i.y - init_position_i.y > 240.0f) {
-                        velocity_i.y = -velocity_i.y;
+                    if (npcs[i]->eat) {
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.y <= init_position_i.y) {
+                            position_i.y = init_position_i.y;
+                            velocity_i.y = -velocity_i.y;
+                        } else if (position_i.y > init_position_i.y 
+                            && position_i.y - init_position_i.y > 240.0f) {
+                            velocity_i.y = -velocity_i.y;
+                        }
                     }
                     break;
             }
@@ -272,8 +276,8 @@ void StoryMode::enter_scene(float elapsed) {
         glm::vec2 &radius = player.radius;
 
 		glm::vec2 shove = glm::vec2(0.0f);
-		if (controls.left) shove.x -= 15.0f;
-		if (controls.right) shove.x += 15.0f;
+		if (controls.left) shove.x -= 20.0f;
+		if (controls.right) shove.x += 20.0f;
 		if (controls.up && abs(velocity.y) < 1e-4) {
 		    shove.y += 20.0f;
             controls.up = false;
@@ -434,16 +438,28 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 switch (npcs[i]->type)
                 {
                     case npc0:
-                        draw.draw(*sprite_npc_1, npcs[i]->position);
+                        if (npcs[i]->eat)
+                            draw.draw(*sprite_npc_1_idle, npcs[i]->position);
+                        else
+                            draw.draw(*sprite_npc_1, npcs[i]->position);
                         break;
                     case npc1:
-                        draw.draw(*sprite_npc_1, npcs[i]->position);
+                        if (npcs[i]->eat)
+                            draw.draw(*sprite_npc_1_idle, npcs[i]->position);
+                        else
+                            draw.draw(*sprite_npc_1, npcs[i]->position);
                         break;
                     case npc2:
-                        draw.draw(*sprite_npc_1, npcs[i]->position);
+                        if (npcs[i]->eat)
+                            draw.draw(*sprite_npc_1_idle, npcs[i]->position);
+                        else
+                            draw.draw(*sprite_npc_1, npcs[i]->position);
                         break;
                     case npc3:
-                        draw.draw(*sprite_npc_1, npcs[i]->position);
+                        if (npcs[i]->eat)
+                            draw.draw(*sprite_npc_1_idle, npcs[i]->position);
+                        else
+                            draw.draw(*sprite_npc_1, npcs[i]->position);
                         break;
                     default:
                         break;
