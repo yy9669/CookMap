@@ -194,16 +194,20 @@ void DrawSprites::draw(Sprite const &sprite, glm::vec2 const &center, float scal
  *  anchor is the top left position of strings
  *  '\n' in text means starting a new line.
  */
-void DrawSprites::draw_text(std::string const &text, glm::vec2 const &anchor, float scale, glm::u8vec4 const &tint, glm::vec2 *anchor_out) {
+void DrawSprites::draw_text(std::string text, glm::vec2 const &anchor, float scale, glm::u8vec4 const &tint, glm::vec2 *anchor_out) {
 	glm::vec2 moving_anchor = anchor;
     Sprite const &tmp = atlas.lookup("A");
 	float font_height = (tmp.max_px.y - tmp.min_px.y + 1) * scale;
+
+	for (char& c : text) {
+	    c = toupper(c);
+	}
 
 	if (anchor_out) {
         *anchor_out = anchor;
 	}
 
-    moving_anchor.y -= font_height;
+//    moving_anchor.y -= font_height;
 	for (size_t pos = 0; pos < text.size(); pos++){
 	    if (text[pos] == '\n') {
             moving_anchor.y -= 1.3f * font_height;
@@ -213,8 +217,8 @@ void DrawSprites::draw_text(std::string const &text, glm::vec2 const &anchor, fl
 		Sprite const &chr = atlas.lookup(text.substr(pos,1));
 	    if (anchor_out) {
             moving_anchor.x += (chr.max_px.x - chr.min_px.x + 1) * scale;
-            anchor_out->x = max(anchor_out->x, moving_anchor.x);
-            anchor_out->y = min(anchor_out->y, moving_anchor.y);
+            anchor_out->x = std::max(anchor_out->x, moving_anchor.x);
+            anchor_out->y = std::min(anchor_out->y, moving_anchor.y);
 	    } else {
             draw(chr, moving_anchor, scale, tint);
             moving_anchor.x += (chr.max_px.x - chr.min_px.x + 1) * scale;

@@ -27,7 +27,7 @@ struct DrawSprites {
 	void draw(Sprite const &sprite, glm::vec2 const &center, float scale = 1.0f, glm::u8vec4 const &tint = glm::u8vec4(0xff, 0xff, 0xff, 0xff));
 
 	//Add text to draw:
-	void draw_text(std::string const &name, glm::vec2 const &anchor, float scale = 1.0f, glm::u8vec4 const &tint = glm::u8vec4(0xff, 0xff, 0xff, 0xff), glm::vec2 *anchor_out = nullptr);
+	void draw_text(std::string name, glm::vec2 const &anchor, float scale = 1.0f, glm::u8vec4 const &tint = glm::u8vec4(0xff, 0xff, 0xff, 0xff), glm::vec2 *anchor_out = nullptr);
 
 	//Measure text:
 	void get_text_extents(std::string const &name, glm::vec2 const &anchor, float scale, glm::vec2 *min, glm::vec2 *max);

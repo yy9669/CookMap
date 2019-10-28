@@ -1,7 +1,6 @@
 #include "StoryMode.hpp"
 
 #include "Sprite.hpp"
-#include "DrawSprites.hpp"
 #include "Load.hpp"
 #include "data_path.hpp"
 #include "gl_errors.hpp"
@@ -43,7 +42,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_exit = &ret->lookup("exit");
     sprite_tile_1 = &ret->lookup("tile_1");
     sprite_tile_2 = &ret->lookup("tile_2");
-    sprite_instruction_panel = &ret->lookup("instruction_panel");
+    sprite_instruction_panel = &ret->lookup("panel_1");
     sprite_helper = &ret->lookup("help");
 	return ret;
 });
@@ -487,5 +486,15 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
 
 void StoryMode::draw_instruction(DrawSprites& draw) {
-
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            draw.draw(*sprite_instruction_panel, glm::vec2(10+48.f*i, 650-48.f*j));
+        }
+    }
+    draw.draw_text(
+            "a,d   to   move   left,right\n"
+            "space   to   jump\n"
+            "click   COOK   to   make   dish\n"
+            "drag   dish   to   enemy   to   pass",
+            glm::vec2(10, 650)+view_min, 0.06);
 }

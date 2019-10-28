@@ -14,6 +14,7 @@
 #include "Npc.hpp"
 #include "Ingredient.hpp"
 #include "Dish.hpp"
+#include "DrawSprites.hpp"
 
 struct StoryMode : Mode {
 	StoryMode();
