@@ -12,7 +12,7 @@ How To Play: Press A/D to move left/right. Press SPACE to jump. Click "Cook" wit
 
 Sources:
 
-Font comes from https://sourceforge.net/projects/rods-custom-font-xcf-files/, it's free to use.
+The rope font comes from https://sourceforge.net/projects/rods-custom-font-xcf-files/ .
 
 The assests mainly come from GIMP-2.10, Kenny.nl (https://www.kenney.nl), Flaticon (www.flaticon.com).
 
