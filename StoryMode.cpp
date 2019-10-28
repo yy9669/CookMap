@@ -26,6 +26,7 @@ Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
 Sprite const *sprite_tile_1 = nullptr;
 Sprite const *sprite_tile_2 = nullptr;
+Sprite const *sprite_instruction_panel = nullptr;
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
@@ -41,6 +42,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_exit = &ret->lookup("exit");
     sprite_tile_1 = &ret->lookup("tile_1");
     sprite_tile_2 = &ret->lookup("tile_2");
+    sprite_instruction_panel = &ret->lookup("instruction_panel");
 
 	return ret;
 });
@@ -464,10 +466,19 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             if (lose) {
                 draw.draw_text("YOU   LOSE...", glm::vec2(90.0f, 330.0f)+view_min, 0.4);
             }
+
+            if (instruction) {
+                draw_instruction(draw);
+            }
 		} else {
             // cooking
 		}
 
 	}
 	GL_ERRORS(); //did the DrawSprites do something wrong?
+}
+
+
+void StoryMode::draw_instruction(DrawSprites& draw) {
+
 }
