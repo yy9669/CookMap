@@ -353,8 +353,8 @@ void StoryMode::enter_scene(float elapsed) {
         float left_border = max(player.position.x - 512.0f, 0.0f);
         left_border = min(left_border, parts[0].size() * TILE_SIZE - 1024);
 
-        view_min = glm::vec2(left_border, 0);
-        view_max = glm::vec2(left_border + 1024.0f, view_max.y);
+        view_min = glm::vec2(int(left_border), 0);
+        view_max = glm::vec2(int(left_border) + 1024, view_max.y);
     }
     if (proto_cook) {
         proto_cook = false;
