@@ -298,10 +298,12 @@ void StoryMode::enter_scene(float elapsed) {
                 continue;
             if (collision(position, radius, box, box_radius)) {
                 resolve_collision(position, radius, box, box_radius, velocity);
-                player.health-=1;
-                player.health=max(0,player.health);
-                position.x = npcs[i]->init_position.x - radius.x * 2;
-                position.y = npcs[i]->init_position.y;
+                player.health -= 1;
+                player.health = max(0,player.health);
+                if (position.x <= npcs[i]->init_position.x)
+                    velocity.x = -200.0f;
+                else
+                    velocity.x = 200.0f;
             }
         }
 
