@@ -30,6 +30,7 @@ struct StoryMode : Mode {
 	void resolve_collision(glm::vec2 &position, glm::vec2 radius, 
     	glm::vec2 box, glm::vec2 box_radius, glm::vec2 &velocity);
 	void draw_instruction(DrawSprites& draw);
+	void draw_recipe(DrawSprites& draw);
 
 	//------ constants ---------
 	const std::vector<glm::vec2> backpack_pos = {{360, 710}, {415, 710}, 
@@ -64,7 +65,7 @@ struct StoryMode : Mode {
 	bool proto_cook = false;
 	bool winning = false, lose = false;
 	bool dish_drag = false;
-	bool instruction = true;
+	bool show_instruction = true, show_recipe = false;
 
 	glm::vec2 dish_drag_pos = glm::vec2(0,0);
 

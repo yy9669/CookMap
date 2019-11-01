@@ -188,6 +188,39 @@ void DrawSprites::draw(Sprite const &sprite, glm::vec2 const &center, float scal
 
 }
 
+void DrawSprites::draw(Sprite const &sprite, glm::vec2 const &center, glm::vec2 const &scale, glm::u8vec4 const &tint) {
+    glm::vec2 min = center + scale * (sprite.min_px - sprite.anchor_px);
+    glm::vec2 max = center + scale * (sprite.max_px - sprite.anchor_px);
+    glm::vec2 min_tc = sprite.min_px / glm::vec2(atlas.tex_size);
+    glm::vec2 max_tc = sprite.max_px / glm::vec2(atlas.tex_size);
+
+    if (mode == AlignPixelPerfect) {
+        //nudge min/max so that pixels line up just ~just so~
+        //notably, want nearest pixel center to anchor to line up on a pixel center:
+        glm::vec2 c = center;
+        glm::vec2 ofs = (glm::floor(sprite.anchor_px) + glm::vec2(0.5f)) - sprite.anchor_px;
+        //move c to nearest pixel center:
+        c += ofs * scale;
+        //make sure c is on a pixel center:
+        c = glm::floor(c) + glm::vec2(0.5f);
+        //move c back to anchor:
+        c -= ofs * scale;
+
+        //recompute sprite location:
+        min = c + scale * (sprite.min_px - sprite.anchor_px);
+        max = c + scale * (sprite.max_px - sprite.anchor_px);
+    }
+
+    //you may recognize this from draw_rectangle in base0:
+    //split rectangle into two triangles:
+    attribs.emplace_back(glm::vec2(min.x,min.y), glm::vec2(min_tc.x,min_tc.y), tint);
+    attribs.emplace_back(glm::vec2(max.x,min.y), glm::vec2(max_tc.x,min_tc.y), tint);
+    attribs.emplace_back(glm::vec2(max.x,max.y), glm::vec2(max_tc.x,max_tc.y), tint);
+
+    attribs.emplace_back(glm::vec2(min.x,min.y), glm::vec2(min_tc.x,min_tc.y), tint);
+    attribs.emplace_back(glm::vec2(max.x,max.y), glm::vec2(max_tc.x,max_tc.y), tint);
+    attribs.emplace_back(glm::vec2(min.x,max.y), glm::vec2(min_tc.x,max_tc.y), tint);
+}
 /*  If anchor_out is NULL, draw text.
  *  If anchor_out is not NULL, don't draw, just return the lower right position.
  *

@@ -7,7 +7,7 @@
 #include <string>
 
 enum dish_type {
-    Dish1, Dish2, Dish3
+    Pizza, Dish2, Dish3
 };
 
 struct Dish {
@@ -18,7 +18,5 @@ public:
 	virtual ~Dish() {}
 
     std::string name;
-    std::vector< Ingredient > recipe;
     dish_type type;
-    int restore;
 };
