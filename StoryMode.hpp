@@ -31,6 +31,7 @@ struct StoryMode : Mode {
     	glm::vec2 box, glm::vec2 box_radius, glm::vec2 &velocity);
 	void draw_instruction(DrawSprites& draw);
 	void draw_recipe(DrawSprites& draw);
+    void draw_pot(DrawSprites& draw);
 
 	//------ constants ---------
 	const std::vector<glm::vec2> backpack_pos = {{360, 710}, {415, 710}, 
@@ -50,6 +51,9 @@ struct StoryMode : Mode {
 	Chef player;
 	std::vector<ingredient_type> backpack;
 	std::vector<dish_type> dishes;
+    std::vector<ingredient_type> pots;
+    float pot_time_left = 0.f;
+    dish_type pot_dish;
 
 	//Current control signals:
 	struct {
@@ -64,10 +68,12 @@ struct StoryMode : Mode {
 
 	bool proto_cook = false;
 	bool winning = false, lose = false;
-	bool dish_drag = false;
-	bool show_instruction = true, show_recipe = false;
+	bool dish_drag = false, ingre_drag = false;
+	bool show_instruction = true, show_recipe = false, show_pot = false;
 
 	glm::vec2 dish_drag_pos = glm::vec2(0,0);
+    glm::vec2 ingre_drag_pos = glm::vec2(0,0);
+    ingredient_type dragging_ingre_type;
 
 	//------ background music -------
 	std::shared_ptr< Sound::PlayingSample > background_music;

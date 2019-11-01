@@ -33,17 +33,19 @@ Sprite const *sprite_instruction_panel = nullptr;
 Sprite const *sprite_helper = nullptr;
 Sprite const *sprite_recipe = nullptr;
 Sprite const *sprite_pot = nullptr;
+Sprite const *sprite_fire = nullptr;
 
 typedef struct {
     vector<ingredient_type> ingredients;
     vector<bool> show;
     dish_type dish;
     int restore;
+    float time;
 } Recipe;
 
 vector<Recipe> recipes = {
-    {{Tomato, Potato, Onion}, {true, true, true}, Pizza, 10},
-    {{Tomato, Onion}, {true, true}, Pizza, 10},
+    {{Tomato, Potato, Onion}, {true, true, true}, Pizza, 10, 5.f},
+    {{Tomato, Onion}, {true, true}, Pizza, 10, 5.f},
 };
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
@@ -67,6 +69,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_helper = &ret->lookup("help");
     sprite_recipe = &ret->lookup("help");  // to be changed
     sprite_pot = &ret->lookup("help");  // to be changed
+    sprite_fire = &ret->lookup("help");  // to be changed
     sprite_item_question = &ret->lookup("item_1");  // to be changed
 	return ret;
 });
@@ -186,25 +189,50 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             dishes.erase(dishes.begin() + (evt.button.x-740)/55 );
             dish_drag = true;
             dish_drag_pos = glm::vec2(evt.button.x,768-evt.button.y)+view_min;
+        } else if (evt.button.x>= 360 && evt.button.x<=628 &&
+                   (evt.button.x-360)%55<48 && evt.button.y>=10 && evt.button.y<=58 &&
+                   int((evt.button.x-360)/55) <int(backpack.size() ) ) {
+            dragging_ingre_type = backpack[(evt.button.x-360)/55];
+            backpack.erase(backpack.begin() + (evt.button.x-360)/55 );
+            ingre_drag = true;
+            ingre_drag_pos = glm::vec2(evt.button.x,768-evt.button.y)+view_min;
         } else if (evt.button.x>= 0 && evt.button.x<=50 &&
                    evt.button.y>=50 && evt.button.y<=100) {
             show_instruction =! show_instruction;
         } else if (evt.button.x>= 904 && evt.button.x<=952 &&
                    evt.button.y>=10 && evt.button.y<=58) {
             show_recipe = !show_recipe;
+        } else if (evt.button.x>= 964 && evt.button.x<=1012 &&
+                   evt.button.y>=10 && evt.button.y<=58) {
+            show_pot = !show_pot;
         }
         return true;
     }
-    if(evt.type== SDL_MOUSEMOTION && dish_drag==true){
+    if(evt.type== SDL_MOUSEMOTION && dish_drag){
         dish_drag_pos=glm::vec2(evt.motion.x,768-evt.motion.y)+view_min;
         return true;
     }
-    if (evt.type== SDL_MOUSEBUTTONUP && dish_drag==true){
+    if (evt.type== SDL_MOUSEBUTTONUP && dish_drag){
         dish_drag=false;
         if(collision(dish_drag_pos, glm::vec2(48,48), npcs[0]->position, npcs[0]->radius )){
             npcs[0]->eat=true;
         }else{
             dishes.push_back(Pizza);
+        }
+        return true;
+    }
+
+    if(evt.type== SDL_MOUSEMOTION && ingre_drag){
+        ingre_drag_pos=glm::vec2(evt.motion.x,768-evt.motion.y)+view_min;
+        return true;
+    }
+    if (evt.type== SDL_MOUSEBUTTONUP && ingre_drag){
+        ingre_drag=false;
+        if (ingre_drag_pos.x >= 950.f+view_min.x && ingre_drag_pos.x <= 1013.f+view_min.x  &&
+            ingre_drag_pos.y >= 513.f+view_min.y && ingre_drag_pos.y <= 690.f+view_min.y && show_pot && pots.size() < 3) {
+            pots.push_back(dragging_ingre_type);
+        }else{
+            backpack.push_back(dragging_ingre_type);
         }
         return true;
     }
@@ -528,6 +556,20 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 draw.draw(*sprite_pizza, dish_drag_pos);
             }
 
+            if(ingre_drag){
+                switch (dragging_ingre_type) {
+                    case Tomato:
+                        draw.draw(*sprite_item_1, ingre_drag_pos);
+                        break;
+                    case Potato:
+                        draw.draw(*sprite_item_2, ingre_drag_pos);
+                        break;
+                    case Onion:
+                        draw.draw(*sprite_item_3, ingre_drag_pos);
+                        break;
+                }
+            }
+
             draw.draw(*sprite_chef, player.position);
 
             draw.draw(*sprite_helper, glm::vec2(0.0f, 668.0f)+view_min);
@@ -556,6 +598,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             if (show_recipe) {
                 draw_recipe(draw);
             }
+
+            if (show_pot) {
+                draw_pot(draw);
+            }
 		} else {
             // cooking
 		}
@@ -578,6 +624,38 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
             "click   COOK!   to   make   dish\n"
             "drag   dish   to   enemy   to   bribe",
             glm::vec2(15, 630)+view_min, 0.068);
+}
+
+void StoryMode::draw_pot(DrawSprites& draw) {
+    for (int i = 0; i < 1; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            draw.draw(*sprite_instruction_panel,
+                      glm::vec2(965+48.f*i, 645-48.f*j)+view_min);
+        }
+    }
+    draw.draw(*sprite_tile_1, glm::vec2(965.f, 510.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+    if (pot_time_left > 0.f) {
+        string tmp = "0";
+        tmp[0] = '0' + int(pot_time_left+0.999f);
+        draw.draw_text(tmp, glm::vec2(980.f, 461.f)+view_min, 0.07);
+    } else {
+        draw.draw(*sprite_fire, glm::vec2(965.f, 457.f)+view_min);
+    }
+
+    for (unsigned i = 0; i < pots.size(); ++i) {
+        auto pos = glm::vec2(965.f, 643-60.f*i)+view_min;
+        switch (pots[i]) {
+            case Tomato:
+                draw.draw(*sprite_item_1, pos);
+                break;
+            case Potato:
+                draw.draw(*sprite_item_2, pos);
+                break;
+            case Onion:
+                draw.draw(*sprite_item_3, pos);
+                break;
+        }
+    }
 }
 
 void StoryMode::draw_recipe(DrawSprites& draw) {
@@ -608,7 +686,7 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
             }
         }
         auto pos = glm::vec2(865.f, 631-60.f*i)+view_min;
-        draw.draw(*sprite_tile_1, pos, glm::vec2(0.1f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+        draw.draw(*sprite_tile_1, pos, glm::vec2(0.05f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
         pos = glm::vec2(885.f, 631-60.f*i)+view_min;
         switch (recipes[i].dish) {
             case Pizza:
