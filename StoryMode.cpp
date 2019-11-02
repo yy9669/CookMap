@@ -8,6 +8,7 @@
 #include "Sound.hpp"
 #include <string>
 #include <fstream>
+#include <map>
 
 using namespace std;
 
@@ -40,12 +41,11 @@ typedef struct {
     vector<bool> show;
     dish_type dish;
     int restore;
-    float time;
 } Recipe;
 
 vector<Recipe> recipes = {
-    {{Tomato, Potato, Onion}, {true, true, true}, Pizza, 10, 5.f},
-    {{Tomato, Onion}, {true, true}, Pizza, 10, 5.f},
+    {{Tomato, Potato, Onion}, {true, true, true}, Pizza, 10},
+    {{Tomato, Onion}, {true, true}, Pizza, 10},
 };
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
@@ -205,6 +205,10 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         } else if (evt.button.x>= 964 && evt.button.x<=1012 &&
                    evt.button.y>=10 && evt.button.y<=58) {
             show_pot = !show_pot;
+        } else if (evt.button.x>= 965 && evt.button.x<=1013 &&
+                   evt.button.y>=263 && evt.button.y<=311 &&
+                   show_pot && pot_time_left == 0.f && pots.size()) {
+            pot_time_left = 5.f;
         }
         return true;
     }
@@ -420,6 +424,34 @@ void StoryMode::enter_scene(float elapsed) {
             dishes.push_back(Pizza);
         }
     }
+
+    if (pot_time_left > 0.f) {
+        pot_time_left -= elapsed;
+        if (pot_time_left <= 0.f) {
+            // check making dish
+            pot_time_left = 0.f;
+            unordered_map<ingredient_type, int> num;
+            for (auto i : pots) {
+                num[i]++;
+            }
+            for (auto &recipe : recipes) {
+                auto num2 = num;
+                bool ok = true;
+                for (auto i : recipe.ingredients) {
+                    if (num2.count(i) == 0 || num2[i] == 0) {
+                        ok = false;
+                        break;
+                    }
+                    num2[i]--;
+                }
+                if (ok) {
+                    dishes.push_back(recipe.dish);
+                    break;
+                }
+            }
+            pots.clear();
+        }
+    }
     if (!winning && player.health == 0) {
         lose = true;
     }
@@ -552,24 +584,6 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 }
             }
 
-            if(dish_drag){
-                draw.draw(*sprite_pizza, dish_drag_pos);
-            }
-
-            if(ingre_drag){
-                switch (dragging_ingre_type) {
-                    case Tomato:
-                        draw.draw(*sprite_item_1, ingre_drag_pos);
-                        break;
-                    case Potato:
-                        draw.draw(*sprite_item_2, ingre_drag_pos);
-                        break;
-                    case Onion:
-                        draw.draw(*sprite_item_3, ingre_drag_pos);
-                        break;
-                }
-            }
-
             draw.draw(*sprite_chef, player.position);
 
             draw.draw(*sprite_helper, glm::vec2(0.0f, 668.0f)+view_min);
@@ -601,6 +615,24 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
             if (show_pot) {
                 draw_pot(draw);
+            }
+
+            if(dish_drag){
+                draw.draw(*sprite_pizza, dish_drag_pos);
+            }
+
+            if(ingre_drag){
+                switch (dragging_ingre_type) {
+                    case Tomato:
+                        draw.draw(*sprite_item_1, ingre_drag_pos);
+                        break;
+                    case Potato:
+                        draw.draw(*sprite_item_2, ingre_drag_pos);
+                        break;
+                    case Onion:
+                        draw.draw(*sprite_item_3, ingre_drag_pos);
+                        break;
+                }
             }
 		} else {
             // cooking
