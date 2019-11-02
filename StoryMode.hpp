@@ -68,7 +68,7 @@ struct StoryMode : Mode {
 
 	bool proto_cook = false;
 	bool winning = false, lose = false;
-	bool dish_drag = false, ingre_drag = false;
+	bool dish_drag = false, ingre_drag = false, drag_from_backpack;
 	bool show_instruction = true, show_recipe = false, show_pot = false;
 
 	glm::vec2 dish_drag_pos = glm::vec2(0,0);

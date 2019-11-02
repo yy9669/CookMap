@@ -192,9 +192,20 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         } else if (evt.button.x>= 360 && evt.button.x<=628 &&
                    (evt.button.x-360)%55<48 && evt.button.y>=10 && evt.button.y<=58 &&
                    int((evt.button.x-360)/55) <int(backpack.size() ) ) {
+            // drag from backpack
             dragging_ingre_type = backpack[(evt.button.x-360)/55];
             backpack.erase(backpack.begin() + (evt.button.x-360)/55 );
             ingre_drag = true;
+            drag_from_backpack = true;
+            ingre_drag_pos = glm::vec2(evt.button.x,768-evt.button.y)+view_min;
+        } else if (evt.button.x>= 965 && evt.button.x<=1013 &&
+                   (evt.button.y-77)%60<48 && evt.button.y>=77 && evt.button.y<=245 &&
+                   int((evt.button.y-77)/60) <int(pots.size() ) ) {
+            // drag from pot
+            dragging_ingre_type = pots[(evt.button.y-77)/60];
+            pots.erase(pots.begin() + (evt.button.y-77)/60 );
+            ingre_drag = true;
+            drag_from_backpack = false;
             ingre_drag_pos = glm::vec2(evt.button.x,768-evt.button.y)+view_min;
         } else if (evt.button.x>= 0 && evt.button.x<=50 &&
                    evt.button.y>=50 && evt.button.y<=100) {
@@ -234,9 +245,19 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         ingre_drag=false;
         if (ingre_drag_pos.x >= 950.f+view_min.x && ingre_drag_pos.x <= 1013.f+view_min.x  &&
             ingre_drag_pos.y >= 513.f+view_min.y && ingre_drag_pos.y <= 690.f+view_min.y && show_pot && pots.size() < 3) {
+            // drag to pot
             pots.push_back(dragging_ingre_type);
-        }else{
+        } else if (evt.button.x>= 360 && evt.button.x<=628 &&
+                   (evt.button.x-360)%55<48 && evt.button.y>=10 && evt.button.y<=58 &&
+                   int((evt.button.x-360)/55) >= int(backpack.size() ) ) {
+            // drag to backpack
             backpack.push_back(dragging_ingre_type);
+        } else{
+            if (drag_from_backpack) {
+                backpack.push_back(dragging_ingre_type);
+            } else {
+                pots.push_back(dragging_ingre_type);
+            }
         }
         return true;
     }
