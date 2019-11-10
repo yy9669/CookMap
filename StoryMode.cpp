@@ -14,18 +14,29 @@ using namespace std;
 
 Sprite const *sprite_left_select = nullptr;
 Sprite const *sprite_right_select = nullptr;
-
 Sprite const *sprite_background = nullptr;
-Sprite const *sprite_chef = nullptr;
+
+Sprite const *sprite_chef_left_stand = nullptr;
+Sprite const *sprite_chef_left_walk1 = nullptr;
+Sprite const *sprite_chef_left_walk2 = nullptr;
+Sprite const *sprite_chef_left_jump = nullptr;
+Sprite const *sprite_chef_right_stand = nullptr;
+Sprite const *sprite_chef_right_walk1 = nullptr;
+Sprite const *sprite_chef_right_walk2 = nullptr;
+Sprite const *sprite_chef_right_jump = nullptr;
+
 Sprite const *sprite_item_1 = nullptr;
 Sprite const *sprite_item_2 = nullptr;
 Sprite const *sprite_item_3 = nullptr;
 Sprite const *sprite_item_question = nullptr;
+
 Sprite const *sprite_pizza = nullptr;
 Sprite const *sprite_dish_2 = nullptr;
 Sprite const *sprite_dish_3 = nullptr;
+
 Sprite const *sprite_npc_1 = nullptr;
 Sprite const *sprite_npc_1_idle = nullptr;
+
 Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
 Sprite const *sprite_tile_1 = nullptr;
@@ -52,7 +63,15 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
 
     sprite_background = &ret->lookup("background");
-    sprite_chef = &ret->lookup("chef");
+    sprite_chef_left_stand = &ret->lookup("chef");
+    sprite_chef_left_walk1 = &ret->lookup("chef");
+    sprite_chef_left_walk2 = &ret->lookup("chef");
+    sprite_chef_left_jump = &ret->lookup("chef");
+    sprite_chef_right_stand = &ret->lookup("chef");
+    sprite_chef_right_walk1 = &ret->lookup("chef");
+    sprite_chef_right_walk2 = &ret->lookup("chef");
+    sprite_chef_right_jump = &ret->lookup("chef");
+
     sprite_item_1 = &ret->lookup("item_1");
     sprite_item_2 = &ret->lookup("item_2");
     sprite_item_3 = &ret->lookup("item_3");
@@ -371,6 +390,40 @@ void StoryMode::enter_scene(float elapsed) {
             velocity = glm::vec2(velocity.x, -250.0f);
         }
 
+        cout << velocity.x << "  " << velocity.y << endl;
+        // change player state to draw animations
+        if (velocity.y > 0.0f || velocity.y <= -13.0f) {
+            if (velocity.x < 0.0f || player.state == Left_stand) {
+                player.state = Left_jump;
+            } else {
+                player.state = Right_jump;
+            }
+        } else {
+            if (velocity.x == 0.0f) {
+                if (player.state == Left_jump || player.state == Left_stand 
+                    || player.state == Left_walk1 || player.state == Left_walk2) {
+                    player.state = Left_stand;
+                } else {
+                    player.state = Right_stand;
+                }
+            } else if (velocity.x > 0.0f && velocity.x < 20.0f) {
+                player.state = Right_stand;
+            } else if (velocity.x >= 10.0f) {
+                if (player.state == Right_walk1)
+                    player.state = Right_walk2;
+                else
+                    player.state = Right_walk1;
+            } else if (velocity.x < 0.0f && velocity.x > -20.0f) {
+                player.state = Left_stand;
+            } else {
+                if (player.state == Left_walk1)
+                    player.state = Left_walk2;
+                else
+                    player.state = Left_walk1;
+            }
+        }
+        cout << player.state << endl;
+
         position = position + velocity * elapsed;
 
         //---- collision handling ----
@@ -609,8 +662,33 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 }
             }
 
-            draw.draw(*sprite_chef, player.position);
-
+            switch (player.state) {
+                case Left_stand:
+                    draw.draw(*sprite_chef_left_stand, player.position);
+                    break;
+                case Left_walk1:
+                    draw.draw(*sprite_chef_left_walk1, player.position);
+                    break;
+                case Left_walk2:
+                    draw.draw(*sprite_chef_left_walk2, player.position);
+                    break;
+                case Left_jump:
+                    draw.draw(*sprite_chef_left_jump, player.position);
+                    break;
+                case Right_stand:
+                    draw.draw(*sprite_chef_right_stand, player.position);
+                    break;
+                case Right_walk1:
+                    draw.draw(*sprite_chef_right_walk1, player.position);
+                    break;
+                case Right_walk2:
+                    draw.draw(*sprite_chef_right_walk2, player.position);
+                    break;
+                case Right_jump:
+                    draw.draw(*sprite_chef_right_jump, player.position);
+                    break;
+            }
+            
             draw.draw(*sprite_helper, glm::vec2(0.0f, 668.0f)+view_min);
 
             draw.draw(*sprite_recipe, glm::vec2(904.0f, 710.0f)+view_min);
