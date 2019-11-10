@@ -12,3 +12,5 @@ cookmap.xcf?tile_1 200 300 +48 +48 +0 +48 tile_1
 cookmap.xcf?tile_2 200 400 +48 +48 +0 +48 tile_2
 cookmap.xcf?help 200 500 +48 +48 +0 +48 help
 cookmap.xcf?panel_1 300 100 +48 +48 +0 +48 panel_1
+cookmap.xcf?pot_normal 300 200 +48 +48 +0 +48 pot_normal
+cookmap.xcf?pot_cooking 300 300 +48 +48 +0 +48 pot_cooking
