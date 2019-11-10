@@ -359,13 +359,17 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.left) shove.x -= 20.0f;
 		if (controls.right) shove.x += 20.0f;
 		if (controls.up && abs(velocity.y) < 1e-4) {
-		    shove.y += 20.0f;
+		    shove.y += 38.5f;
             controls.up = false;
 		}
 		shove *= 10.0f;
 
 		auto tmp = glm::mix(shove, velocity, std::pow(0.5f, elapsed / 0.25f));
-		velocity = glm::vec2(tmp.x, velocity.y + shove.y - 200.0f * elapsed);
+		velocity = glm::vec2(tmp.x, velocity.y + shove.y - 720.0f * elapsed);
+        // bound the negative velocity to avoid collision error
+        if (velocity.y < -250.0f) {
+            velocity = glm::vec2(velocity.x, -250.0f);
+        }
 
         position = position + velocity * elapsed;
 
