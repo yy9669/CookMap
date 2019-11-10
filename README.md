@@ -16,4 +16,8 @@ The rope font comes from https://sourceforge.net/projects/rods-custom-font-xcf-f
 
 The assests mainly come from GIMP-2.10, Kenny.nl (https://www.kenney.nl), Flaticon (www.flaticon.com).
 
+Garbage icon made by Payungkead from www.flaticon.com.
+Wheat/Pepper icons made by  Freepik from www.flaticon.com.
+Salami/Pizza/Bulb icons made by Smashicons from www.flaticon.com.
+
 This game was built with [NEST](NEST.md).
