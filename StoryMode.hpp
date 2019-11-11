@@ -18,6 +18,7 @@
 #include "Sprite.hpp"
 #include <map>
 #include <vector>
+#include <sys/time.h>
 
 typedef struct {
     std::vector<ingredient_type> ingredients;
@@ -64,6 +65,7 @@ struct StoryMode : Mode {
     std::vector<ingredient_type> pots;
     float pot_time_left = 0.f;
     dish_type pot_dish;
+	struct timeval curt_time, last_time;
 
     std::unordered_map<ingredient_type, Sprite> ingredient_map;
     std::unordered_map<dish_type, Sprite> dish_map;

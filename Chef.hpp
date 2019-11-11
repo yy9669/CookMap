@@ -18,7 +18,7 @@ public:
 
     glm::vec2 position = glm::vec2(0.0f, 0.0f);
     glm::vec2 velocity = glm::vec2(0.0f, 0.0f);
-    glm::vec2 radius = glm::vec2(30.0f, 60.0f);
+    glm::vec2 radius = glm::vec2(40.0f, 80.0f);
     chef_state state = Right_stand;
     int health = 10;
 };

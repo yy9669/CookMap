@@ -222,6 +222,7 @@ StoryMode::StoryMode() {
     health_map.insert({{Dish1,2},{Dish2,1},{Dish3,1},{Dish4,1},{Dish5,0},{Dish0,-1}} );
 
     load_map_file(data_path("map_1.txt"), this);
+    gettimeofday(&last_time, NULL);
 }
 
 StoryMode::~StoryMode() {
@@ -300,6 +301,9 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             if (player.health > 10) {
                 player.health = 10;
             }
+        } else if (dish_drag_pos.x >= garbage_x+view_min.x && dish_drag_pos.x <= garbage_x+item_size+view_min.x  &&
+            (draw_width-dish_drag_pos.y) >= garbage_y+view_min.y && (draw_width-dish_drag_pos.y) <= garbage_y+item_size+view_min.y) {
+            // discard dish
         } else {
             dishes.push_back(dragged_dish);
         }
@@ -448,6 +452,9 @@ void StoryMode::enter_scene(float elapsed) {
             velocity = glm::vec2(velocity.x, -250.0f);
         }
 
+        gettimeofday(&curt_time, NULL);
+        auto time_since_last = (curt_time.tv_sec - last_time.tv_sec) * 1000 
+            + (curt_time.tv_usec - last_time.tv_usec) / 1000;
         // change player state to draw animations
         if (velocity.y > 0.0f || velocity.y <= -16.0f) {
             if (velocity.x < 0.0f || player.state == Left_stand) {
@@ -466,17 +473,35 @@ void StoryMode::enter_scene(float elapsed) {
             } else if (velocity.x > 0.0f && velocity.x < 20.0f) {
                 player.state = Right_stand;
             } else if (velocity.x >= 10.0f) {
-                if (player.state == Right_walk1)
-                    player.state = Right_walk2;
-                else
-                    player.state = Right_walk1;
+                if (player.state == Right_walk1) {
+                    if (time_since_last > 500) {
+                        player.state = Right_walk2;
+                        last_time.tv_sec = curt_time.tv_sec;
+                        last_time.tv_usec = curt_time.tv_usec;
+                    } 
+                } else {
+                    if (time_since_last > 500) {
+                        player.state = Right_walk1;
+                        last_time.tv_sec = curt_time.tv_sec;
+                        last_time.tv_usec = curt_time.tv_usec;
+                    }
+                }
             } else if (velocity.x < 0.0f && velocity.x > -20.0f) {
                 player.state = Left_stand;
             } else {
-                if (player.state == Left_walk1)
-                    player.state = Left_walk2;
-                else
-                    player.state = Left_walk1;
+                if (player.state == Left_walk1) {
+                    if (time_since_last > 500) {
+                        player.state = Left_walk2;
+                        last_time.tv_sec = curt_time.tv_sec;
+                        last_time.tv_usec = curt_time.tv_usec;
+                    }
+                } else {
+                    if (time_since_last > 500) {
+                        player.state = Left_walk1;
+                        last_time.tv_sec = curt_time.tv_sec;
+                        last_time.tv_usec = curt_time.tv_usec;
+                    }
+                }
             }
         }
 
