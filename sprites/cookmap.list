@@ -1,5 +1,5 @@
 cookmap.xcf?background 0 0 1024 768 0 +768 background
-cookmap.xcf?chef 100 100 +30 +60 +0 +60 chef
+cookmap.xcf?chef_rstand 100 100 +30 +60 +0 +60 chef_rstand
 cookmap.xcf?item_1 100 200 +48 +48 +0 +48 item_1
 cookmap.xcf?item_2 100 300 +48 +48 +0 +48 item_2
 cookmap.xcf?item_3 100 400 +48 +48 +0 +48 item_3
@@ -34,3 +34,12 @@ cookmap.xcf?item_16 600 500 +48 +48 +0 +48 item_16
 cookmap.xcf?item_17 700 100 +48 +48 +0 +48 item_17
 cookmap.xcf?item_18 700 200 +48 +48 +0 +48 item_18
 cookmap.xcf?item_19 700 300 +48 +48 +0 +48 item_19
+cookmap.xcf?waste 700 400 +48 +48 +0 +48 waste
+cookmap.xcf?chef_lstand 800 100 +30 +60 +0 +60 chef_lstand
+cookmap.xcf?chef_lwalk1 800 200 +30 +60 +0 +60 chef_lwalk1
+cookmap.xcf?chef_lwalk2 800 300 +30 +60 +0 +60 chef_lwalk2
+cookmap.xcf?chef_ljump 800 400 +30 +60 +0 +60 chef_ljump
+cookmap.xcf?chef_rwalk1 850 100 +30 +60 +0 +60 chef_rwalk1
+cookmap.xcf?chef_rwalk2 850 200 +30 +60 +0 +60 chef_rwalk2
+cookmap.xcf?chef_rjump 850 300 +30 +60 +0 +60 chef_rjump
+cookmap.xcf?bonfire 900 100 +48 +48 +0 +48 bonfire
