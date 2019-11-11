@@ -85,14 +85,14 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
 
     sprite_background = &ret->lookup("background");
-    sprite_chef_left_stand = &ret->lookup("chef");
-    sprite_chef_left_walk1 = &ret->lookup("chef");
-    sprite_chef_left_walk2 = &ret->lookup("chef");
-    sprite_chef_left_jump = &ret->lookup("chef");
-    sprite_chef_right_stand = &ret->lookup("chef");
-    sprite_chef_right_walk1 = &ret->lookup("chef");
-    sprite_chef_right_walk2 = &ret->lookup("chef");
-    sprite_chef_right_jump = &ret->lookup("chef");
+    sprite_chef_left_stand = &ret->lookup("chef_lstand");
+    sprite_chef_left_walk1 = &ret->lookup("chef_lwalk1");
+    sprite_chef_left_walk2 = &ret->lookup("chef_lwalk2");
+    sprite_chef_left_jump = &ret->lookup("chef_ljump");
+    sprite_chef_right_stand = &ret->lookup("chef_rstand");
+    sprite_chef_right_walk1 = &ret->lookup("chef_rwalk1");
+    sprite_chef_right_walk2 = &ret->lookup("chef_rwalk2");
+    sprite_chef_right_jump = &ret->lookup("chef_rjump");
 
     sprite_item_1 = &ret->lookup("item_1");
     sprite_item_2 = &ret->lookup("item_2");
@@ -795,10 +795,13 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
         }
     }
     draw.draw_text(
-            "a,d   to   move   left,right\n"
-            "space   to   jump\n"
-            "click   COOK!   to   make   dish\n"
-            "drag   dish   to   enemy   to   bribe",
+            "a,d   to   move,   w   to   jump\n"
+            "click   to   open   the recipe\n"
+            "open   pot   and   drag   items   in\n"
+            "click   the   fire   button   to   cook\n"
+            "drag   dish   to   enemy   to   bribe\n"
+            "drag   dish   to   self   to   heal\n"
+            "click   the   bulb   to   close   help",
             glm::vec2(draw_length-item_size*9, 630)+view_min, 0.068);
 }
 
