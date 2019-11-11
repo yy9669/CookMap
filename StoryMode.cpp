@@ -781,10 +781,13 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
         }
     }
     draw.draw_text(
-            "a,d   to   move   left,right\n"
-            "space   to   jump\n"
-            "click   COOK!   to   make   dish\n"
-            "drag   dish   to   enemy   to   bribe",
+            "a,d   to   move,   w   to   jump\n"
+            "click   to   open   the recipe\n"
+            "open   pot   and   drag   items   in\n"
+            "click   the   fire   button   to   cook\n"
+            "drag   dish   to   enemy   to   bribe\n"
+            "drag   dish   to   self   to   heal\n"
+            "click   the   bulb   to   close   help",
             glm::vec2(draw_length-item_size*9, 630)+view_min, 0.068);
 }
 
