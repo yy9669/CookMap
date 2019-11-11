@@ -219,7 +219,6 @@ StoryMode::StoryMode() {
     }); 
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
         {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
-    health_map.insert({{Dish1,2},{Dish2,1},{Dish3,1},{Dish4,1},{Dish5,0},{Dish0,-1}} );
 
     load_map_file(data_path("map_1.txt"), this);
     gettimeofday(&last_time, NULL);
@@ -795,7 +794,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
 void StoryMode::draw_instruction(DrawSprites& draw) {
     for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 3; ++j) {
+        for (int j = 0; j < 5; ++j) {
             draw.draw(*sprite_instruction_panel,
                     glm::vec2(draw_length-7-item_size*(i+1), 615-item_size*j)+view_min);
         }
@@ -835,7 +834,7 @@ void StoryMode::draw_pot(DrawSprites& draw) {
 
 void StoryMode::draw_recipe(DrawSprites& draw) {
     for (int i = 0; i < 6; ++i) {
-        for (unsigned j = 0; j < 1 + recipes.size(); ++j) {
+        for (unsigned j = 0; j < 1.3* recipes.size(); ++j) {
             draw.draw(*sprite_instruction_panel,
                       glm::vec2(665+item_size*i, 645-item_size*j)+view_min);
         }

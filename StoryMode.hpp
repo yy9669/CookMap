@@ -69,7 +69,7 @@ struct StoryMode : Mode {
 
     std::unordered_map<ingredient_type, Sprite> ingredient_map;
     std::unordered_map<dish_type, Sprite> dish_map;
-    std::unordered_map<dish_type, int> health_map;
+    std::unordered_map<dish_type, int> health_map={{Dish1,4},{Dish2,2},{Dish3,1},{Dish4,10},{Dish5,3},{Dish0,-1}};
 	//Current control signals:
 	struct {
 		bool left = false;
@@ -86,7 +86,13 @@ struct StoryMode : Mode {
 
 	std::vector<Recipe> recipes = {
 	    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 10},
-	    {{Item1, Item2}, {true, false}, Dish2, 10},
+	    {{Item11, Item2}, {true, true}, Dish2, 10},
+    	    {{Item4, Item5}, {true, false}, Dish3, 10},
+        	    {{Item5, Item6}, {true, false}, Dish3, 10},
+        	    {{Item6, Item4}, {true, false}, Dish3, 10},
+	    {{Item12, Item14,Item15}, {true, false, true}, Dish4, 10},
+	    {{Item12, Item8,Item15}, {true, false, true}, Dish4, 10},
+    	    {{Item16,Item17, Item18}, {false, false, false}, Dish5, 10},	    	    
 	};
 	Recipe *cooking_recipe;   // Curently cooked recipe
 	dish_type cooking_dish;   // Curently cooked recipe
