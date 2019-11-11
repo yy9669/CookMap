@@ -46,6 +46,7 @@ Sprite const *sprite_item_18 = nullptr;
 Sprite const *sprite_item_19 = nullptr;
 Sprite const *sprite_item_question = nullptr;
 
+Sprite const *sprite_dish_0 = nullptr;
 Sprite const *sprite_dish_1 = nullptr;
 Sprite const *sprite_dish_2 = nullptr;
 Sprite const *sprite_dish_3 = nullptr;
@@ -69,17 +70,7 @@ Sprite const *sprite_fire = nullptr;
 
 
 
-typedef struct {
-    vector<ingredient_type> ingredients;
-    vector<bool> show;
-    dish_type dish;
-    int restore;
-} Recipe;
 
-vector<Recipe> recipes = {
-    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 10},
-    {{Item1, Item2}, {true, false}, Dish2, 10},
-};
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
@@ -114,6 +105,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_item_18 = &ret->lookup("item_18");
     sprite_item_19 = &ret->lookup("item_19");
 
+    sprite_dish_0 = &ret->lookup("waste");
     sprite_dish_1 = &ret->lookup("dish_1");
     sprite_dish_2 = &ret->lookup("dish_2"); 
     sprite_dish_3 = &ret->lookup("dish_3"); 
@@ -131,7 +123,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_recipe = &ret->lookup("help");  // to be changed
     sprite_pot_normal = &ret->lookup("pot_normal");  // to be changed
     sprite_pot_cooking = &ret->lookup("pot_cooking");  // to be changed
-    sprite_fire = &ret->lookup("help");  // to be changed
+    sprite_fire = &ret->lookup("bonfire");  // to be changed
     sprite_item_question = &ret->lookup("item_1");  // to be changed
 	return ret;
 });
@@ -585,6 +577,7 @@ void StoryMode::enter_scene(float elapsed) {
                     num2[i]--;
                 }
                 if (ok) {
+                    cooking_recipe=&recipe;
                     cooking_dish = recipe.dish;
                     break;
                 }
@@ -595,6 +588,11 @@ void StoryMode::enter_scene(float elapsed) {
         if (pot_time_left <= 0.f) {
             dishes.push_back(cooking_dish);
             pot_time_left = 0.f;
+            if(cooking_dish!=Dish0){
+                for(auto show:cooking_recipe->show)
+                    show=true;
+            }
+
         }
     }
     if (!winning && player.health == 0) {
