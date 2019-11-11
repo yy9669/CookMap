@@ -68,6 +68,8 @@ struct StoryMode : Mode {
 
 	bool proto_cook = false;
 	bool winning = false, lose = false;
+	dish_type curt_dish;		// Curently dragged dish
+	dish_type cooking_dish;		// Curently cooked dish
 	bool dish_drag = false, ingre_drag = false, drag_from_backpack;
 	bool show_instruction = true, show_recipe = false, show_pot = false;
 

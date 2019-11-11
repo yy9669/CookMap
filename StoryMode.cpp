@@ -192,7 +192,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 		} else if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
 			controls.right = (evt.type == SDL_KEYDOWN);
 			return true;
-		} else if (evt.key.keysym.sym == SDLK_SPACE) {
+		} else if (evt.key.keysym.scancode == SDL_SCANCODE_W) {
 			controls.up = (evt.type == SDL_KEYDOWN);
 			return true;
 		}
@@ -205,6 +205,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         if (evt.button.x>= 740 && evt.button.x<=843 &&
            (evt.button.x-740)%55<48 && evt.button.y>=10 && evt.button.y<=58 &&
            int((evt.button.x-740)/55) <int(dishes.size() ) ) {
+            curt_dish = dishes[(evt.button.x-740)/55];
             dishes.erase(dishes.begin() + (evt.button.x-740)/55 );
             dish_drag = true;
             dish_drag_pos = glm::vec2(evt.button.x,768-evt.button.y)+view_min;
@@ -248,9 +249,24 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
     }
     if (evt.type== SDL_MOUSEBUTTONUP && dish_drag){
         dish_drag=false;
-        if(collision(dish_drag_pos, glm::vec2(48,48), npcs[0]->position, npcs[0]->radius )){
+        if(collision(dish_drag_pos, glm::vec2(48,48), npcs[0]->position, npcs[0]->radius)){
             npcs[0]->eat=true;
-        }else{
+        } else if (collision(dish_drag_pos, glm::vec2(48,48), player.position, player.radius)) {
+            switch (curt_dish) {
+                case Pizza:
+                    player.health += 2;
+                    break;
+                case Dish2:
+                    player.health += 1;
+                    break;
+                case Dish3:
+                    player.health += 1;
+                    break;
+            }
+            if (player.health > 10) {
+                player.health = 10;
+            }
+        } else {
             dishes.push_back(Pizza);
         }
         return true;
@@ -319,7 +335,7 @@ void StoryMode::resolve_collision(glm::vec2 &position, glm::vec2 radius,
         box.y >= position.y) {
         position.y = box.y - radius.y;
         if (velocity.y > 0.0f) {
-            velocity.y = 0.0f;
+            velocity.y = -16.0f;
         }
     }
     // x direction
@@ -383,16 +399,24 @@ void StoryMode::enter_scene(float elapsed) {
 		}
 		shove *= 10.0f;
 
+        auto old_velocity = glm::vec2(velocity.x, velocity.y);
 		auto tmp = glm::mix(shove, velocity, std::pow(0.5f, elapsed / 0.25f));
-		velocity = glm::vec2(tmp.x, velocity.y + shove.y - 720.0f * elapsed);
+        if (shove.y > 0.0f || player.state == Left_jump || player.state == Right_jump) {
+            velocity = glm::vec2(tmp.x, velocity.y + shove.y - 720.0f * elapsed);
+        } else {
+            velocity = glm::vec2(tmp.x, velocity.y + shove.y - 250.0f * elapsed);
+        }
+		
+        if (old_velocity.y > 0.0f && velocity.y < 0.0f && velocity.y > -16.0f) {
+            velocity = glm::vec2(velocity.x, -16.0f);
+        }
         // bound the negative velocity to avoid collision error
         if (velocity.y < -250.0f) {
             velocity = glm::vec2(velocity.x, -250.0f);
         }
 
-        cout << velocity.x << "  " << velocity.y << endl;
         // change player state to draw animations
-        if (velocity.y > 0.0f || velocity.y <= -13.0f) {
+        if (velocity.y > 0.0f || velocity.y <= -16.0f) {
             if (velocity.x < 0.0f || player.state == Left_stand) {
                 player.state = Left_jump;
             } else {
@@ -422,7 +446,6 @@ void StoryMode::enter_scene(float elapsed) {
                     player.state = Left_walk1;
             }
         }
-        cout << player.state << endl;
 
         position = position + velocity * elapsed;
 
@@ -504,10 +527,8 @@ void StoryMode::enter_scene(float elapsed) {
     }
 
     if (pot_time_left > 0.f) {
-        pot_time_left -= elapsed;
-        if (pot_time_left <= 0.f) {
+        if (pot_time_left == 5.0f) {
             // check making dish
-            pot_time_left = 0.f;
             unordered_map<ingredient_type, int> num;
             for (auto i : pots) {
                 num[i]++;
@@ -523,11 +544,16 @@ void StoryMode::enter_scene(float elapsed) {
                     num2[i]--;
                 }
                 if (ok) {
-                    dishes.push_back(recipe.dish);
+                    cooking_dish = recipe.dish;
                     break;
                 }
             }
             pots.clear();
+        }
+        pot_time_left -= elapsed;
+        if (pot_time_left <= 0.f) {
+            dishes.push_back(cooking_dish);
+            pot_time_left = 0.f;
         }
     }
     if (!winning && player.health == 0) {
