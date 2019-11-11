@@ -34,7 +34,7 @@ cookmap.xcf?item_16 600 500 +48 +48 +0 +48 item_16
 cookmap.xcf?item_17 700 100 +48 +48 +0 +48 item_17
 cookmap.xcf?item_18 700 200 +48 +48 +0 +48 item_18
 cookmap.xcf?item_19 700 300 +48 +48 +0 +48 item_19
-cookmap.xcf?item_19 700 300 +48 +48 +0 +48 item_19
+cookmap.xcf?waste 700 400 +48 +48 +0 +48 waste
 cookmap.xcf?chef_lstand 800 100 +30 +60 +0 +60 chef_lstand
 cookmap.xcf?chef_lwalk1 800 200 +30 +60 +0 +60 chef_lwalk1
 cookmap.xcf?chef_lwalk2 800 300 +30 +60 +0 +60 chef_lwalk2
