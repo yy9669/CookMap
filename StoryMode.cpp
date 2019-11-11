@@ -85,14 +85,14 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
 
     sprite_background = &ret->lookup("background");
-    sprite_chef_left_stand = &ret->lookup("chef");
-    sprite_chef_left_walk1 = &ret->lookup("chef");
-    sprite_chef_left_walk2 = &ret->lookup("chef");
-    sprite_chef_left_jump = &ret->lookup("chef");
-    sprite_chef_right_stand = &ret->lookup("chef");
-    sprite_chef_right_walk1 = &ret->lookup("chef");
-    sprite_chef_right_walk2 = &ret->lookup("chef");
-    sprite_chef_right_jump = &ret->lookup("chef");
+    sprite_chef_left_stand = &ret->lookup("chef_lstand");
+    sprite_chef_left_walk1 = &ret->lookup("chef_lwalk1");
+    sprite_chef_left_walk2 = &ret->lookup("chef_lwalk2");
+    sprite_chef_left_jump = &ret->lookup("chef_ljump");
+    sprite_chef_right_stand = &ret->lookup("chef_rstand");
+    sprite_chef_right_walk1 = &ret->lookup("chef_rwalk1");
+    sprite_chef_right_walk2 = &ret->lookup("chef_rwalk2");
+    sprite_chef_right_jump = &ret->lookup("chef_rjump");
 
     sprite_item_1 = &ret->lookup("item_1");
     sprite_item_2 = &ret->lookup("item_2");
