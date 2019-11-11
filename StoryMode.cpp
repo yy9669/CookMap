@@ -220,6 +220,7 @@ StoryMode::StoryMode() {
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
         {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
     load_map_file(data_path("map_1.txt"), this);
+    gettimeofday(&last_time, NULL);
 }
 
 StoryMode::~StoryMode() {
