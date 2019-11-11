@@ -488,13 +488,13 @@ void StoryMode::enter_scene(float elapsed) {
                 player.state = Right_stand;
             } else if (velocity.x >= 10.0f) {
                 if (player.state == Right_walk1) {
-                    if (time_since_last > 500) {
+                    if (time_since_last > 300) {
                         player.state = Right_walk2;
                         last_time.tv_sec = curt_time.tv_sec;
                         last_time.tv_usec = curt_time.tv_usec;
                     } 
                 } else {
-                    if (time_since_last > 500) {
+                    if (time_since_last > 300) {
                         player.state = Right_walk1;
                         last_time.tv_sec = curt_time.tv_sec;
                         last_time.tv_usec = curt_time.tv_usec;
@@ -504,13 +504,13 @@ void StoryMode::enter_scene(float elapsed) {
                 player.state = Left_stand;
             } else {
                 if (player.state == Left_walk1) {
-                    if (time_since_last > 500) {
+                    if (time_since_last > 300) {
                         player.state = Left_walk2;
                         last_time.tv_sec = curt_time.tv_sec;
                         last_time.tv_usec = curt_time.tv_usec;
                     }
                 } else {
-                    if (time_since_last > 500) {
+                    if (time_since_last > 300) {
                         player.state = Left_walk1;
                         last_time.tv_sec = curt_time.tv_sec;
                         last_time.tv_usec = curt_time.tv_usec;
@@ -819,8 +819,8 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
     draw.draw_text(
             "a,d   to   move,   w   to   jump\n"
             "click   to   open   the recipe\n"
-            "open   pot   and   drag   items   in\n"
-            "click   the   fire   button   to   cook\n"
+            "open   pot   and   drag   items   i n\n"
+            "click   fire   to   cook\n"
             "drag   dish   to   enemy   to   bribe\n"
             "drag   dish   to   self   to   heal\n"
             "click   the   bulb   to   close   help",
