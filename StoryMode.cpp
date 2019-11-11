@@ -124,7 +124,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_pot_normal = &ret->lookup("pot_normal");  // to be changed
     sprite_pot_cooking = &ret->lookup("pot_cooking");  // to be changed
     sprite_fire = &ret->lookup("bonfire");  // to be changed
-    sprite_item_question = &ret->lookup("item_1");  // to be changed
+    sprite_item_question = &ret->lookup("question");  // to be changed
 	return ret;
 });
 
