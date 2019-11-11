@@ -283,7 +283,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=263 && evt.button.y<=311 &&
                    show_pot && pot_time_left == 0.f && pots.size()) {
-            pot_time_left = 5.f;
+            pot_time_left = 500.f;
         }
         res=true;
     }
@@ -594,8 +594,9 @@ void StoryMode::enter_scene(float elapsed) {
 
 
     if (pot_time_left > 0.f) {
-        if (pot_time_left == 5.0f) {
+        if (pot_time_left == 500.0f) {
             // check making dish
+            pot_time_left=5;
             cooking_dish=Dish0;
             unordered_map<ingredient_type, int> num;
             for (auto i : pots) {
@@ -614,6 +615,7 @@ void StoryMode::enter_scene(float elapsed) {
                 if (ok) {
                     cooking_recipe=&recipe;
                     cooking_dish = recipe.dish;
+                    pot_time_left = recipe.cost;
                     break;
                 }
             }
@@ -834,8 +836,7 @@ void StoryMode::draw_pot(DrawSprites& draw) {
     }
     draw.draw(*sprite_tile_1, glm::vec2(pot_x, 510.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
     if (pot_time_left > 0.f) {
-        string tmp = "0";
-        tmp[0] = '0' + int(pot_time_left+0.999f);
+        string tmp = std::to_string(int(pot_time_left+0.999f));
         draw.draw_text(tmp, glm::vec2(pot_x+15, 461.f)+view_min, 0.07);
     } else {
         draw.draw(*sprite_fire, glm::vec2(pot_x, 457.f)+view_min);
