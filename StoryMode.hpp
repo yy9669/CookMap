@@ -17,7 +17,15 @@
 #include "DrawSprites.hpp"
 #include "Sprite.hpp"
 #include <map>
+#include <vector>
 #include <sys/time.h>
+
+typedef struct {
+    std::vector<ingredient_type> ingredients;
+    std::vector<bool> show;
+    dish_type dish;
+    int restore;
+} Recipe;
 
 struct StoryMode : Mode {
 	StoryMode();
@@ -75,7 +83,14 @@ struct StoryMode : Mode {
 
 	bool proto_cook = false;
 	bool winning = false, lose = false;
-	dish_type cooking_dish;		// Curently cooked dish
+
+	std::vector<Recipe> recipes = {
+	    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 10},
+	    {{Item1, Item2}, {true, false}, Dish2, 10},
+	};
+	Recipe *cooking_recipe;   // Curently cooked recipe
+	dish_type cooking_dish;   // Curently cooked recipe
+
 	bool dish_drag = false, ingre_drag = false, drag_from_backpack;
 	dish_type dragged_dish;		// Curently dragged dish
 	bool show_instruction = true, show_recipe = false, show_pot = false;

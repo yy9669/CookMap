@@ -8,7 +8,7 @@
 #include <string>
 
 enum dish_type {
-    Dish1, Dish2, Dish3, Dish4, Dish5
+    Dish0, Dish1, Dish2, Dish3, Dish4, Dish5
 };
 
 struct Dish {
