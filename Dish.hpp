@@ -4,10 +4,11 @@
 #include "Ingredient.hpp"
 #include <glm/glm.hpp>
 #include <vector>
+
 #include <string>
 
 enum dish_type {
-    Pizza, Dish2, Dish3
+    Dish1, Dish2, Dish3, Dish4, Dish5
 };
 
 struct Dish {
