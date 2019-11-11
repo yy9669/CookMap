@@ -124,7 +124,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_pot_normal = &ret->lookup("pot_normal");  // to be changed
     sprite_pot_cooking = &ret->lookup("pot_cooking");  // to be changed
     sprite_fire = &ret->lookup("bonfire");  // to be changed
-    sprite_item_question = &ret->lookup("item_1");  // to be changed
+    sprite_item_question = &ret->lookup("question");  // to be changed
 	return ret;
 });
 
@@ -219,7 +219,6 @@ StoryMode::StoryMode() {
     }); 
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
         {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
-    health_map.insert({{Dish1,2},{Dish2,1},{Dish3,1},{Dish4,1},{Dish5,0},{Dish0,-1}} );
 
     load_map_file(data_path("map_1.txt"), this);
     gettimeofday(&last_time, NULL);
@@ -284,7 +283,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=263 && evt.button.y<=311 &&
                    show_pot && pot_time_left == 0.f && pots.size()) {
-            pot_time_left = 5.f;
+            pot_time_left = 500.f;
         }
         res=true;
     }
@@ -294,9 +293,8 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
     }
     if (evt.type== SDL_MOUSEBUTTONUP && dish_drag){
         dish_drag=false;
-        if(collision(dish_drag_pos, glm::vec2(48,48), npcs[0]->position, npcs[0]->radius)){
-            npcs[0]->eat=true;
-        } else if (collision(dish_drag_pos, glm::vec2(48,48), player.position, player.radius)) {
+
+        if (collision(dish_drag_pos, glm::vec2(48,48), player.position, player.radius)) {
             player.health += health_map[dragged_dish];
             if (player.health > 10) {
                 player.health = 10;
@@ -305,7 +303,23 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             (draw_width-dish_drag_pos.y) >= garbage_y+view_min.y && (draw_width-dish_drag_pos.y) <= garbage_y+item_size+view_min.y) {
             // discard dish
         } else {
-            dishes.push_back(dragged_dish);
+            auto eaten = false;
+            for (unsigned i = 0; i < npcs.size(); i++) {
+                if(collision(dish_drag_pos, glm::vec2(item_size,item_size), npcs[i]->position, npcs[i]->radius)){
+                    for (unsigned j = 0; j < npcs[i]->favorates.size(); j++) {
+                        if (npcs[i]->favorates[j] == dragged_dish) {
+                            npcs[i]->eat=true;
+                            eaten = true;
+                            break;
+                        }
+                    }
+                }
+                if (eaten)
+                    break;
+            }
+
+            if (!eaten)
+                dishes.push_back(dragged_dish);
         }
         res=true;
     }
@@ -516,7 +530,7 @@ void StoryMode::enter_scene(float elapsed) {
                 continue;
             if (collision(position, radius, box, box_radius)) {
                 resolve_collision(position, radius, box, box_radius, velocity);
-                player.health -= 1;
+                player.health -= npcs[i]->attack;
                 player.health = max(0,player.health);
                 if (position.x <= npcs[i]->init_position.x)
                     velocity.x = -200.0f;
@@ -580,8 +594,9 @@ void StoryMode::enter_scene(float elapsed) {
 
 
     if (pot_time_left > 0.f) {
-        if (pot_time_left == 5.0f) {
+        if (pot_time_left == 500.0f) {
             // check making dish
+            pot_time_left=5;
             cooking_dish=Dish0;
             unordered_map<ingredient_type, int> num;
             for (auto i : pots) {
@@ -600,6 +615,7 @@ void StoryMode::enter_scene(float elapsed) {
                 if (ok) {
                     cooking_recipe=&recipe;
                     cooking_dish = recipe.dish;
+                    pot_time_left = recipe.cost;
                     break;
                 }
             }
@@ -795,7 +811,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
 void StoryMode::draw_instruction(DrawSprites& draw) {
     for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 3; ++j) {
+        for (int j = 0; j < 5; ++j) {
             draw.draw(*sprite_instruction_panel,
                     glm::vec2(draw_length-7-item_size*(i+1), 615-item_size*j)+view_min);
         }
@@ -820,8 +836,7 @@ void StoryMode::draw_pot(DrawSprites& draw) {
     }
     draw.draw(*sprite_tile_1, glm::vec2(pot_x, 510.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
     if (pot_time_left > 0.f) {
-        string tmp = "0";
-        tmp[0] = '0' + int(pot_time_left+0.999f);
+        string tmp = std::to_string(int(pot_time_left+0.999f));
         draw.draw_text(tmp, glm::vec2(pot_x+15, 461.f)+view_min, 0.07);
     } else {
         draw.draw(*sprite_fire, glm::vec2(pot_x, 457.f)+view_min);
@@ -835,7 +850,7 @@ void StoryMode::draw_pot(DrawSprites& draw) {
 
 void StoryMode::draw_recipe(DrawSprites& draw) {
     for (int i = 0; i < 6; ++i) {
-        for (unsigned j = 0; j < 1 + recipes.size(); ++j) {
+        for (unsigned j = 0; j < 1.3* recipes.size(); ++j) {
             draw.draw(*sprite_instruction_panel,
                       glm::vec2(665+item_size*i, 645-item_size*j)+view_min);
         }
