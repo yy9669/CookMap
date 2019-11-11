@@ -293,9 +293,8 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
     }
     if (evt.type== SDL_MOUSEBUTTONUP && dish_drag){
         dish_drag=false;
-        if(collision(dish_drag_pos, glm::vec2(48,48), npcs[0]->position, npcs[0]->radius)){
-            npcs[0]->eat=true;
-        } else if (collision(dish_drag_pos, glm::vec2(48,48), player.position, player.radius)) {
+
+        if (collision(dish_drag_pos, glm::vec2(48,48), player.position, player.radius)) {
             player.health += health_map[dragged_dish];
             if (player.health > 10) {
                 player.health = 10;
@@ -304,7 +303,23 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             (draw_width-dish_drag_pos.y) >= garbage_y+view_min.y && (draw_width-dish_drag_pos.y) <= garbage_y+item_size+view_min.y) {
             // discard dish
         } else {
-            dishes.push_back(dragged_dish);
+            auto eaten = false;
+            for (unsigned i = 0; i < npcs.size(); i++) {
+                if(collision(dish_drag_pos, glm::vec2(item_size,item_size), npcs[i]->position, npcs[i]->radius)){
+                    for (unsigned j = 0; j < npcs[i]->favorates.size(); j++) {
+                        if (npcs[i]->favorates[j] == dragged_dish) {
+                            npcs[i]->eat=true;
+                            eaten = true;
+                            break;
+                        }
+                    }
+                }
+                if (eaten)
+                    break;
+            }
+
+            if (!eaten)
+                dishes.push_back(dragged_dish);
         }
         res=true;
     }
@@ -515,7 +530,7 @@ void StoryMode::enter_scene(float elapsed) {
                 continue;
             if (collision(position, radius, box, box_radius)) {
                 resolve_collision(position, radius, box, box_radius, velocity);
-                player.health -= 1;
+                player.health -= npcs[i]->attack;
                 player.health = max(0,player.health);
                 if (position.x <= npcs[i]->init_position.x)
                     velocity.x = -200.0f;
