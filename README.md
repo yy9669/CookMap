@@ -19,5 +19,6 @@ The assests mainly come from GIMP-2.10, Kenny.nl (https://www.kenney.nl), Flatic
 Garbage icon made by Payungkead from www.flaticon.com.
 Wheat/Pepper/Bonfire icons made by Freepik from www.flaticon.com.
 Salami/Pizza/Bulb icons made by Smashicons from www.flaticon.com.
+The components of chef are 2d assets we bought from unity asset store.
 
 This game was built with [NEST](NEST.md).
