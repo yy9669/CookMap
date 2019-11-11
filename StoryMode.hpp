@@ -24,7 +24,7 @@ typedef struct {
     std::vector<ingredient_type> ingredients;
     std::vector<bool> show;
     dish_type dish;
-    int restore;
+    int cost;
 } Recipe;
 
 struct StoryMode : Mode {
@@ -63,7 +63,7 @@ struct StoryMode : Mode {
 	std::vector<ingredient_type> backpack;
 	std::vector<dish_type> dishes;
     std::vector<ingredient_type> pots;
-    float pot_time_left = 0.f;
+    float pot_time_left = 0;
     dish_type pot_dish;
 	struct timeval curt_time, last_time;
 
@@ -85,11 +85,11 @@ struct StoryMode : Mode {
 	bool winning = false, lose = false;
 
 	std::vector<Recipe> recipes = {
-	    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 10},
-	    {{Item11, Item2}, {true, true}, Dish2, 10},
-    	    {{Item4, Item5}, {true, false}, Dish3, 10},
-        	    {{Item5, Item6}, {true, false}, Dish3, 10},
-        	    {{Item6, Item4}, {true, false}, Dish3, 10},
+	    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 20},
+	    {{Item11, Item2}, {true, true}, Dish2, 5},
+    	    {{Item4, Item5}, {true, false}, Dish3, 3},
+        	    {{Item5, Item6}, {true, false}, Dish3, 3},
+        	    {{Item6, Item4}, {true, false}, Dish3, 3},
 	    {{Item12, Item14,Item15}, {true, false, true}, Dish4, 10},
 	    {{Item12, Item8,Item15}, {true, false, true}, Dish4, 10},
     	    {{Item16,Item17, Item18}, {false, false, false}, Dish5, 10},	    	    
