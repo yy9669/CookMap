@@ -311,6 +311,9 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             if (player.health > 10) {
                 player.health = 10;
             }
+        } else if (collision(dish_drag_pos, glm::vec2(48,48), 
+            glm::vec2(garbage_x+view_min.x,garbage_y+view_min.y), glm::vec2(48,48))) {
+            // discard dish
         } else {
             dishes.push_back(dragged_dish);
         }
@@ -460,6 +463,9 @@ void StoryMode::enter_scene(float elapsed) {
             velocity = glm::vec2(velocity.x, -250.0f);
         }
 
+        gettimeofday(&curt_time, NULL);
+        auto time_since_last = (curt_time.tv_sec - last_time.tv_sec) * 1000 
+            + (curt_time.tv_usec - last_time.tv_usec) / 1000;
         // change player state to draw animations
         if (velocity.y > 0.0f || velocity.y <= -16.0f) {
             if (velocity.x < 0.0f || player.state == Left_stand) {
@@ -478,19 +484,27 @@ void StoryMode::enter_scene(float elapsed) {
             } else if (velocity.x > 0.0f && velocity.x < 20.0f) {
                 player.state = Right_stand;
             } else if (velocity.x >= 10.0f) {
-                if (player.state == Right_walk1)
-                    player.state = Right_walk2;
-                else
-                    player.state = Right_walk1;
+                if (player.state == Right_walk1) {
+                    if (time_since_last > 500)
+                        player.state = Right_walk2;
+                } else {
+                    if (time_since_last > 500)
+                        player.state = Right_walk1;
+                }
             } else if (velocity.x < 0.0f && velocity.x > -20.0f) {
                 player.state = Left_stand;
             } else {
-                if (player.state == Left_walk1)
-                    player.state = Left_walk2;
-                else
-                    player.state = Left_walk1;
+                if (player.state == Left_walk1) {
+                    if (time_since_last > 500)
+                        player.state = Left_walk2;
+                } else {
+                    if (time_since_last > 500)
+                        player.state = Left_walk1;
+                }
             }
         }
+        last_time.tv_sec = curt_time.tv_sec;
+        last_time.tv_usec = curt_time.tv_usec;
 
         position = position + velocity * elapsed;
 
