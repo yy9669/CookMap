@@ -67,7 +67,7 @@ struct StoryMode : Mode {
 
     std::unordered_map<ingredient_type, Sprite> ingredient_map;
     std::unordered_map<dish_type, Sprite> dish_map;
-
+    std::unordered_map<dish_type, int> health_map;
 	//Current control signals:
 	struct {
 		bool left = false;

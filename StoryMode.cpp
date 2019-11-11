@@ -219,6 +219,8 @@ StoryMode::StoryMode() {
     }); 
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
         {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
+    health_map.insert({{Dish1,2},{Dish2,1},{Dish3,1},{Dish4,1},{Dish5,0},{Dish0,-1}} );
+
     load_map_file(data_path("map_1.txt"), this);
 }
 
@@ -294,13 +296,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         if(collision(dish_drag_pos, glm::vec2(48,48), npcs[0]->position, npcs[0]->radius)){
             npcs[0]->eat=true;
         } else if (collision(dish_drag_pos, glm::vec2(48,48), player.position, player.radius)) {
-            switch (dragged_dish) {
-                case Dish1:
-                    player.health += 2;
-                    break;
-                default:
-                    player.health += 1;
-            }
+            player.health += health_map[dragged_dish];
             if (player.health > 10) {
                 player.health = 10;
             }
