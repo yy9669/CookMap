@@ -78,7 +78,7 @@ typedef struct {
 
 vector<Recipe> recipes = {
     {{Item1, Item2, Item3}, {true, true, true}, Dish1, 10},
-    {{Item1, Item2}, {true, true}, Dish2, 10},
+    {{Item1, Item2}, {true, false}, Dish2, 10},
 };
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
@@ -225,7 +225,7 @@ StoryMode::StoryMode() {
         {Item15,*sprite_item_15},{Item16,*sprite_item_16},{Item17,*sprite_item_17},{Item18,*sprite_item_18},
         {Item18,*sprite_item_19}
     }); 
-    dish_map.insert ( {{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
+    dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
         {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
     load_map_file(data_path("map_1.txt"), this);
 }
@@ -250,6 +250,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 			res=true;
 		}
 	}
+
     if (evt.type== SDL_MOUSEBUTTONDOWN){
         if (evt.button.x>= dish_start_x && evt.button.x<=dish_start_x+item_inteval*(dish_num-1)+item_size &&
            (evt.button.x-dish_start_x)%item_inteval<item_size && evt.button.y>=dish_start_y && evt.button.y<=dish_start_y+item_size &&
@@ -316,7 +317,6 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         }
         res=true;
     }
-
     if(evt.type== SDL_MOUSEMOTION && ingre_drag){
         ingre_drag_pos=glm::vec2(evt.motion.x,draw_width-evt.motion.y)+view_min;
         res=true;
@@ -569,6 +569,7 @@ void StoryMode::enter_scene(float elapsed) {
     if (pot_time_left > 0.f) {
         if (pot_time_left == 5.0f) {
             // check making dish
+            cooking_dish=Dish0;
             unordered_map<ingredient_type, int> num;
             for (auto i : pots) {
                 num[i]++;
