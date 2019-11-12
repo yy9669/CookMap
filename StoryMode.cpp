@@ -64,6 +64,8 @@ Sprite const *sprite_tile_3 = nullptr;
 Sprite const *sprite_tile_4 = nullptr;
 Sprite const *sprite_tile_5 = nullptr;
 Sprite const *sprite_tile_6 = nullptr;
+Sprite const *sprite_tile_7 = nullptr;
+Sprite const *sprite_tile_8 = nullptr;
 Sprite const *sprite_instruction_panel = nullptr;
 Sprite const *sprite_helper = nullptr;
 Sprite const *sprite_recipe = nullptr;
@@ -122,6 +124,8 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_tile_4 = &ret->lookup("tile_4");
     sprite_tile_5 = &ret->lookup("tile_5");
     sprite_tile_6 = &ret->lookup("tile_6");
+    sprite_tile_7 = &ret->lookup("tile_7");
+    sprite_tile_8 = &ret->lookup("tile_8");
     sprite_instruction_panel = &ret->lookup("panel_1");
     sprite_helper = &ret->lookup("help");
     sprite_recipe = &ret->lookup("help");  // to be changed
@@ -192,7 +196,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                 case 'e':
                     part = new Empty();
                     break;
-                case 'g': case 'w': case 'l': case 'r': case 'z': case 'x':
+                case 'g': case 'w': case 'l': case 'r': case 'z': case 'x': case 'c': case 'v':
                     part = new Ground(s[x]);
                     break;
                 case '*':
@@ -688,6 +692,12 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                                 break;
                             case 'x':
                                 draw.draw(*sprite_tile_6, parts[i][j]->position);
+                                break;
+                            case 'c':
+                                draw.draw(*sprite_tile_7, parts[i][j]->position);
+                                break;
+                            case 'v':
+                                draw.draw(*sprite_tile_8, parts[i][j]->position);
                                 break;
                             }
                             break;
