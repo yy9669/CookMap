@@ -60,16 +60,18 @@ Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
 Sprite const *sprite_tile_1 = nullptr;
 Sprite const *sprite_tile_2 = nullptr;
+Sprite const *sprite_tile_3 = nullptr;
+Sprite const *sprite_tile_4 = nullptr;
+Sprite const *sprite_tile_5 = nullptr;
+Sprite const *sprite_tile_6 = nullptr;
+Sprite const *sprite_tile_7 = nullptr;
+Sprite const *sprite_tile_8 = nullptr;
 Sprite const *sprite_instruction_panel = nullptr;
 Sprite const *sprite_helper = nullptr;
 Sprite const *sprite_recipe = nullptr;
 Sprite const *sprite_pot_normal = nullptr;
 Sprite const *sprite_pot_cooking = nullptr;
 Sprite const *sprite_fire = nullptr;
-
-
-
-
 
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
@@ -118,6 +120,12 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_exit = &ret->lookup("exit");
     sprite_tile_1 = &ret->lookup("tile_1");
     sprite_tile_2 = &ret->lookup("tile_2");
+    sprite_tile_3 = &ret->lookup("tile_3");
+    sprite_tile_4 = &ret->lookup("tile_4");
+    sprite_tile_5 = &ret->lookup("tile_5");
+    sprite_tile_6 = &ret->lookup("tile_6");
+    sprite_tile_7 = &ret->lookup("tile_7");
+    sprite_tile_8 = &ret->lookup("tile_8");
     sprite_instruction_panel = &ret->lookup("panel_1");
     sprite_helper = &ret->lookup("help");
     sprite_recipe = &ret->lookup("help");  // to be changed
@@ -188,7 +196,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                 case 'e':
                     part = new Empty();
                     break;
-                case 'g': case 'w':
+                case 'g': case 'w': case 'l': case 'r': case 'z': case 'x': case 'c': case 'v':
                     part = new Ground(s[x]);
                     break;
                 case '*':
@@ -674,6 +682,24 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                                 break;
                             case 'w':
                                 draw.draw(*sprite_tile_2, parts[i][j]->position);
+                                break;
+                            case 'l':
+                                draw.draw(*sprite_tile_3, parts[i][j]->position);
+                                break;
+                            case 'r':
+                                draw.draw(*sprite_tile_4, parts[i][j]->position);
+                                break;
+                            case 'z':
+                                draw.draw(*sprite_tile_5, parts[i][j]->position);
+                                break;
+                            case 'x':
+                                draw.draw(*sprite_tile_6, parts[i][j]->position);
+                                break;
+                            case 'c':
+                                draw.draw(*sprite_tile_7, parts[i][j]->position);
+                                break;
+                            case 'v':
+                                draw.draw(*sprite_tile_8, parts[i][j]->position);
                                 break;
                             }
                             break;
