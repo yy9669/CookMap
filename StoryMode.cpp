@@ -436,21 +436,8 @@ void StoryMode::enter_scene(float elapsed) {
             {
                 //TODO: add different motions for npc
                 case npc0:
-                    position_i = position_i + velocity_i * elapsed;
-                    if (position_i.x <= init_position_i.x) {
-                        position_i.x = init_position_i.x;
-                        velocity_i.x = -velocity_i.x;
-                    } else if (position_i.x > init_position_i.x 
-                        && position_i.x - init_position_i.x > 140.0f) {
-                        velocity_i.x = -velocity_i.x;
-                    }
-                    position_i.y = init_position_i.y;
-                case npc1:
-                case npc2:
-                case npc3:
-                default:
                     if (npcs[i]->eat) {
-                        auto old_x = position_i.x;
+                        velocity_i.x = 0;
                         position_i = position_i + velocity_i * elapsed;
                         if (position_i.y <= init_position_i.y) {
                             position_i.y = init_position_i.y;
@@ -459,8 +446,22 @@ void StoryMode::enter_scene(float elapsed) {
                             && position_i.y - init_position_i.y > 240.0f) {
                             velocity_i.y = -velocity_i.y;
                         }
-                        position_i.x = old_x;
+                    } else {
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.x <= init_position_i.x) {
+                            position_i.x = init_position_i.x;
+                            velocity_i.x = -velocity_i.x;
+                        } else if (position_i.x > init_position_i.x 
+                            && position_i.x - init_position_i.x > 140.0f) {
+                            velocity_i.x = -velocity_i.x;
+                        }
+                        position_i.y = init_position_i.y;
                     }
+                    break;
+                case npc1:
+                case npc2:
+                case npc3:
+                default:
                     break;
             }
         }
