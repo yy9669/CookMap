@@ -212,9 +212,6 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                 case '1': case '2': case '3':case '4': case '5': case '6':
                     part = new Ingredient((ingredient_type)(s[x] - '1'));
                     break;
-                case '[':
-                    part = new Dish((dish_type)(1));
-                    break;
                 default:
                     cerr << "Error: map type unrecognized" << endl;
                     return false;
@@ -753,42 +750,46 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                     case npc0:
                         if (npcs[i]->eat)
                             draw.draw(*sprite_npc_1_idle, npcs[i]->position);
-                        else
+                        else{
                             draw.draw(*sprite_npc_1, npcs[i]->position);
                             draw.draw(*sprite_thinking, 
                                 glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
                             draw.draw(dish_map[npcs[i]->favorates[0]], 
                                 glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
+                        }
                         break;
                     case npc1:
                         if (npcs[i]->eat)
                             draw.draw(*sprite_npc_1_idle, npcs[i]->position);
-                        else
+                        else{
                             draw.draw(*sprite_npc_1, npcs[i]->position);
                             draw.draw(*sprite_thinking, 
                                 glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
                             draw.draw(dish_map[npcs[i]->favorates[0]], 
                                 glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
+                        }
                         break;
                     case npc2:
                         if (npcs[i]->eat)
                             draw.draw(*sprite_npc_1_idle, npcs[i]->position);
-                        else
+                        else{
                             draw.draw(*sprite_npc_1, npcs[i]->position);
                             draw.draw(*sprite_thinking, 
                                 glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
                             draw.draw(dish_map[npcs[i]->favorates[0]], 
                                 glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
+                        }
                         break;
                     case npc3:
                         if (npcs[i]->eat)
                             draw.draw(*sprite_npc_1_idle, npcs[i]->position);
-                        else
+                        else{
                             draw.draw(*sprite_npc_1, npcs[i]->position);
                             draw.draw(*sprite_thinking, 
                                 glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
                             draw.draw(dish_map[npcs[i]->favorates[0]], 
                                 glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
+                        }
                         break;
                     default:
                         break;
