@@ -287,6 +287,8 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         } else if (evt.button.x>= help_x && evt.button.x<=help_x+item_size &&
                    evt.button.y>=help_y && evt.button.y<=help_y+item_size) {
             show_instruction =! show_instruction;
+            show_pot = false;
+            show_recipe = false;
         } else if (evt.button.x>= recipe_x && evt.button.x<=recipe_x+item_size &&
                    evt.button.y>=recipe_y && evt.button.y<=recipe_y+item_size) {
             show_recipe = !show_recipe;
