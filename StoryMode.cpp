@@ -277,9 +277,11 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         } else if (evt.button.x>= recipe_x && evt.button.x<=recipe_x+item_size &&
                    evt.button.y>=recipe_y && evt.button.y<=recipe_y+item_size) {
             show_recipe = !show_recipe;
+            show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=pot_y && evt.button.y<=pot_y+item_size) {
             show_pot = !show_pot;
+            show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=263 && evt.button.y<=311 &&
                    show_pot && pot_time_left == 0.f && pots.size()) {
@@ -445,7 +447,7 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.left) shove.x -= 20.0f;
 		if (controls.right) shove.x += 20.0f;
 		if (controls.up && abs(velocity.y) < 1e-4) {
-		    shove.y += 38.5f;
+		    shove.y += 39.5f;
             controls.up = false;
 		}
 		shove *= 10.0f;
@@ -453,17 +455,17 @@ void StoryMode::enter_scene(float elapsed) {
         auto old_velocity = glm::vec2(velocity.x, velocity.y);
 		auto tmp = glm::mix(shove, velocity, std::pow(0.5f, elapsed / 0.25f));
         if (shove.y > 0.0f || player.state == Left_jump || player.state == Right_jump) {
-            velocity = glm::vec2(tmp.x, velocity.y + shove.y - 720.0f * elapsed);
+            velocity = glm::vec2(tmp.x, velocity.y + shove.y - 740.0f * elapsed);
         } else {
-            velocity = glm::vec2(tmp.x, velocity.y + shove.y - 250.0f * elapsed);
+            velocity = glm::vec2(tmp.x, velocity.y + shove.y - 270.0f * elapsed);
         }
 		
         if (old_velocity.y > 0.0f && velocity.y < 0.0f && velocity.y > -16.0f) {
             velocity = glm::vec2(velocity.x, -16.0f);
         }
         // bound the negative velocity to avoid collision error
-        if (velocity.y < -250.0f) {
-            velocity = glm::vec2(velocity.x, -250.0f);
+        if (velocity.y < -270.0f) {
+            velocity = glm::vec2(velocity.x, -270.0f);
         }
 
         gettimeofday(&curt_time, NULL);
@@ -852,22 +854,22 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
     for (int i = 0; i < 6; ++i) {
         for (unsigned j = 0; j < 1.3* recipes.size(); ++j) {
             draw.draw(*sprite_instruction_panel,
-                      glm::vec2(665+item_size*i, 645-item_size*j)+view_min);
+                      glm::vec2(665-120+item_size*i, 645-item_size*j)+view_min);
         }
     }
 
     for (unsigned i = 0; i < recipes.size(); ++i) {
         for (unsigned j = 0; j < recipes[i].ingredients.size(); ++j) {
-            auto pos = glm::vec2(677+60.f*j, 631-60.f*i)+view_min;
+            auto pos = glm::vec2(677-120+60.f*j, 631-60.f*i)+view_min;
             if (recipes[i].show[j]) {
                 draw.draw(ingredient_map[recipes[i].ingredients[j]], pos);
             } else {
                 draw.draw(*sprite_item_question, pos);
             }
         }
-        auto pos = glm::vec2(865.f, 631-60.f*i)+view_min;
+        auto pos = glm::vec2(865.f-120, 631-60.f*i)+view_min;
         draw.draw(*sprite_tile_1, pos, glm::vec2(0.05f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
-        pos = glm::vec2(885.f, 631-60.f*i)+view_min;
+        pos = glm::vec2(885.f-120, 631-60.f*i)+view_min;
         draw.draw(dish_map[recipes[i].dish], pos);
     }
 }
