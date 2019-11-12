@@ -118,7 +118,6 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 
     sprite_npc_1 = &ret->lookup("guard_1");
     sprite_npc_1_idle = &ret->lookup("guard_1_idle");
-
     sprite_thinking = &ret->lookup("thinking");
 
     sprite_health_box = &ret->lookup("health_box");
@@ -172,7 +171,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
     mode->player.set_pos(TILE_SIZE*start_x, TILE_SIZE*start_y);
 
     // npc definition
-    int npc_num, npc_type_;
+    int npc_num, npc_type_, npc_dish_;
     float npc_x, npc_y;
 
     for (unsigned i = 0; i < mode->npcs.size(); ++i) {
@@ -183,8 +182,8 @@ bool load_map_file(const string& filename, StoryMode* mode) {
     f >> npc_num;
     mode->npcs.resize(npc_num);
     for (int i = 0; i < npc_num; ++i) {
-        f >> npc_type_ >> npc_x >> npc_y;
-        mode->npcs[i] = new Npc((npc_type)npc_type_, TILE_SIZE*npc_x, TILE_SIZE*npc_y);
+        f >> npc_type_ >> npc_x >> npc_y >> npc_dish_;
+        mode->npcs[i] = new Npc((npc_type)npc_type_, TILE_SIZE*npc_x, TILE_SIZE*npc_y, (dish_type)npc_dish_);
     }
 
     // fill in the parts map
@@ -434,11 +433,21 @@ void StoryMode::enter_scene(float elapsed) {
             {
                 //TODO: add different motions for npc
                 case npc0:
+                    position_i = position_i + velocity_i * elapsed;
+                    if (position_i.x <= init_position_i.x) {
+                        position_i.x = init_position_i.x;
+                        velocity_i.x = -velocity_i.x;
+                    } else if (position_i.x > init_position_i.x 
+                        && position_i.x - init_position_i.x > 140.0f) {
+                        velocity_i.x = -velocity_i.x;
+                    }
+                    position_i.y = init_position_i.y;
                 case npc1:
                 case npc2:
                 case npc3:
                 default:
                     if (npcs[i]->eat) {
+                        auto old_x = position_i.x;
                         position_i = position_i + velocity_i * elapsed;
                         if (position_i.y <= init_position_i.y) {
                             position_i.y = init_position_i.y;
@@ -447,6 +456,7 @@ void StoryMode::enter_scene(float elapsed) {
                             && position_i.y - init_position_i.y > 240.0f) {
                             velocity_i.y = -velocity_i.y;
                         }
+                        position_i.x = old_x;
                     }
                     break;
             }
@@ -472,15 +482,15 @@ void StoryMode::enter_scene(float elapsed) {
         if (shove.y > 0.0f || player.state == Left_jump || player.state == Right_jump) {
             velocity = glm::vec2(tmp.x, velocity.y + shove.y - 740.0f * elapsed);
         } else {
-            velocity = glm::vec2(tmp.x, velocity.y + shove.y - 270.0f * elapsed);
+            velocity = glm::vec2(tmp.x, velocity.y + shove.y - 260.0f * elapsed);
         }
 		
         if (old_velocity.y > 0.0f && velocity.y < 0.0f && velocity.y > -16.0f) {
             velocity = glm::vec2(velocity.x, -16.0f);
         }
         // bound the negative velocity to avoid collision error
-        if (velocity.y < -270.0f) {
-            velocity = glm::vec2(velocity.x, -270.0f);
+        if (velocity.y < -260.0f) {
+            velocity = glm::vec2(velocity.x, -260.0f);
         }
 
         gettimeofday(&curt_time, NULL);
@@ -549,7 +559,7 @@ void StoryMode::enter_scene(float elapsed) {
                 resolve_collision(position, radius, box, box_radius, velocity);
                 player.health -= npcs[i]->attack;
                 player.health = max(0,player.health);
-                if (position.x <= npcs[i]->init_position.x)
+                if (position.x <= npcs[i]->position.x)
                     velocity.x = -200.0f;
                 else
                     velocity.x = 200.0f;
@@ -739,24 +749,40 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                             draw.draw(*sprite_npc_1_idle, npcs[i]->position);
                         else
                             draw.draw(*sprite_npc_1, npcs[i]->position);
+                            draw.draw(*sprite_thinking, 
+                                glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
+                            draw.draw(dish_map[npcs[i]->favorates[0]], 
+                                glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
                         break;
                     case npc1:
                         if (npcs[i]->eat)
                             draw.draw(*sprite_npc_1_idle, npcs[i]->position);
                         else
                             draw.draw(*sprite_npc_1, npcs[i]->position);
+                            draw.draw(*sprite_thinking, 
+                                glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
+                            draw.draw(dish_map[npcs[i]->favorates[0]], 
+                                glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
                         break;
                     case npc2:
                         if (npcs[i]->eat)
                             draw.draw(*sprite_npc_1_idle, npcs[i]->position);
                         else
                             draw.draw(*sprite_npc_1, npcs[i]->position);
+                            draw.draw(*sprite_thinking, 
+                                glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
+                            draw.draw(dish_map[npcs[i]->favorates[0]], 
+                                glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
                         break;
                     case npc3:
                         if (npcs[i]->eat)
                             draw.draw(*sprite_npc_1_idle, npcs[i]->position);
                         else
                             draw.draw(*sprite_npc_1, npcs[i]->position);
+                            draw.draw(*sprite_thinking, 
+                                glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
+                            draw.draw(dish_map[npcs[i]->favorates[0]], 
+                                glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
                         break;
                     default:
                         break;
