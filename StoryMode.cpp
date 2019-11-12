@@ -56,6 +56,8 @@ Sprite const *sprite_dish_5 = nullptr;
 Sprite const *sprite_npc_1 = nullptr;
 Sprite const *sprite_npc_1_idle = nullptr;
 
+Sprite const *sprite_thinking = nullptr;
+
 Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
 Sprite const *sprite_tile_1 = nullptr;
@@ -116,6 +118,9 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 
     sprite_npc_1 = &ret->lookup("guard_1");
     sprite_npc_1_idle = &ret->lookup("guard_1_idle");
+
+    sprite_thinking = &ret->lookup("thinking");
+
     sprite_health_box = &ret->lookup("health_box");
     sprite_exit = &ret->lookup("exit");
     sprite_tile_1 = &ret->lookup("tile_1");
