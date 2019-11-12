@@ -55,6 +55,8 @@ Sprite const *sprite_dish_5 = nullptr;
 
 Sprite const *sprite_npc_1 = nullptr;
 Sprite const *sprite_npc_1_idle = nullptr;
+Sprite const *sprite_npc_2 = nullptr;
+Sprite const *sprite_npc_2_idle = nullptr;
 
 Sprite const *sprite_thinking = nullptr;
 
@@ -118,6 +120,8 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 
     sprite_npc_1 = &ret->lookup("guard_1");
     sprite_npc_1_idle = &ret->lookup("guard_1_idle");
+    sprite_npc_2 = &ret->lookup("guard_2");
+    sprite_npc_2_idle = &ret->lookup("guard_2_idle");
     sprite_thinking = &ret->lookup("thinking");
 
     sprite_health_box = &ret->lookup("health_box");
@@ -459,6 +463,18 @@ void StoryMode::enter_scene(float elapsed) {
                     }
                     break;
                 case npc1:
+                    if (npcs[i]->eat) {
+                        velocity_i.x = 0;
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.y <= init_position_i.y) {
+                            position_i.y = init_position_i.y;
+                            velocity_i.y = -velocity_i.y;
+                        } else if (position_i.y > init_position_i.y 
+                            && position_i.y - init_position_i.y > 100.0f) {
+                            velocity_i.y = -velocity_i.y;
+                        }
+                    }
+                    break;
                 case npc2:
                 case npc3:
                 default:
@@ -761,9 +777,9 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                         break;
                     case npc1:
                         if (npcs[i]->eat)
-                            draw.draw(*sprite_npc_1_idle, npcs[i]->position);
+                            draw.draw(*sprite_npc_2_idle, npcs[i]->position);
                         else{
-                            draw.draw(*sprite_npc_1, npcs[i]->position);
+                            draw.draw(*sprite_npc_2, npcs[i]->position);
                             draw.draw(*sprite_thinking, 
                                 glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
                             draw.draw(dish_map[npcs[i]->favorates[0]], 
@@ -892,7 +908,7 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
             "click   fire   to   cook\n"
             "drag   dish   to   enemy   to   bribe\n"
             "drag   dish   to   self   to   heal\n"
-            "click   the   bulb   to   close   help",
+            "click   bulb   to   close   help",
             glm::vec2(draw_length-item_size*9, 630)+view_min, 0.068);
 }
 
