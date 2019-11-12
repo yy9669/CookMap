@@ -10,25 +10,22 @@ enum npc_type {
 
 class Npc {
 public:
-    Npc(npc_type type_, float x, float y) {
+    Npc(npc_type type_, float x, float y, dish_type npc_dish_) {
         type = type_;
         position = glm::vec2(x, y);
         init_position = glm::vec2(x, y);
+        favorates = {npc_dish_};
         switch (type) {
             case npc0:
-                favorates = {Dish1, Dish2, Dish3};
                 attack = 2;
                 break;
             case npc1:
-                favorates = {Dish2, Dish4};
                 attack = 4;
                 break;
             case npc2:
-                favorates = {Dish3, Dish4};
                 attack = 6;
                 break;
             case npc3:
-                favorates = {Dish5};
                 attack = 8;
                 break;
         }
@@ -37,8 +34,9 @@ public:
 
     npc_type type;
     glm::vec2 position, init_position;
-    glm::vec2 radius = glm::vec2(80.0f, 120.0f);
-    glm::vec2 velocity = glm::vec2(0.0f, 60.0f);
+
+    glm::vec2 radius = glm::vec2(90.0f, 135.0f);
+    glm::vec2 velocity = glm::vec2(50.0f, 60.0f);
     std::vector<dish_type> favorates;
     int attack;
     bool eat = false;
