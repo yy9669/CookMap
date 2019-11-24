@@ -581,8 +581,8 @@ void StoryMode::enter_scene(float elapsed) {
                 continue;
             if (collision(position, radius, box, box_radius)) {
                 resolve_collision(position, radius, box, box_radius, velocity);
-                player.health -= npcs[i]->attack;
-                player.health = max(0,player.health);
+//                player.health -= npcs[i]->attack;
+//                player.health = max(0,player.health);
                 if (position.x <= npcs[i]->position.x)
                     velocity.x = -200.0f;
                 else
@@ -719,9 +719,6 @@ void StoryMode::enter_scene(float elapsed) {
 
         }
     }
-    if (!winning && player.health == 0) {
-        lose = true;
-    }
 }
 
 
@@ -853,8 +850,12 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 }
             }
 
-            for (unsigned i = 0; i < backpack.size(); i++) 
+            for (unsigned i = 0; i < backpack.size(); i++) {
                 draw.draw(ingredient_map[backpack[i]], backpack_pos[i]+view_min);
+                for (int j = ingre_cost[backpack[i]]; j > 0; --j) {
+                    draw.draw(*sprite_health_box, backpack_pos[i]+view_min+glm::vec2(43-j*8, 4), 0.4);
+                }
+            }
 
             for (unsigned i = 0; i < dishes.size(); i++) 
                 draw.draw(dish_map[dishes[i]],  dishes_pos[i]+view_min);
@@ -897,9 +898,6 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             if (winning) {
                 // 'I' is too thin...
                 draw.draw_text("YOU  W I N!", glm::vec2(160.0f, 330.0f)+view_min, 0.4);
-            }
-            if (lose) {
-                draw.draw_text("YOU   LOSE...", glm::vec2(90.0f, 330.0f)+view_min, 0.4);
             }
 
             if (show_instruction) {
@@ -970,6 +968,9 @@ void StoryMode::draw_pot(DrawSprites& draw) {
     for (unsigned i = 0; i < pots.size(); ++i) {
         auto pos = glm::vec2(pot_x, 643-60.f*i)+view_min;
         draw.draw(ingredient_map[pots[i]], pos);
+        for (int j = ingre_cost[pots[i]]; j > 0; --j) {
+            draw.draw(*sprite_health_box, glm::vec2(pot_x, 643-60.f*i)+view_min+glm::vec2(43-j*8, 4), 0.4);
+        }
     }
 }
 
@@ -986,6 +987,9 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
             auto pos = glm::vec2(677-120+60.f*j, 631-60.f*i)+view_min;
             if (recipes[i].show[j]) {
                 draw.draw(ingredient_map[recipes[i].ingredients[j]], pos);
+                for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
+                    draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
+                }
             } else {
                 draw.draw(*sprite_item_question, pos);
             }
@@ -994,5 +998,8 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
         draw.draw(*sprite_tile_1, pos, glm::vec2(0.05f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
         pos = glm::vec2(885.f-120, 631-60.f*i)+view_min;
         draw.draw(dish_map[recipes[i].dish], pos);
+        for (int k = health_map[recipes[i].dish]; k > 0; --k) {
+            draw.draw(*sprite_health_box, pos+glm::vec2(43-k*4, 2), 0.4);
+        }
     }
 }
