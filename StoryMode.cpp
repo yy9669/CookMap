@@ -365,7 +365,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 
             if (player.state != Left_jump && player.state != Right_jump) {
                 if(controls.up==false && evt.type == SDL_KEYDOWN)
-                    Sound::play(*music_jump,0.5);
+                    Sound::play(*music_jump,0.2);
                 controls.up = (evt.type == SDL_KEYDOWN);
 			    res=true;
             }
