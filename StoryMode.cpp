@@ -241,9 +241,30 @@ StoryMode::StoryMode() {
 
     load_map_file(data_path("map_1.txt"), this);
     gettimeofday(&last_time, NULL);
+    save_state(this);
 }
 
 StoryMode::~StoryMode() {
+}
+
+void StoryMode::save_state(StoryMode* mode) {
+    mode->player_b.health = mode->player.health;
+    mode->backpack_b = mode->backpack;
+    mode->dishes_b = mode->dishes;
+    mode->pots = mode->pots_b;
+}
+
+void StoryMode::load_state(StoryMode* mode) {
+    mode->player.health = mode->player_b.health;
+    mode->backpack = mode->backpack_b;
+    mode->dishes = mode->dishes_b;
+    mode->pots = mode->pots_b;
+}
+
+void StoryMode::restart(StoryMode* mode) {
+    load_map_file(data_path("map_1.txt"), mode);
+    gettimeofday(&mode->last_time, NULL);
+    load_state(mode);
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -392,8 +413,8 @@ void StoryMode::update(float elapsed) {
 
 bool StoryMode::collision(glm::vec2 pos1, glm::vec2 radius1, glm::vec2 pos2, 
     glm::vec2 radius2) {
-    glm::vec2 posmin = glm::vec2(max(pos1.x+9.0f, pos2.x), max(pos1.y, pos2.y));
-    glm::vec2 posmax = glm::vec2(min(pos1.x+9.0f+radius1.x, pos2.x+radius2.x),
+    glm::vec2 posmin = glm::vec2(max(pos1.x, pos2.x), max(pos1.y, pos2.y));
+    glm::vec2 posmax = glm::vec2(min(pos1.x+radius1.x, pos2.x+radius2.x),
                                     min(pos1.y+radius1.y, pos2.y+radius2.y));
     return posmin.x < posmax.x && posmin.y < posmax.y;
 }
@@ -420,7 +441,7 @@ void StoryMode::resolve_collision(glm::vec2 &position, glm::vec2 radius,
     // x direction
     else if (position.x < box.x + box_radius.x &&
         box.x + box_radius.x <= position.x + radius.x) {
-        position.x = box.x + box_radius.x - 9.0f;
+        position.x = box.x + box_radius.x;
         if (velocity.x < 0.0f) {
             velocity.x = 0.0f;
         }
@@ -670,6 +691,11 @@ void StoryMode::enter_scene(float elapsed) {
         if (position.x < 0) {
             position.x = 0;
             velocity.x = 0.0f;
+        }
+        // restart if fall down
+        if (position.y < 0) {
+            restart(this);
+            return;
         }
 	}
 	{
