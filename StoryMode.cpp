@@ -12,6 +12,9 @@
 
 using namespace std;
 
+/////////////////////////////////////////////////////////////// sprite ///////////////////////////////////////////////////
+
+
 Sprite const *sprite_left_select = nullptr;
 Sprite const *sprite_right_select = nullptr;
 Sprite const *sprite_background = nullptr;
@@ -144,9 +147,94 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	return ret;
 });
 
+//////////////////////////////////////////////// music //////////////////////////////////////////////////
+
+Load< Sound::Sample > icon_click(LoadTagDefault, []() -> Sound::Sample *{
+    std::vector< float > data(size_t(48000 * 0.2f), 0.0f);
+    for (uint32_t i = 0; i < data.size(); ++i) {
+        float t = i / float(48000);
+        //phase-modulated sine wave (creates some metal-like sound):
+        data[i] = std::sin(3.1415926f * 2.0f * 440.0f * t + std::sin(3.1415926f * 2.0f * 450.0f * t));
+        //quadratic falloff:
+        data[i] *= 0.3f * std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
+    }
+    return new Sound::Sample(data);
+});
+
+Load< Sound::Sample > icon_clonk(LoadTagDefault, []() -> Sound::Sample *{
+    std::vector< float > data(size_t(48000 * 0.2f), 0.0f);
+    for (uint32_t i = 0; i < data.size(); ++i) {
+        float t = i / float(48000);
+        //phase-modulated sine wave (creates some metal-like sound):
+        data[i] = std::sin(3.1415926f * 2.0f * 220.0f * t + std::sin(3.1415926f * 2.0f * 200.0f * t));
+        //quadratic falloff:
+        data[i] *= 0.3f * std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
+    }
+    return new Sound::Sample(data);
+});
+
 Load< Sound::Sample > music_cold_dunes(LoadTagDefault, []() -> Sound::Sample * {
 	return new Sound::Sample(data_path("cold-dunes.opus"));
 });
+
+Load< Sound::Sample > music_collision(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("collision.opus"));
+});
+
+Load< Sound::Sample > music_eat(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("eat.opus"));
+});
+
+Load< Sound::Sample > music_jump(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("jump.opus"));
+});
+
+Load< Sound::Sample > music_oh_no(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("oh_no.opus"));
+});
+
+Load< Sound::Sample > music_pickup(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pickup.opus"));
+});
+
+Load< Sound::Sample > music_pleasure(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pleasure.opus"));
+});
+
+Load< Sound::Sample > music_pot_cook(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pot_cook.opus"));
+});
+
+Load< Sound::Sample > music_pot_finish(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pot_finish.opus"));
+});
+
+Load< Sound::Sample > music_pot_put(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pot_put.opus"));
+});
+
+Load< Sound::Sample > music_scene1_bgm(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("scene1_bgm.opus"));
+});
+
+Load< Sound::Sample > music_scene2_bgm(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("scene2_bgm.opus"));
+});
+
+Load< Sound::Sample > music_scene3_bgm(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("scene3_bgm.opus"));
+});
+
+Load< Sound::Sample > music_trash(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("trash.opus"));
+});
+
+Load< Sound::Sample > music_win(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("win.opus"));
+});
+
+///////////////////////////////////////////////////// map//////////////////////////////////////
+
 
 bool load_map_file(const string& filename, StoryMode* mode) {
     ifstream f(filename);
@@ -260,6 +348,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 			return true;
 		} else if (evt.key.keysym.scancode == SDL_SCANCODE_W) {
             if (player.state != Left_jump || player.state != Right_jump) {
+                Sound::play(*music_jump);
                 controls.up = (evt.type == SDL_KEYDOWN);
 			    res=true;
             }
@@ -294,15 +383,27 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             ingre_drag_pos = glm::vec2(evt.button.x,draw_width-evt.button.y)+view_min;
         } else if (evt.button.x>= help_x && evt.button.x<=help_x+item_size &&
                    evt.button.y>=help_y && evt.button.y<=help_y+item_size) {
+            if(show_instruction)
+                Sound::play(*icon_click);
+            else
+                Sound::play(*icon_clonk);
             show_instruction =! show_instruction;
             show_pot = false;
             show_recipe = false;
         } else if (evt.button.x>= recipe_x && evt.button.x<=recipe_x+item_size &&
                    evt.button.y>=recipe_y && evt.button.y<=recipe_y+item_size) {
+            if(show_recipe)
+                Sound::play(*icon_click);
+            else
+                Sound::play(*icon_clonk);
             show_recipe = !show_recipe;
             show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=pot_y && evt.button.y<=pot_y+item_size) {
+             if(show_pot)
+                Sound::play(*icon_click);
+            else
+                Sound::play(*icon_clonk);           
             show_pot = !show_pot;
             show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
@@ -386,7 +487,7 @@ void StoryMode::update(float elapsed) {
 	}
 
 	if (!background_music || background_music->stopped) {
-		background_music = Sound::play(*music_cold_dunes, 1.0f);
+		background_music = Sound::play(*music_scene1_bgm, 1.0f);
 	}
 }
 
