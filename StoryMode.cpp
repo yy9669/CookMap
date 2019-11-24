@@ -674,7 +674,7 @@ void StoryMode::enter_scene(float elapsed) {
 						break;
 
                     case part_goal_type:
-                        if (!lose) {
+                        if (!lose && scene_num + 1 == SCENE_TOTAL) {
                             winning = true;
                         }
                         break;
