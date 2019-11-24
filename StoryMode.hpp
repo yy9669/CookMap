@@ -86,20 +86,42 @@ struct StoryMode : Mode {
 	bool winning = false, lose = false;
 
 	std::vector<Recipe> recipes = {
-	    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 5},
-	    {{Item11, Item2}, {true, true}, Dish2, 4},
-    	    {{Item4, Item5}, {true, false}, Dish3, 3},
-        	    {{Item5, Item6}, {true, false}, Dish3, 3},
-        	    {{Item6, Item4}, {true, false}, Dish3, 3},
-	    {{Item12, Item14,Item15}, {true, false, true}, Dish4, 2},
-	    {{Item12, Item8,Item15}, {true, false, true}, Dish4, 2},
-    	    {{Item16,Item17, Item18}, {false, false, false}, Dish5, 6},	    	    
+	    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 5},  // flour, sausage, pepper => pizza
+	    {{Item11, Item2}, {true, true}, Dish2, 4},  // bread, sausage => hot dog
+	    {{Item4, Item5}, {true, false}, Dish3, 3},  // apple, dragon fruit => juice
+        {{Item5, Item6}, {true, false}, Dish3, 3},  // dragon fruit, grape => juice
+        {{Item6, Item4}, {true, false}, Dish3, 3},  // grape, apple => juice
+	    {{Item12, Item14,Item15}, {true, false, true}, Dish4, 2},  // broccoli, avocado, egg => salad
+	    {{Item12, Item8,Item15}, {true, false, true}, Dish4, 2},  // broccoli, tomato, egg => salad
+	    {{Item16,Item17, Item18}, {false, false, false}, Dish5, 6},  // twig, steak, mushroom => bbq
 	};
-	Recipe *cooking_recipe;   // Curently cooked recipe
-	dish_type cooking_dish;   // Curently cooked recipe
+	Recipe *cooking_recipe;   // Currently cooked recipe
+	dish_type cooking_dish;   // Currently cooked recipe
+
+	std::unordered_map<ingredient_type, int> ingre_cost = {
+        {Item1, 1},  // flour
+        {Item2, 2},  // sausage
+        {Item3, 1},  // pepper
+        {Item4, 0},  // apple
+        {Item5, 0},  // dragon fruit
+        {Item6, 0},  // grape
+        {Item7, 0},  // orange
+        {Item8, 0},  // tomato
+        {Item9, 0},  // kiwi
+        {Item10, 0},  // lemon
+        {Item11, 1},  // bread
+        {Item12, 1},  // broccoli
+        {Item13, 1},  // almond
+        {Item14, 1},  // avocado
+        {Item15, 1},  // egg
+        {Item16, 1},  // twig
+        {Item17, 2},  // steak
+        {Item18, 1},  // mushroom
+        {Item19, 1},  // onion
+	};
 
 	bool dish_drag = false, ingre_drag = false, drag_from_backpack;
-	dish_type dragged_dish;		// Curently dragged dish
+	dish_type dragged_dish;		// Currently dragged dish
 	bool show_instruction = true, show_recipe = false, show_pot = false;
 
 	glm::vec2 dish_drag_pos = glm::vec2(0,0);
