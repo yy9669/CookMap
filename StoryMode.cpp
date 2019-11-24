@@ -259,8 +259,10 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 			controls.right = (evt.type == SDL_KEYDOWN);
 			return true;
 		} else if (evt.key.keysym.scancode == SDL_SCANCODE_W) {
-			controls.up = (evt.type == SDL_KEYDOWN);
-			res=true;
+            if (player.state != Left_jump || player.state != Right_jump) {
+                controls.up = (evt.type == SDL_KEYDOWN);
+			    res=true;
+            }
 		}
 	}
 
@@ -489,10 +491,10 @@ void StoryMode::enter_scene(float elapsed) {
         glm::vec2 &radius = player.radius;
 
 		glm::vec2 shove = glm::vec2(0.0f);
-		if (controls.left) shove.x -= 20.0f;
-		if (controls.right) shove.x += 20.0f;
+		if (controls.left) shove.x -= 28.0f;
+		if (controls.right) shove.x += 28.0f;
 		if (controls.up && abs(velocity.y) < 1e-4) {
-		    shove.y += 39.5f;
+		    shove.y += 40.5f;
             controls.up = false;
 		}
 		shove *= 10.0f;
