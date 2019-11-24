@@ -1,7 +1,14 @@
 cookmap.xcf?background 0 0 1024 768 0 +768 background
 cookmap.xcf?background_2 0 0 1024 768 0 +768 background_2
+cookmap.xcf?background_3 0 0 1024 768 0 +768 background_3
+cookmap.xcf?guard_4 0 0 +90 +135 +0 +135 guard_4
 cookmap.xcf?guard_2 0 100 +90 +135 +0 +135 guard_2
 cookmap.xcf?guard_2_idle 0 250 +90 +135 +0 +135 guard_2_idle
+cookmap.xcf?guard_3 0 400 +90 +135 +0 +135 guard_3
+cookmap.xcf?guard_3_idle 0 550 +90 +135 +0 +135 guard_3_idle
+cookmap.xcf?guard_4_idle 100 0 +90 +135 +0 +135 guard_4_idle
+cookmap.xcf?guard_5 200 0 +90 +135 +0 +135 guard_5
+cookmap.xcf?guard_5_idle 300 0 +90 +135 +0 +135 guard_5_idle
 cookmap.xcf?chef_rstand 100 100 +40 +80 +0 +80 chef_rstand
 cookmap.xcf?item_1 100 200 +48 +48 +0 +48 item_1
 cookmap.xcf?item_2 100 300 +48 +48 +0 +48 item_2
@@ -54,3 +61,20 @@ cookmap.xcf?chef_rwalk2 850 200 +40 +80 +0 +80 chef_rwalk2
 cookmap.xcf?chef_rjump 850 300 +40 +80 +0 +80 chef_rjump
 cookmap.xcf?bonfire 900 100 +48 +48 +0 +48 bonfire
 cookmap.xcf?question 900 200 +48 +48 +0 +48 question
+cookmap.xcf?tile_17 900 300 +48 +48 +0 +48 tile_17
+cookmap.xcf?tile_18 900 350 +48 +48 +0 +48 tile_18
+cookmap.xcf?tile_19 900 400 +48 +48 +0 +48 tile_19
+cookmap.xcf?tile_20 900 450 +48 +48 +0 +48 tile_20
+cookmap.xcf?tile_21 900 500 +48 +48 +0 +48 tile_21
+cookmap.xcf?tile_22 900 550 +48 +48 +0 +48 tile_22
+cookmap.xcf?tile_23 900 600 +48 +48 +0 +48 tile_23
+cookmap.xcf?tile_24 900 650 +48 +48 +0 +48 tile_24
+cookmap.xcf?tile_9 960 100 +48 +48 +0 +48 tile_9
+cookmap.xcf?tile_10 960 150 +48 +48 +0 +48 tile_10
+cookmap.xcf?tile_11 960 200 +48 +48 +0 +48 tile_11
+cookmap.xcf?tile_12 960 250 +48 +48 +0 +48 tile_12
+cookmap.xcf?tile_13 960 300 +48 +48 +0 +48 tile_13
+cookmap.xcf?tile_14 960 350 +48 +48 +0 +48 tile_14
+cookmap.xcf?tile_15 960 400 +48 +48 +0 +48 tile_15
+cookmap.xcf?tile_16 960 450 +48 +48 +0 +48 tile_16
+
