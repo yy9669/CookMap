@@ -212,7 +212,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                     part = new Ingredient((ingredient_type)(s[x] - '1'));
                     break;
                 default:
-                    cerr << "Error: map type unrecognized" << endl;
+                    cerr << "Error: map type " << s[x] << " unrecognized" << endl;
                     return false;
             }
             part->set_pos(TILE_SIZE*x, TILE_SIZE*(height-1-y));
@@ -246,7 +246,7 @@ void StoryMode::save_state(StoryMode* mode) {
     mode->player_b.health = mode->player.health;
     mode->backpack_b = mode->backpack;
     mode->dishes_b = mode->dishes;
-    mode->pots = mode->pots_b;
+    mode->pots_b = mode->pots;
 }
 
 void StoryMode::load_state(StoryMode* mode) {
@@ -257,7 +257,7 @@ void StoryMode::load_state(StoryMode* mode) {
 }
 
 void StoryMode::restart(StoryMode* mode) {
-    load_map_file(data_path("map_1.txt"), mode);
+    load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), mode);
     gettimeofday(&mode->last_time, NULL);
     load_state(mode);
 }
@@ -513,9 +513,9 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.right) shove.x += 28.0f;
         jump_interval = max(0.f, jump_interval - elapsed);
 		if (controls.up && abs(velocity.y) < 1e-4 && jump_interval == 0.f) {
-		    shove.y += 40.5f;
+//		    shove.y += 40.5f;
             // Super jump
-            // shove.y += 60.5f;
+             shove.y += 60.5f;
             controls.up = false;
             jump_interval = 1.2f;  // allow jump after 1.2 secs
 		}
@@ -634,7 +634,13 @@ void StoryMode::enter_scene(float elapsed) {
 
                     case part_goal_type:
                         if (!lose) {
-                            winning = true;
+                            if (scene_num + 1 < SCENE_TOTAL) {
+                                save_state(this);
+                                scene_num++;
+                                restart(this);
+                            } else {
+                                winning = true;
+                            }
                         }
                         break;
 
