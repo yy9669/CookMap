@@ -1,4 +1,4 @@
-cookmap.xcf?background 0 0 1024 768 0 +768 background
+cookmap.xcf?background 0 0 1024 768 0 +768 background_1
 cookmap.xcf?background_2 0 0 1024 768 0 +768 background_2
 cookmap.xcf?background_3 0 0 1024 768 0 +768 background_3
 cookmap.xcf?black 0 0 1024 768 0 +768 black
@@ -53,10 +53,16 @@ cookmap.xcf?item_17 700 100 +48 +48 +0 +48 item_17
 cookmap.xcf?item_18 700 200 +48 +48 +0 +48 item_18
 cookmap.xcf?item_19 700 300 +48 +48 +0 +48 item_19
 cookmap.xcf?waste 700 400 +48 +48 +0 +48 waste
+cookmap.xcf?item_20 700 500 +48 +48 +0 +48 item_20
+cookmap.xcf?item_21 700 600 +48 +48 +0 +48 item_21
+cookmap.xcf?item_22 700 700 +48 +48 +0 +48 item_22
 cookmap.xcf?chef_lstand 800 100 +40 +80 +0 +80 chef_lstand
 cookmap.xcf?chef_lwalk1 800 200 +40 +80 +0 +80 chef_lwalk1
 cookmap.xcf?chef_lwalk2 800 300 +40 +80 +0 +80 chef_lwalk2
 cookmap.xcf?chef_ljump 800 400 +40 +80 +0 +80 chef_ljump
+cookmap.xcf?dish_6 800 500 +48 +48 +0 +48 dish_6
+cookmap.xcf?dish_7 800 600 +48 +48 +0 +48 dish_7
+cookmap.xcf?dish_8 800 700 +48 +48 +0 +48 dish_8
 cookmap.xcf?chef_rwalk1 850 100 +40 +80 +0 +80 chef_rwalk1
 cookmap.xcf?chef_rwalk2 850 200 +40 +80 +0 +80 chef_rwalk2
 cookmap.xcf?chef_rjump 850 300 +40 +80 +0 +80 chef_rjump
@@ -70,6 +76,7 @@ cookmap.xcf?tile_21 900 500 +48 +48 +0 +48 tile_21
 cookmap.xcf?tile_22 900 550 +48 +48 +0 +48 tile_22
 cookmap.xcf?tile_23 900 600 +48 +48 +0 +48 tile_23
 cookmap.xcf?tile_24 900 650 +48 +48 +0 +48 tile_24
+cookmap.xcf?dish_9 900 700 +48 +48 +0 +48 dish_9
 cookmap.xcf?tile_9 960 100 +48 +48 +0 +48 tile_9
 cookmap.xcf?tile_10 960 150 +48 +48 +0 +48 tile_10
 cookmap.xcf?tile_11 960 200 +48 +48 +0 +48 tile_11
