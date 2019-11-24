@@ -1,4 +1,5 @@
 cookmap.xcf?background 0 0 1024 768 0 +768 background
+cookmap.xcf?background_2 0 0 1024 768 0 +768 background_2
 cookmap.xcf?guard_2 0 100 +90 +135 +0 +135 guard_2
 cookmap.xcf?guard_2_idle 0 250 +90 +135 +0 +135 guard_2_idle
 cookmap.xcf?chef_rstand 100 100 +40 +80 +0 +80 chef_rstand
