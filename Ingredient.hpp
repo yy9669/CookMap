@@ -21,7 +21,10 @@ enum ingredient_type {
     Item16,
     Item17,
     Item18,
-    Item19
+    Item19,
+    Item20,
+    Item21,
+    Item22
 };
 
 class Ingredient : public Part {

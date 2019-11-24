@@ -87,8 +87,8 @@ struct StoryMode : Mode {
 	float jump_interval = 0.f;
 
 	std::vector<Recipe> recipes = {
+		{{Item11, Item2}, {true, true}, Dish2, 4},  // bread, sausage => hot dog
 	    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 5},  // flour, sausage, pepper => pizza
-	    {{Item11, Item2}, {true, true}, Dish2, 4},  // bread, sausage => hot dog
 	    {{Item4, Item5}, {true, false}, Dish3, 3},  // apple, dragon fruit => juice
         {{Item5, Item6}, {true, false}, Dish3, 3},  // dragon fruit, grape => juice
         {{Item6, Item4}, {true, false}, Dish3, 3},  // grape, apple => juice
@@ -119,6 +119,9 @@ struct StoryMode : Mode {
         {Item17, 2},  // steak
         {Item18, 1},  // mushroom
         {Item19, 1},  // onion
+        {Item20, 1},  // fish
+        {Item21, 1},  // water
+        {Item22, 1},  // milk
 	};
 
 	bool dish_drag = false, ingre_drag = false, drag_from_backpack;
