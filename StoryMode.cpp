@@ -601,7 +601,8 @@ void StoryMode::enter_scene(float elapsed) {
 
 					case part_ingredient_type:
                         ingre = reinterpret_cast<Ingredient*>(parts[i][j]);
-                        if (!ingre->obtained && backpack.size() < item_num) {
+                        if (!ingre->obtained && ((int)backpack.size() < item_num-1 ||
+                            ((int)backpack.size() == item_num-1 && !ingre_drag))) {
                             ingre->obtained = true;
                             backpack.push_back(ingre->type);
                         }
