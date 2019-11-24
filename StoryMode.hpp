@@ -154,8 +154,7 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
-
-
+    int scene_num = 0;
 	//------ background music -------
 	std::shared_ptr< Sound::PlayingSample > background_music;
 
