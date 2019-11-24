@@ -12,9 +12,12 @@
 
 using namespace std;
 
+const int SCENE_TOTAL = 3;
+const int TILE_TOTAL = 8;
+
 Sprite const *sprite_left_select = nullptr;
 Sprite const *sprite_right_select = nullptr;
-Sprite const *sprite_background = nullptr;
+Sprite const *sprite_background[SCENE_TOTAL];
 
 Sprite const *sprite_chef_left_stand = nullptr;
 Sprite const *sprite_chef_left_walk1 = nullptr;
@@ -53,35 +56,29 @@ Sprite const *sprite_dish_3 = nullptr;
 Sprite const *sprite_dish_4 = nullptr;
 Sprite const *sprite_dish_5 = nullptr;
 
-Sprite const *sprite_npc_1 = nullptr;
-Sprite const *sprite_npc_1_idle = nullptr;
-Sprite const *sprite_npc_2 = nullptr;
-Sprite const *sprite_npc_2_idle = nullptr;
+Sprite const *sprite_npc[npc_total];
+Sprite const *sprite_npc_idle[npc_total];
 
 Sprite const *sprite_thinking = nullptr;
 
 Sprite const *sprite_health_box = nullptr;
 Sprite const *sprite_exit = nullptr;
-Sprite const *sprite_tile_1 = nullptr;
-Sprite const *sprite_tile_2 = nullptr;
-Sprite const *sprite_tile_3 = nullptr;
-Sprite const *sprite_tile_4 = nullptr;
-Sprite const *sprite_tile_5 = nullptr;
-Sprite const *sprite_tile_6 = nullptr;
-Sprite const *sprite_tile_7 = nullptr;
-Sprite const *sprite_tile_8 = nullptr;
+Sprite const *sprite_tile[SCENE_TOTAL][TILE_TOTAL];
 Sprite const *sprite_instruction_panel = nullptr;
 Sprite const *sprite_helper = nullptr;
 Sprite const *sprite_recipe = nullptr;
 Sprite const *sprite_pot_normal = nullptr;
 Sprite const *sprite_pot_cooking = nullptr;
 Sprite const *sprite_fire = nullptr;
+Sprite const *sprite_black = nullptr;
 
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
 
-    sprite_background = &ret->lookup("background");
+	for (int i = 0; i < SCENE_TOTAL; ++i) {
+        sprite_background[i] = &ret->lookup("background_" + to_string(i+1));
+	}
     sprite_chef_left_stand = &ret->lookup("chef_lstand");
     sprite_chef_left_walk1 = &ret->lookup("chef_lwalk1");
     sprite_chef_left_walk2 = &ret->lookup("chef_lwalk2");
@@ -118,29 +115,27 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_dish_4 = &ret->lookup("dish_4"); 
     sprite_dish_5 = &ret->lookup("dish_5"); 
 
-    sprite_npc_1 = &ret->lookup("guard_1");
-    sprite_npc_1_idle = &ret->lookup("guard_1_idle");
-    sprite_npc_2 = &ret->lookup("guard_2");
-    sprite_npc_2_idle = &ret->lookup("guard_2_idle");
+    for (int i = 0; i < npc_total; ++i) {
+        sprite_npc[i] = &ret->lookup(string("guard_") + to_string(i+1));
+        sprite_npc_idle[i] = &ret->lookup(string("guard_") + to_string(i+1) + "_idle");
+    }
     sprite_thinking = &ret->lookup("thinking");
 
     sprite_health_box = &ret->lookup("health_box");
     sprite_exit = &ret->lookup("exit");
-    sprite_tile_1 = &ret->lookup("tile_1");
-    sprite_tile_2 = &ret->lookup("tile_2");
-    sprite_tile_3 = &ret->lookup("tile_3");
-    sprite_tile_4 = &ret->lookup("tile_4");
-    sprite_tile_5 = &ret->lookup("tile_5");
-    sprite_tile_6 = &ret->lookup("tile_6");
-    sprite_tile_7 = &ret->lookup("tile_7");
-    sprite_tile_8 = &ret->lookup("tile_8");
+    for (int i = 0; i < SCENE_TOTAL; ++i) {
+        for (int j = 0; j < TILE_TOTAL; ++j) {
+            sprite_tile[i][j] =  &ret->lookup("tile_" + to_string(i*TILE_TOTAL+j+1));
+        }
+    }
     sprite_instruction_panel = &ret->lookup("panel_1");
     sprite_helper = &ret->lookup("help");
-    sprite_recipe = &ret->lookup("help");  // to be changed
-    sprite_pot_normal = &ret->lookup("pot_normal");  // to be changed
-    sprite_pot_cooking = &ret->lookup("pot_cooking");  // to be changed
-    sprite_fire = &ret->lookup("bonfire");  // to be changed
-    sprite_item_question = &ret->lookup("question");  // to be changed
+    sprite_recipe = &ret->lookup("help");
+    sprite_pot_normal = &ret->lookup("pot_normal");
+    sprite_pot_cooking = &ret->lookup("pot_cooking");
+    sprite_fire = &ret->lookup("bonfire");
+    sprite_item_question = &ret->lookup("question");
+    sprite_black = &ret->lookup("black");
 	return ret;
 });
 
@@ -217,7 +212,7 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                     part = new Ingredient((ingredient_type)(s[x] - '1'));
                     break;
                 default:
-                    cerr << "Error: map type unrecognized" << endl;
+                    cerr << "Error: map type " << s[x] << " unrecognized" << endl;
                     return false;
             }
             part->set_pos(TILE_SIZE*x, TILE_SIZE*(height-1-y));
@@ -251,7 +246,7 @@ void StoryMode::save_state(StoryMode* mode) {
     mode->player_b.health = mode->player.health;
     mode->backpack_b = mode->backpack;
     mode->dishes_b = mode->dishes;
-    mode->pots = mode->pots_b;
+    mode->pots_b = mode->pots;
 }
 
 void StoryMode::load_state(StoryMode* mode) {
@@ -262,7 +257,7 @@ void StoryMode::load_state(StoryMode* mode) {
 }
 
 void StoryMode::restart(StoryMode* mode) {
-    load_map_file(data_path("map_1.txt"), mode);
+    load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), mode);
     gettimeofday(&mode->last_time, NULL);
     load_state(mode);
 }
@@ -281,10 +276,8 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 			return true;
 		} else if (evt.key.keysym.scancode == SDL_SCANCODE_W ||
 		           evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-            if (player.state != Left_jump || player.state != Right_jump) {
-                controls.up = (evt.type == SDL_KEYDOWN);
-			    res=true;
-            }
+            controls.up = (evt.type == SDL_KEYDOWN);
+            res=true;
 		}
 	}
 
@@ -520,9 +513,9 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.right) shove.x += 28.0f;
         jump_interval = max(0.f, jump_interval - elapsed);
 		if (controls.up && abs(velocity.y) < 1e-4 && jump_interval == 0.f) {
-		    shove.y += 40.5f;
+//		    shove.y += 40.5f;
             // Super jump
-            // shove.y += 60.5f;
+             shove.y += 60.5f;
             controls.up = false;
             jump_interval = 1.2f;  // allow jump after 1.2 secs
 		}
@@ -641,7 +634,13 @@ void StoryMode::enter_scene(float elapsed) {
 
                     case part_goal_type:
                         if (!lose) {
-                            winning = true;
+                            if (scene_num + 1 < SCENE_TOTAL) {
+                                save_state(this);
+                                scene_num++;
+                                restart(this);
+                            } else {
+                                winning = true;
+                            }
                         }
                         break;
 
@@ -777,7 +776,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 		glm::vec2 bl = glm::vec2(view_min.x, view_min.y);
 
 		if (game_mode == Walking) {
-            draw.draw(*sprite_background, bl);
+            draw.draw(*sprite_background[scene_num], bl);
 
             for (unsigned i = 0; i < parts.size(); i++) {
                 for (unsigned j = 0; j < parts[i].size(); j++) {
@@ -789,28 +788,28 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                             grd = reinterpret_cast<Ground*>(parts[i][j]);
                             switch (grd->g_type) {
                             case 'g':
-                                draw.draw(*sprite_tile_1, parts[i][j]->position);
+                                draw.draw(*sprite_tile[scene_num][0], parts[i][j]->position);
                                 break;
                             case 'w':
-                                draw.draw(*sprite_tile_2, parts[i][j]->position);
+                                draw.draw(*sprite_tile[scene_num][1], parts[i][j]->position);
                                 break;
                             case 'l':
-                                draw.draw(*sprite_tile_3, parts[i][j]->position);
+                                draw.draw(*sprite_tile[scene_num][2], parts[i][j]->position);
                                 break;
                             case 'r':
-                                draw.draw(*sprite_tile_4, parts[i][j]->position);
+                                draw.draw(*sprite_tile[scene_num][3], parts[i][j]->position);
                                 break;
                             case 'z':
-                                draw.draw(*sprite_tile_5, parts[i][j]->position);
+                                draw.draw(*sprite_tile[scene_num][4], parts[i][j]->position);
                                 break;
                             case 'x':
-                                draw.draw(*sprite_tile_6, parts[i][j]->position);
+                                draw.draw(*sprite_tile[scene_num][5], parts[i][j]->position);
                                 break;
                             case 'c':
-                                draw.draw(*sprite_tile_7, parts[i][j]->position);
+                                draw.draw(*sprite_tile[scene_num][6], parts[i][j]->position);
                                 break;
                             case 'v':
-                                draw.draw(*sprite_tile_8, parts[i][j]->position);
+                                draw.draw(*sprite_tile[scene_num][7], parts[i][j]->position);
                                 break;
                             }
                             break;
@@ -844,54 +843,14 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
 
             for (unsigned i = 0; i < npcs.size(); i++) {
-                switch (npcs[i]->type)
-                {
-                    case npc0:
-                        if (npcs[i]->eat)
-                            draw.draw(*sprite_npc_1_idle, npcs[i]->position);
-                        else{
-                            draw.draw(*sprite_npc_1, npcs[i]->position);
-                            draw.draw(*sprite_thinking, 
-                                glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
-                            draw.draw(dish_map[npcs[i]->favorates[0]], 
-                                glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
-                        }
-                        break;
-                    case npc1:
-                        if (npcs[i]->eat)
-                            draw.draw(*sprite_npc_2_idle, npcs[i]->position);
-                        else{
-                            draw.draw(*sprite_npc_2, npcs[i]->position);
-                            draw.draw(*sprite_thinking, 
-                                glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
-                            draw.draw(dish_map[npcs[i]->favorates[0]], 
-                                glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
-                        }
-                        break;
-                    case npc2:
-                        if (npcs[i]->eat)
-                            draw.draw(*sprite_npc_1_idle, npcs[i]->position);
-                        else{
-                            draw.draw(*sprite_npc_1, npcs[i]->position);
-                            draw.draw(*sprite_thinking, 
-                                glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
-                            draw.draw(dish_map[npcs[i]->favorates[0]], 
-                                glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
-                        }
-                        break;
-                    case npc3:
-                        if (npcs[i]->eat)
-                            draw.draw(*sprite_npc_1_idle, npcs[i]->position);
-                        else{
-                            draw.draw(*sprite_npc_1, npcs[i]->position);
-                            draw.draw(*sprite_thinking, 
-                                glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
-                            draw.draw(dish_map[npcs[i]->favorates[0]], 
-                                glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
-                        }
-                        break;
-                    default:
-                        break;
+                if (npcs[i]->eat)
+                    draw.draw(*sprite_npc_idle[npcs[i]->type], npcs[i]->position);
+                else{
+                    draw.draw(*sprite_npc[npcs[i]->type], npcs[i]->position);
+                    draw.draw(*sprite_thinking,
+                              glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
+                    draw.draw(dish_map[npcs[i]->favorates[0]],
+                              glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
                 }
             }
 
@@ -1002,7 +961,7 @@ void StoryMode::draw_pot(DrawSprites& draw) {
                       glm::vec2(pot_x+item_size*i, 645-item_size*j)+view_min);
         }
     }
-    draw.draw(*sprite_tile_1, glm::vec2(pot_x, 510.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+    draw.draw(*sprite_tile[scene_num][0], glm::vec2(pot_x, 510.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
     if (pot_time_left > 0.f) {
         string tmp = std::to_string(int(pot_time_left+0.999f));
         draw.draw_text(tmp, glm::vec2(pot_x+15, 461.f)+view_min, 0.07);
@@ -1040,7 +999,7 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
             }
         }
         auto pos = glm::vec2(865.f-120, 631-60.f*i)+view_min;
-        draw.draw(*sprite_tile_1, pos, glm::vec2(0.05f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+        draw.draw(*sprite_tile[scene_num][0], pos, glm::vec2(0.05f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
         pos = glm::vec2(885.f-120, 631-60.f*i)+view_min;
         draw.draw(dish_map[recipes[i].dish], pos);
         for (int k = health_map[recipes[i].dish]; k > 0; --k) {
