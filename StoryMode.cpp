@@ -689,27 +689,32 @@ void StoryMode::enter_scene(float elapsed) {
             pot_time_left=5;
             cooking_dish=Dish0;
             unordered_map<ingredient_type, int> num;
+            int health_cost = 0;
             for (auto i : pots) {
                 num[i]++;
+                health_cost += ingre_cost[i];
             }
-            for (auto &recipe : recipes) {
-                auto num2 = num;
-                bool ok = true;
-                for (auto i : recipe.ingredients) {
-                    if (num2.count(i) == 0 || num2[i] == 0) {
-                        ok = false;
+            if (player.health >= health_cost) {
+                player.health -= health_cost;
+                for (auto &recipe : recipes) {
+                    auto num2 = num;
+                    bool ok = true;
+                    for (auto i : recipe.ingredients) {
+                        if (num2.count(i) == 0 || num2[i] == 0) {
+                            ok = false;
+                            break;
+                        }
+                        num2[i]--;
+                    }
+                    if (ok) {
+                        cooking_recipe=&recipe;
+                        cooking_dish = recipe.dish;
+                        pot_time_left = recipe.cost;
                         break;
                     }
-                    num2[i]--;
                 }
-                if (ok) {
-                    cooking_recipe=&recipe;
-                    cooking_dish = recipe.dish;
-                    pot_time_left = recipe.cost;
-                    break;
-                }
+                pots.clear();
             }
-            pots.clear();
         }
         pot_time_left -= elapsed;
         if (pot_time_left <= 0.f) {
