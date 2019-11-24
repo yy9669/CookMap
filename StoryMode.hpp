@@ -35,6 +35,7 @@ struct StoryMode : Mode {
 	virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
+	void restart(StoryMode* mode);
 	//called to create menu for current scene:
 	void enter_scene(float elapsed);
 	bool collision(glm::vec2 pos1, glm::vec2 radius1, glm::vec2 pos2, glm::vec2 radius2);
@@ -158,6 +159,13 @@ struct StoryMode : Mode {
     	int help_y=10;
 
 
+	// backup state
+	Chef player_b;
+	std::vector<ingredient_type> backpack_b;
+	std::vector<dish_type> dishes_b;
+    std::vector<ingredient_type> pots_b;
+	void save_state(StoryMode* mode);
+	void load_state(StoryMode* mode);
 
 	//------ background music -------
 	std::shared_ptr< Sound::PlayingSample > background_music;
