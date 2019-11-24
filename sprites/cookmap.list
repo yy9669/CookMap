@@ -8,7 +8,7 @@ cookmap.xcf?item_3 100 400 +48 +48 +0 +48 item_3
 cookmap.xcf?dish_1 100 500 +48 +48 +0 +48 dish_1
 cookmap.xcf?guard_1 100 600 +90 +135 +0 +135 guard_1
 cookmap.xcf?guard_1_idle 200 600 +90 +135 +0 +135 guard_1_idle
-cookmap.xcf?health_box 200 100 +20 +24 +0 +24 health_box
+cookmap.xcf?health_box 200 100 +24 +24 +0 +24 health_box
 cookmap.xcf?exit 200 200 +48 +48 +0 +48 exit
 cookmap.xcf?tile_1 200 300 +48 +48 +0 +48 tile_1
 cookmap.xcf?tile_2 200 400 +48 +48 +0 +48 tile_2

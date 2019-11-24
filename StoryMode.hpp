@@ -113,7 +113,7 @@ struct StoryMode : Mode {
     	int item_size=48;
     	int item_inteval=55;
 
-    	float item_num=5;
+        int item_num=5;
     	int item_start_x=335;
     	int item_start_y=10;
 
