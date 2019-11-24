@@ -363,6 +363,9 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                    int((evt.button.x-item_start_x)/item_inteval) >= int(backpack.size() ) ) {
             // drag to backpack
             backpack.push_back(dragging_ingre_type);
+        } else if (ingre_drag_pos.x >= garbage_x+view_min.x && ingre_drag_pos.x <= garbage_x+item_size+view_min.x  &&
+            (draw_width-ingre_drag_pos.y) >= garbage_y+view_min.y && (draw_width-ingre_drag_pos.y) <= garbage_y+item_size+view_min.y) {
+            // discard ingredient
         } else{
             if (drag_from_backpack) {
                 backpack.push_back(dragging_ingre_type);
@@ -785,6 +788,14 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                             ingre = reinterpret_cast<Ingredient*>(parts[i][j]);
                             if (!ingre->obtained) {
                                 draw.draw(ingredient_map[ingre->type], parts[i][j]->position);
+                            } else {
+                                draw.draw(ingredient_map[ingre->type], glm::vec2(parts[i][j]->position.x, parts[i][j]->position.y - item_size + ingre->grow_count));
+                                ingre->grow_count += 0.02;
+                                if (ingre->grow_count >= item_size) {
+                                    ingre->grow_count = item_size;
+                                    ingre->obtained = false;
+                                    ingre->grow_count = 0;
+                                }
                             }
                             break;
 

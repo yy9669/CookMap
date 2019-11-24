@@ -36,4 +36,5 @@ public:
 
     ingredient_type type;
     bool obtained = false;
+    float grow_count = 0;
 };
