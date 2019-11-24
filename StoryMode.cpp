@@ -959,7 +959,7 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
         }
     }
     draw.draw_text(
-            "a,d   to   move,   w   to   jump\n"
+            "a,d   to   move,   w, space to jump\n"
             "click   to   open   the recipe\n"
             "open   pot   and   drag   items   i n\n"
             "click   fire   to   cook\n"
