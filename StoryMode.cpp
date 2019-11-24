@@ -389,8 +389,8 @@ void StoryMode::update(float elapsed) {
 
 bool StoryMode::collision(glm::vec2 pos1, glm::vec2 radius1, glm::vec2 pos2, 
     glm::vec2 radius2) {
-    glm::vec2 posmin = glm::vec2(max(pos1.x, pos2.x), max(pos1.y, pos2.y));
-    glm::vec2 posmax = glm::vec2(min(pos1.x+radius1.x, pos2.x+radius2.x),
+    glm::vec2 posmin = glm::vec2(max(pos1.x+9.0f, pos2.x), max(pos1.y, pos2.y));
+    glm::vec2 posmax = glm::vec2(min(pos1.x+9.0f+radius1.x, pos2.x+radius2.x),
                                     min(pos1.y+radius1.y, pos2.y+radius2.y));
     return posmin.x < posmax.x && posmin.y < posmax.y;
 }
@@ -417,7 +417,7 @@ void StoryMode::resolve_collision(glm::vec2 &position, glm::vec2 radius,
     // x direction
     else if (position.x < box.x + box_radius.x &&
         box.x + box_radius.x <= position.x + radius.x) {
-        position.x = box.x + box_radius.x;
+        position.x = box.x + box_radius.x - 9.0f;
         if (velocity.x < 0.0f) {
             velocity.x = 0.0f;
         }
@@ -495,6 +495,8 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.right) shove.x += 28.0f;
 		if (controls.up && abs(velocity.y) < 1e-4) {
 		    shove.y += 40.5f;
+            // Super jump
+            // shove.y += 60.5f;
             controls.up = false;
 		}
 		shove *= 10.0f;
@@ -511,8 +513,8 @@ void StoryMode::enter_scene(float elapsed) {
             velocity = glm::vec2(velocity.x, -16.0f);
         }
         // bound the negative velocity to avoid collision error
-        if (velocity.y < -260.0f) {
-            velocity = glm::vec2(velocity.x, -260.0f);
+        if (velocity.y < -500.0f) {
+            velocity = glm::vec2(velocity.x, -500.0f);
         }
 
         gettimeofday(&curt_time, NULL);
@@ -568,7 +570,7 @@ void StoryMode::enter_scene(float elapsed) {
             }
         }
 
-        position = position + velocity * elapsed;
+        position = position + velocity * elapsed * (float)0.5;
 
         //---- collision handling ----
         // Npc detection
@@ -590,6 +592,41 @@ void StoryMode::enter_scene(float elapsed) {
 
 		// Environment detection
 		for (unsigned i = 0; i < parts.size(); i++) {
+			for (unsigned j = 0; j < parts[i].size(); j++) {
+                glm::vec2 box = parts[i][j]->position;
+                glm::vec2 box_radius = parts[i][j]->radius;
+				if (collision(position, radius, box, box_radius)) {
+                    Ingredient *ingre;
+					switch (parts[i][j]->id())
+					{
+					case part_ground_type:
+						resolve_collision(position, radius, box, box_radius, velocity);
+						break;
+
+					case part_ingredient_type:
+                        ingre = reinterpret_cast<Ingredient*>(parts[i][j]);
+                        if (!ingre->obtained && ((int)backpack.size() < item_num-1 ||
+                            ((int)backpack.size() == item_num-1 && !ingre_drag))) {
+                            ingre->obtained = true;
+                            backpack.push_back(ingre->type);
+                        }
+						break;
+
+                    case part_goal_type:
+                        if (!lose) {
+                            winning = true;
+                        }
+                        break;
+
+					default:
+						break;
+					}
+				}
+			}
+		}
+
+        position = position + velocity * elapsed * (float)0.5;
+        for (unsigned i = 0; i < parts.size(); i++) {
 			for (unsigned j = 0; j < parts[i].size(); j++) {
                 glm::vec2 box = parts[i][j]->position;
                 glm::vec2 box_radius = parts[i][j]->radius;
