@@ -723,8 +723,8 @@ void StoryMode::enter_scene(float elapsed) {
                         break;
                     case npc1:
                             position_i = position_i + velocity_i * elapsed;
-                            if (position_i.x <= init_position_i.x) {
-                                position_i.x = init_position_i.x;
+                            if (position_i.x <= init_position_i.x - 20.0f) {
+                                position_i.x = init_position_i.x - 20.0f;
                                 velocity_i.x = -velocity_i.x;
                             } else if (position_i.x > init_position_i.x 
                                 && position_i.x - init_position_i.x > 30.0f) {
@@ -1299,7 +1299,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.f && restarting==1) {
                 restarting = 2;
-                scene_transition = 2.f;
+                scene_transition = 2.3f;
                 restart(this);
                 background_music->stop();
                 last_time = timepoint;
@@ -1308,10 +1308,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 if (!restarting) {
                     draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
                 } else {
-                    draw.draw_text("RESTARTING", glm::vec2(220.0f, 330.0f)+view_min, 0.25);
+                    draw.draw_text("LOADING    FROM", glm::vec2(205.0f, 395.0f)+view_min, 0.2);
+                    draw.draw_text("LAST    CHECKPOINT", glm::vec2(155.0f, 285.0f)+view_min, 0.2);
                 }
             }
-
 		} else {
             // cooking
 		}
@@ -1346,12 +1346,16 @@ void StoryMode::draw_pot(DrawSprites& draw) {
                       glm::vec2(pot_x+item_size*i, 645-item_size*j)+view_min);
         }
     }
-    draw.draw(*sprite_tile[scene_num][0], glm::vec2(pot_x, 510.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+    draw.draw(*sprite_tile[0][0], glm::vec2(pot_x, 520.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+
+    draw.draw(*sprite_tile[0][0], glm::vec2(pot_x, 578.f)+view_min, glm::vec2(1.f, 0.02f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+    draw.draw(*sprite_tile[0][0], glm::vec2(pot_x, 638.f)+view_min, glm::vec2(1.f, 0.02f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+
     if (pot_time_left > 0.f) {
         string tmp = std::to_string(int(pot_time_left+0.999f));
-        draw.draw_text(tmp, glm::vec2(pot_x+15, 461.f)+view_min, 0.07);
+        draw.draw_text(tmp, glm::vec2(pot_x+15, 463.f)+view_min, 0.07);
     } else {
-        draw.draw(*sprite_fire, glm::vec2(pot_x, 457.f)+view_min);
+        draw.draw(*sprite_fire, glm::vec2(pot_x, 459.f)+view_min);
     }
 
     for (unsigned i = 0; i < pots.size(); ++i) {
