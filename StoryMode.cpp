@@ -563,6 +563,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             backpack.push_back(dragging_ingre_type);
         } else if (ingre_drag_pos.x >= garbage_x+view_min.x && ingre_drag_pos.x <= garbage_x+item_size+view_min.x  &&
             (draw_width-ingre_drag_pos.y) >= garbage_y+view_min.y && (draw_width-ingre_drag_pos.y) <= garbage_y+item_size+view_min.y) {
+            Sound::play(*music_trash);
             // discard ingredient
         } else{
             if (drag_from_backpack) {
