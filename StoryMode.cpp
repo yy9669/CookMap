@@ -368,7 +368,7 @@ StoryMode::StoryMode() {
         {Item7,*sprite_item_7},{Item8,*sprite_item_8},{Item9,*sprite_item_9},{Item10,*sprite_item_10},
         {Item11,*sprite_item_11},{Item12,*sprite_item_12},{Item13,*sprite_item_13},{Item14,*sprite_item_14},
         {Item15,*sprite_item_15},{Item16,*sprite_item_16},{Item17,*sprite_item_17},{Item18,*sprite_item_18},
-        {Item18,*sprite_item_19}
+        {Item19,*sprite_item_19}, {Item20,*sprite_item_20}, {Item21,*sprite_item_21}, {Item22,*sprite_item_22}
     }); 
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
         {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
