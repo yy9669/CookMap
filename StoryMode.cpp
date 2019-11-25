@@ -371,7 +371,8 @@ StoryMode::StoryMode() {
         {Item19,*sprite_item_19}, {Item20,*sprite_item_20}, {Item21,*sprite_item_21}, {Item22,*sprite_item_22}
     }); 
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
-        {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
+        {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}, {Dish6, *sprite_dish_6}, {Dish7, *sprite_dish_7}
+        ,{Dish8, *sprite_dish_8}, {Dish9, *sprite_dish_9}} ); 
 
     load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
     gettimeofday(&last_time, NULL);
@@ -804,8 +805,7 @@ void StoryMode::enter_scene(float elapsed) {
                     player.big_jump = false;
                 }
             } else {
-                // shove.y += 40.5f;
-                shove.y += 60.5f;
+                shove.y += 40.5f;
             }
             jumping = true;
             controls.up = false;
