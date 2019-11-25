@@ -12,6 +12,7 @@
 
 using namespace std;
 
+/////////////////////////////////////////////////////////////// sprite ///////////////////////////////////////////////////
 const int SCENE_TOTAL = 3;
 const int TILE_TOTAL = 8;
 
@@ -47,6 +48,9 @@ Sprite const *sprite_item_16 = nullptr;
 Sprite const *sprite_item_17 = nullptr;
 Sprite const *sprite_item_18 = nullptr;
 Sprite const *sprite_item_19 = nullptr;
+Sprite const *sprite_item_20 = nullptr;
+Sprite const *sprite_item_21 = nullptr;
+Sprite const *sprite_item_22 = nullptr;
 Sprite const *sprite_item_question = nullptr;
 
 Sprite const *sprite_dish_0 = nullptr;
@@ -55,6 +59,11 @@ Sprite const *sprite_dish_2 = nullptr;
 Sprite const *sprite_dish_3 = nullptr;
 Sprite const *sprite_dish_4 = nullptr;
 Sprite const *sprite_dish_5 = nullptr;
+Sprite const *sprite_dish_6 = nullptr;
+Sprite const *sprite_dish_7 = nullptr;
+Sprite const *sprite_dish_8 = nullptr;
+Sprite const *sprite_dish_9 = nullptr;
+
 
 Sprite const *sprite_npc[npc_total];
 Sprite const *sprite_npc_idle[npc_total];
@@ -107,6 +116,9 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_item_17 = &ret->lookup("item_17");
     sprite_item_18 = &ret->lookup("item_18");
     sprite_item_19 = &ret->lookup("item_19");
+    sprite_item_20 = &ret->lookup("item_20");
+    sprite_item_21 = &ret->lookup("item_21");
+    sprite_item_22 = &ret->lookup("item_22");
 
     sprite_dish_0 = &ret->lookup("waste");
     sprite_dish_1 = &ret->lookup("dish_1");
@@ -114,6 +126,10 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_dish_3 = &ret->lookup("dish_3"); 
     sprite_dish_4 = &ret->lookup("dish_4"); 
     sprite_dish_5 = &ret->lookup("dish_5"); 
+    sprite_dish_6 = &ret->lookup("dish_6"); 
+    sprite_dish_7 = &ret->lookup("dish_7"); 
+    sprite_dish_8 = &ret->lookup("dish_8"); 
+    sprite_dish_9 = &ret->lookup("dish_9");
 
     for (int i = 0; i < npc_total; ++i) {
         sprite_npc[i] = &ret->lookup(string("guard_") + to_string(i+1));
@@ -139,9 +155,94 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	return ret;
 });
 
+//////////////////////////////////////////////// music //////////////////////////////////////////////////
+
+Load< Sound::Sample > icon_click(LoadTagDefault, []() -> Sound::Sample *{
+    std::vector< float > data(size_t(48000 * 0.2f), 0.0f);
+    for (uint32_t i = 0; i < data.size(); ++i) {
+        float t = i / float(48000);
+        //phase-modulated sine wave (creates some metal-like sound):
+        data[i] = std::sin(3.1415926f * 2.0f * 440.0f * t + std::sin(3.1415926f * 2.0f * 450.0f * t));
+        //quadratic falloff:
+        data[i] *= 0.3f * std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
+    }
+    return new Sound::Sample(data);
+});
+
+Load< Sound::Sample > icon_clonk(LoadTagDefault, []() -> Sound::Sample *{
+    std::vector< float > data(size_t(48000 * 0.2f), 0.0f);
+    for (uint32_t i = 0; i < data.size(); ++i) {
+        float t = i / float(48000);
+        //phase-modulated sine wave (creates some metal-like sound):
+        data[i] = std::sin(3.1415926f * 2.0f * 220.0f * t + std::sin(3.1415926f * 2.0f * 200.0f * t));
+        //quadratic falloff:
+        data[i] *= 0.3f * std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
+    }
+    return new Sound::Sample(data);
+});
+
 Load< Sound::Sample > music_cold_dunes(LoadTagDefault, []() -> Sound::Sample * {
 	return new Sound::Sample(data_path("cold-dunes.opus"));
 });
+
+Load< Sound::Sample > music_collision(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("collision.opus"));
+});
+
+Load< Sound::Sample > music_eat(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("eat.opus"));
+});
+
+Load< Sound::Sample > music_jump(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("jump.opus"));
+});
+
+Load< Sound::Sample > music_oh_no(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("oh_no.opus"));
+});
+
+Load< Sound::Sample > music_pickup(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pickup.opus"));
+});
+
+Load< Sound::Sample > music_pleasure(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pleasure.opus"));
+});
+
+Load< Sound::Sample > music_pot_cook(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pot_cook.opus"));
+});
+
+Load< Sound::Sample > music_pot_finish(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pot_finish.opus"));
+});
+
+Load< Sound::Sample > music_pot_put(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("pot_put.opus"));
+});
+
+Load< Sound::Sample > music_scene1_bgm(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("scene1_bgm.opus"));
+});
+
+Load< Sound::Sample > music_scene2_bgm(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("scene2_bgm.opus"));
+});
+
+Load< Sound::Sample > music_scene3_bgm(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("scene3_bgm.opus"));
+});
+
+Load< Sound::Sample > music_trash(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("trash.opus"));
+});
+
+Load< Sound::Sample > music_win(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("win.opus"));
+});
+
+///////////////////////////////////////////////////// map//////////////////////////////////////
+
 
 bool load_map_file(const string& filename, StoryMode* mode) {
     ifstream f(filename);
@@ -202,14 +303,51 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                 case 'g': case 'w': case 'l': case 'r': case 'z': case 'x': case 'c': case 'v':
                     part = new Ground(s[x]);
                     break;
-                case '*':
+                case '~':
                     part = new Goal();
+                    break;
+                case '1': case '2': case '3': case '4': 
+                case '5': case '6': case '7': case '8': case '9': 
+                    part = new Ingredient((ingredient_type)(s[x] - '1'));
+                    break;
+                case '0':
+                    part = new Ingredient((ingredient_type)(9));
                     break;
                 case '!':
                     part = new Ingredient((ingredient_type)(10));
                     break;
-                case '1': case '2': case '3':case '4': case '5': case '6': case '8':
-                    part = new Ingredient((ingredient_type)(s[x] - '1'));
+                case '@':
+                    part = new Ingredient((ingredient_type)(11));
+                    break;
+                case '#':
+                    part = new Ingredient((ingredient_type)(12));
+                    break;
+                case '$':
+                    part = new Ingredient((ingredient_type)(13));
+                    break;
+                case '%':
+                    part = new Ingredient((ingredient_type)(14));
+                    break;
+                case '^':
+                    part = new Ingredient((ingredient_type)(15));
+                    break;
+                case '&':
+                    part = new Ingredient((ingredient_type)(16));
+                    break;
+                case '*':
+                    part = new Ingredient((ingredient_type)(17));
+                    break;
+                case '(':
+                    part = new Ingredient((ingredient_type)(18));
+                    break;
+                case ')':
+                    part = new Ingredient((ingredient_type)(19));
+                    break;
+                case '[':
+                    part = new Ingredient((ingredient_type)(20));
+                    break;
+                 case ']':
+                    part = new Ingredient((ingredient_type)(21));
                     break;
                 default:
                     cerr << "Error: map type " << s[x] << " unrecognized" << endl;
@@ -276,8 +414,14 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 			return true;
 		} else if (evt.key.keysym.scancode == SDL_SCANCODE_W ||
 		           evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-            controls.up = (evt.type == SDL_KEYDOWN);
-            res=true;
+
+            if (player.state != Left_jump && player.state != Right_jump) {
+                if(controls.up==false && evt.type == SDL_KEYDOWN)
+                    Sound::play(*music_jump,0.2);
+                controls.up = (evt.type == SDL_KEYDOWN);
+			    res=true;
+            }
+
 		}
 	}
 
@@ -309,20 +453,25 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             ingre_drag_pos = glm::vec2(evt.button.x,draw_width-evt.button.y)+view_min;
         } else if (evt.button.x>= help_x && evt.button.x<=help_x+item_size &&
                    evt.button.y>=help_y && evt.button.y<=help_y+item_size) {
+
+                Sound::play(*icon_click);
             show_instruction =! show_instruction;
             show_pot = false;
             show_recipe = false;
         } else if (evt.button.x>= recipe_x && evt.button.x<=recipe_x+item_size &&
                    evt.button.y>=recipe_y && evt.button.y<=recipe_y+item_size) {
+                Sound::play(*icon_click);
             show_recipe = !show_recipe;
             show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=pot_y && evt.button.y<=pot_y+item_size) {
+                Sound::play(*icon_click);      
             show_pot = !show_pot;
             show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=263 && evt.button.y<=311 &&
                    show_pot && pot_time_left == 0.f && pots.size()) {
+            Sound::play(*icon_click);
             pot_time_left = 500.f;
         }
         res=true;
@@ -335,19 +484,24 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         dish_drag=false;
 
         if (collision(dish_drag_pos, glm::vec2(48,48), player.position, player.radius)) {
+            // eat dish
+            Sound::play(*music_eat);
             player.health += health_map[dragged_dish];
             if (player.health > 10) {
                 player.health = 10;
             }
         } else if (dish_drag_pos.x >= garbage_x+view_min.x && dish_drag_pos.x <= garbage_x+item_size+view_min.x  &&
             (draw_width-dish_drag_pos.y) >= garbage_y+view_min.y && (draw_width-dish_drag_pos.y) <= garbage_y+item_size+view_min.y) {
+            Sound::play(*music_trash);
             // discard dish
         } else {
+            // bribe npc 
             auto eaten = false;
             for (unsigned i = 0; i < npcs.size(); i++) {
                 if(collision(dish_drag_pos, glm::vec2(item_size,item_size), npcs[i]->position, npcs[i]->radius)){
                     for (unsigned j = 0; j < npcs[i]->favorates.size(); j++) {
                         if (npcs[i]->favorates[j] == dragged_dish) {
+                            Sound::play(*music_pleasure);
                             npcs[i]->eat=true;
                             eaten = true;
                             break;
@@ -372,6 +526,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         if (ingre_drag_pos.x >= pot_x+view_min.x && ingre_drag_pos.x <= pot_x+item_size+view_min.x  &&
             ingre_drag_pos.y >= 513.f+view_min.y && ingre_drag_pos.y <= 690.f+view_min.y && show_pot && pots.size() < 3) {
             // drag to pot
+            Sound::play(*music_pot_put);
             pots.push_back(dragging_ingre_type);
         } else if (evt.button.x>= item_start_x && evt.button.x<=item_start_x+item_inteval*(item_num-1)+item_size &&
                    (evt.button.x-item_start_x)%item_inteval<item_size && evt.button.y>=item_start_y && evt.button.y<=item_start_y+item_size &&
@@ -401,7 +556,7 @@ void StoryMode::update(float elapsed) {
 	}
 
 	if (!background_music || background_music->stopped) {
-		background_music = Sound::play(*music_cold_dunes, 1.0f);
+		background_music = Sound::play(*music_scene1_bgm, 0.5);
 	}
 }
 
@@ -603,6 +758,8 @@ void StoryMode::enter_scene(float elapsed) {
                 resolve_collision(position, radius, box, box_radius, velocity);
 //                player.health -= npcs[i]->attack;
 //                player.health = max(0,player.health);
+
+                Sound::play(*music_collision,0.5);
                 if (position.x <= npcs[i]->position.x)
                     velocity.x = -200.0f;
                 else
@@ -628,6 +785,7 @@ void StoryMode::enter_scene(float elapsed) {
                         if (!ingre->obtained && ((int)backpack.size() < item_num-1 ||
                             ((int)backpack.size() == item_num-1 && !ingre_drag))) {
                             ingre->obtained = true;
+                            Sound::play(*music_pickup,0.5);
                             backpack.push_back(ingre->type);
                         }
 						break;
@@ -668,6 +826,7 @@ void StoryMode::enter_scene(float elapsed) {
                         if (!ingre->obtained && ((int)backpack.size() < item_num-1 ||
                             ((int)backpack.size() == item_num-1 && !ingre_drag))) {
                             ingre->obtained = true;
+                            Sound::play(*music_pickup,0.5);
                             backpack.push_back(ingre->type);
                         }
 						break;
@@ -740,11 +899,16 @@ void StoryMode::enter_scene(float elapsed) {
                         break;
                     }
                 }
+                Sound::play(*music_pot_cook);
                 pots.clear();
             }
         }
         pot_time_left -= elapsed;
         if (pot_time_left <= 0.f) {
+            if(cooking_dish!=Dish0)
+                Sound::play(*music_pot_finish);
+            else
+                Sound::play(*music_oh_no);
             dishes.push_back(cooking_dish);
             pot_time_left = 0.f;
             if(cooking_dish!=Dish0){
@@ -902,6 +1066,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
             if (winning) {
                 // 'I' is too thin...
+                Sound::play(*music_win);
                 draw.draw_text("YOU  W I N!", glm::vec2(160.0f, 330.0f)+view_min, 0.4);
             }
 
