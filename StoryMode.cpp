@@ -793,7 +793,7 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.right) shove.x += 28.0f;
         jump_interval = max(0.f, jump_interval - elapsed);
         if (player.state != Left_jump && player.state != Right_jump && jumping) {
-            jump_interval = 0.2f;
+            jump_interval = 0.1f;
             jumping = false;
         }
 		if (controls.up && abs(velocity.y) < 1e-4 && jump_interval == 0.f) {
@@ -966,12 +966,6 @@ void StoryMode::enter_scene(float elapsed) {
                             backpack.push_back(ingre->type);
                         }
 						break;
-
-//                    case part_goal_type:
-//                        if (!lose && scene_num + 1 == SCENE_TOTAL) {
-//                            winning = true;
-//                        }
-//                        break;
 
 					default:
 						break;
@@ -1247,7 +1241,6 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 player.health = 10;
                 save_state(this);
                 background_music->stop();
-                player.health = 10;
                 scene_num = scene_target;
                 Sound::play(*music_win);
                 restart(this);
@@ -1320,9 +1313,9 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
             auto pos = glm::vec2(677-216+60.f*j, 631-60.f*i)+view_min;
             if (recipes[i].show[j]) {
                 draw.draw(ingredient_map[recipes[i].ingredients[j]], pos);
-                // for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
-                //     draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
-                // }
+                for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
+                    draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
+                }
             } else {
                 draw.draw(*sprite_item_question, pos);
             }
