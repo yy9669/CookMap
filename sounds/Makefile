@@ -7,7 +7,7 @@ else
 	OPUSENC = ../../nest-libs/macos/opus-tools/bin/opusenc
 endif
 
-../dist/scene1_bgm.opus : scene1_bgm.wav
+../dist/oh_no.opus : oh_no.wav
 	$(OPUSENC) --vbr --bitrate 128 cold-dunes.wav ../dist/cold-dunes.opus
 	$(OPUSENC) --vbr --bitrate 128 collision.wav ../dist/collision.opus
 	$(OPUSENC) --vbr --bitrate 128 eat.wav ../dist/eat.opus
