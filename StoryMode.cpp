@@ -587,9 +587,20 @@ void StoryMode::update(float elapsed) {
 		enter_scene(elapsed);
 	}
 
-	if (!background_music || background_music->stopped) {
-		background_music = Sound::play(*music_scene1_bgm, 0.5);
-	}
+    if (!background_music || background_music->stopped) {
+        switch(scene_num){
+            case 0:
+                background_music = Sound::play(*music_scene1_bgm, 0.5);
+                break;
+            case 1:
+                background_music = Sound::play(*music_scene2_bgm, 0.5);
+                break;
+            case 2:
+                background_music = Sound::play(*music_scene3_bgm, 0.5);
+                break;              
+        }
+    }
+
 }
 
 bool StoryMode::collision(glm::vec2 pos1, glm::vec2 radius1, glm::vec2 pos2, 
@@ -1144,6 +1155,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.5f && scene_num != scene_target) {
                 save_state(this);
+                background_music->stopped=true;
                 scene_num = scene_target;
                 restart(this);
             }
@@ -1227,8 +1239,12 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
         pos = glm::vec2(885.f-216, 631-60.f*i)+view_min;
         draw.draw(dish_map[recipes[i].dish], pos);
         draw.draw(*sprite_add, pos+glm::vec2(60, 0), 0.5);      
-        if(power_map.count(recipes[i].dish)!=0 ){}
-
+        if(power_map.count(recipes[i].dish)!=0 ){
+            if(power_map[recipes[i].dish]==1)
+                draw.draw(*sprite_unlock, pos+glm::vec2(96, 0));
+            else
+                draw.draw(*sprite_jump, pos+glm::vec2(96, 0));                
+        }
         else{
             for (int k = health_map[recipes[i].dish]; k > 0; --k) 
                 draw.draw(*sprite_health_box, pos+glm::vec2(96, 0)+glm::vec2(43-k*4, 2), 0.4);
