@@ -831,11 +831,10 @@ void StoryMode::enter_scene(float elapsed) {
 
                     case part_goal_type:
                         if (!lose) {
-                            if (scene_num + 1 < SCENE_TOTAL) {
-                                save_state(this);
-                                scene_num++;
-                                restart(this);
-                            } else {
+                            if (scene_num + 1 < SCENE_TOTAL && scene_transition == 3.f) {
+                                scene_target = scene_num + 1;
+                                scene_transition = 0.f;
+                            } else if (scene_num + 1 == SCENE_TOTAL){
                                 winning = true;
                             }
                         }
@@ -871,11 +870,11 @@ void StoryMode::enter_scene(float elapsed) {
                         }
 						break;
 
-                    case part_goal_type:
-                        if (!lose && scene_num + 1 == SCENE_TOTAL) {
-                            winning = true;
-                        }
-                        break;
+//                    case part_goal_type:
+//                        if (!lose && scene_num + 1 == SCENE_TOTAL) {
+//                            winning = true;
+//                        }
+//                        break;
 
 					default:
 						break;
@@ -958,6 +957,8 @@ void StoryMode::enter_scene(float elapsed) {
 
         }
     }
+
+    scene_transition = min(3.f, scene_transition + elapsed);
 }
 
 
@@ -1131,6 +1132,25 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             if(ingre_drag){
                 draw.draw(ingredient_map[dragging_ingre_type] , ingre_drag_pos);
             }
+
+            if (scene_transition < 0.5f) {
+                draw.draw(*sprite_black, bl, 1.0f,
+                          glm::u8vec4(0xff, 0xff, 0xff, (unsigned char)(255.f*scene_transition/0.5f)));
+            } else if (scene_transition < 2.5f) {
+                draw.draw(*sprite_black, bl);
+            } else if (scene_transition < 3.f){
+                draw.draw(*sprite_black, bl, 1.0f,
+                          glm::u8vec4(0xff, 0xff, 0xff, (unsigned char)(255.f*(3.f-scene_transition)/0.5f)));
+            }
+            if (scene_transition >1.5f && scene_num != scene_target) {
+                save_state(this);
+                scene_num = scene_target;
+                restart(this);
+            }
+            if (scene_transition < 3.f) {
+                draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
+            }
+
 		} else {
             // cooking
 		}
