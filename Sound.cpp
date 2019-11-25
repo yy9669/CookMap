@@ -41,11 +41,11 @@ void mix_audio(void *, Uint8 *buffer_, int len);
     filename_length filename data_length data ...
 */
 const std::string SOUND_CACHE_FILENAME = "sound_cache.bin";
-std::unordered_map<std::string, std::vector<float>> cache_data;
+std::unordered_map<std::string, std::vector<float>*> cache_data;
 bool getSoundData(std::string const &filename2, std::vector<float>* data) {
     std::string filename = filename2.substr(filename2.find_last_of("/")+1);
     if (cache_data.count(filename)) {
-        *data = cache_data[filename];
+        *data = *cache_data[filename];
         return true;
     }
     std::ifstream f(data_path(SOUND_CACHE_FILENAME), std::ios_base::binary);
@@ -64,13 +64,13 @@ bool getSoundData(std::string const &filename2, std::vector<float>* data) {
         fn = new char[length];
         f.read(fn, length);
         f.read((char*)&length, 4);
-        std::vector<float> v;
-        v.resize(length);
-        f.read((char*)&v.front(), length* sizeof(float));
+        std::vector<float> *v = new std::vector<float>;
+        v->resize(length);
+        f.read((char*)&v->front(), length* sizeof(float));
         cache_data[fn] = v;
     }
     if (cache_data.count(filename)) {
-        *data = cache_data[filename];
+        *data = *cache_data[filename];
         return true;
     }
     return false;
