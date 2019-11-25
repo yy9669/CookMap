@@ -691,7 +691,53 @@ void StoryMode::enter_scene(float elapsed) {
                     }
                     break;
                 case npc2:
+                    if (npcs[i]->eat) {
+                        velocity_i.x = 0;
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.y <= init_position_i.y) {
+                            position_i.y = init_position_i.y;
+                            velocity_i.y = -velocity_i.y;
+                        } else if (position_i.y > init_position_i.y 
+                            && position_i.y - init_position_i.y > 240.0f) {
+                            velocity_i.y = -velocity_i.y;
+                        }
+                    } else {
+                        position_i = position_i + velocity_i * elapsed;
+                        velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
+                        if (position_i.x >= init_position_i.x) {
+                            position_i.x = init_position_i.x;
+                            velocity_i.x = -velocity_i.x;
+                        } else if (position_i.x < init_position_i.x 
+                            && init_position_i.x - position_i.x > 200.0f) {
+                            velocity_i.x = -velocity_i.x;
+                        }
+                        position_i.y = init_position_i.y;
+                    }
+                    break;
                 case npc3:
+                    if (npcs[i]->eat) {
+                        velocity_i.x = 0;
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.y <= init_position_i.y) {
+                            position_i.y = init_position_i.y;
+                            velocity_i.y = -velocity_i.y;
+                        } else if (position_i.y > init_position_i.y 
+                            && position_i.y - init_position_i.y > 240.0f) {
+                            velocity_i.y = -velocity_i.y;
+                        }
+                    } else {
+                        position_i = position_i + velocity_i * elapsed;
+                        velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
+                        if (position_i.x <= init_position_i.x) {
+                            position_i.x = init_position_i.x;
+                            velocity_i.x = -velocity_i.x;
+                        } else if (position_i.x > init_position_i.x 
+                            && position_i.x - init_position_i.x  > 200.0f) {
+                            velocity_i.x = -velocity_i.x;
+                        }
+                        position_i.y = init_position_i.y;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -811,6 +857,12 @@ void StoryMode::enter_scene(float elapsed) {
 //                player.health = max(0,player.health);
 
                 Sound::play(*music_collision,0.5);
+                
+                // some npc will steal your items or dishes
+                if(npcs[i]->type==npc2 && dishes.size()>0)
+                    dishes.erase(dishes.begin());
+                if(npcs[i]->type==npc3 && backpack.size()>0)
+                    backpack.erase(backpack.begin());          
                 if (position.x <= npcs[i]->position.x)
                     velocity.x = -200.0f;
                 else
@@ -1159,7 +1211,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.5f && scene_num != scene_target) {
                 save_state(this);
-                background_music->stopped=true;
+                background_music->stop();
                 scene_num = scene_target;
                 restart(this);
             }
