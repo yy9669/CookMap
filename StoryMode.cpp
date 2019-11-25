@@ -1231,9 +1231,9 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
             auto pos = glm::vec2(677-216+60.f*j, 631-60.f*i)+view_min;
             if (recipes[i].show[j]) {
                 draw.draw(ingredient_map[recipes[i].ingredients[j]], pos);
-                // for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
-                //     draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
-                // }
+                 for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
+                     draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
+                 }
             } else {
                 draw.draw(*sprite_item_question, pos);
             }
