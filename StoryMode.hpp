@@ -88,6 +88,7 @@ struct StoryMode : Mode {
 	bool proto_cook = false;
 	bool winning = false, lose = false;
 	float jump_interval = 0.f;
+	bool jumping = false;
 
 	std::vector<Recipe> recipes = {
 		{{Item11, Item2}, {true, true}, Dish2, 5},  // bread, sausage => hot dog

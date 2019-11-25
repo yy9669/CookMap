@@ -186,10 +186,6 @@ Load< Sound::Sample > icon_clonk(LoadTagDefault, []() -> Sound::Sample *{
     return new Sound::Sample(data);
 });
 
-Load< Sound::Sample > music_cold_dunes(LoadTagDefault, []() -> Sound::Sample * {
-	return new Sound::Sample(data_path("cold-dunes.opus"));
-});
-
 Load< Sound::Sample > music_collision(LoadTagDefault, []() -> Sound::Sample * {
     return new Sound::Sample(data_path("collision.opus"));
 });
@@ -377,7 +373,7 @@ StoryMode::StoryMode() {
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
         {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
 
-    load_map_file(data_path("map_1.txt"), this);
+    load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
     gettimeofday(&last_time, NULL);
     save_state(this);
 }
@@ -414,20 +410,20 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 	if (evt.type == SDL_KEYDOWN || evt.type == SDL_KEYUP) {
 		if (evt.key.keysym.scancode == SDL_SCANCODE_A) {
 			controls.left = (evt.type == SDL_KEYDOWN);
-			res=true;
-		} else if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
+			res = true;
+		}
+		if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
 			controls.right = (evt.type == SDL_KEYDOWN);
-			return true;
-		} else if (evt.key.keysym.scancode == SDL_SCANCODE_W ||
+			res = true;
+		}
+		if (evt.key.keysym.scancode == SDL_SCANCODE_W ||
 		           evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-
             if (player.state != Left_jump && player.state != Right_jump) {
                 if(controls.up==false && evt.type == SDL_KEYDOWN)
                     Sound::play(*music_jump,0.2);
                 controls.up = (evt.type == SDL_KEYDOWN);
 			    res=true;
             }
-
 		}
 	}
 
@@ -710,6 +706,10 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.left) shove.x -= 28.0f;
 		if (controls.right) shove.x += 28.0f;
         jump_interval = max(0.f, jump_interval - elapsed);
+        if (player.state != Left_jump && player.state != Right_jump && jumping) {
+            jump_interval = 0.2f;
+            jumping = false;
+        }
 		if (controls.up && abs(velocity.y) < 1e-4 && jump_interval == 0.f) {
             if (player.big_jump) {
                 // Super jump
@@ -721,8 +721,8 @@ void StoryMode::enter_scene(float elapsed) {
             } else {
                 shove.y += 40.5f;
             }
+            jumping = true;
             controls.up = false;
-            jump_interval = 1.2f;  // allow jump after 1.2 secs
 		}
 		shove *= 10.0f;
 
