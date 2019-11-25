@@ -158,7 +158,8 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
-    int scene_num = 0;
+    int scene_num = 0, scene_target = 0;
+    float scene_transition = 10.f;
 
 	// backup state
 	Chef player_b;
