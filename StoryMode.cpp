@@ -1171,10 +1171,11 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 draw.draw(*sprite_health_box, current_health_pos);
             }
 
-            if (winning) {
-                // 'I' is too thin...
-                Sound::play(*music_win);
+            if (winning) 
                 draw.draw_text("YOU  W I N!", glm::vec2(160.0f, 330.0f)+view_min, 0.4);
+            if (winning && !winned){
+                Sound::play(*music_win);
+                winned=true;
             }
 
             if (show_instruction) {
@@ -1214,6 +1215,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 save_state(this);
                 background_music->stop();
                 player.health = 10;
+
                 scene_num = scene_target;
                 restart(this);
             }

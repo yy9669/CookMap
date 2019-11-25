@@ -86,7 +86,7 @@ struct StoryMode : Mode {
 	glm::vec2 view_max = glm::vec2(1024, 768);
 
 	bool proto_cook = false;
-	bool winning = false, lose = false;
+	bool winning = false, lose = false, winned=false;
 	float jump_interval = 0.f;
 	bool jumping = false;
 
