@@ -94,8 +94,8 @@ struct StoryMode : Mode {
         {{Item1, Item2, Item3}, {true, true, false}, Dish1, 5},  // flour, sausage, pepper => pizza
 	    {{Item12, Item15, Item14,}, {true, true, false}, Dish4, 5},  // broccoli, egg, avocado => salad
 	    {{Item12, Item15, Item8}, {true, true, false}, Dish4, 5},  // broccoli, egg, tomato => salad
-	    {{Item16,Item17, Item3}, {true, false, false}, Dish5, 5},  // twig, steak, pepper => bbq
-	    {{Item17, Item18, Item19}, {true, false, false}, Dish6, 5},  // steak, mushroom, onion => bbq
+	    {{Item16,Item17, Item3}, {true, false, false}, Dish5, 5},  // twig, meat, pepper => bbq
+	    {{Item17, Item18, Item19}, {true, false, false}, Dish6, 5},  // meat, mushroom, onion => steak
 	    {{Item19, Item21}, {true, false}, Dish7, 5},  // onion, water => onion soup
 	    {{Item21, Item20, Item10}, {false, false, false}, Dish8, 5},  // water => steamed fish
 	    {{Item15, Item21, Item7}, {false, false, false}, Dish9, 5},  // egg, milk, orange  => orange ice cream
@@ -120,7 +120,7 @@ struct StoryMode : Mode {
         {Item14, 1},  // avocado
         {Item15, 1},  // egg
         {Item16, 1},  // twig
-        {Item17, 2},  // steak
+        {Item17, 2},  // meat
         {Item18, 1},  // mushroom
         {Item19, 1},  // onion
         {Item20, 1},  // fish

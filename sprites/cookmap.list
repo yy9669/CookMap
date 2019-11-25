@@ -85,4 +85,6 @@ cookmap.xcf?tile_13 960 300 +48 +48 +0 +48 tile_13
 cookmap.xcf?tile_14 960 350 +48 +48 +0 +48 tile_14
 cookmap.xcf?tile_15 960 400 +48 +48 +0 +48 tile_15
 cookmap.xcf?tile_16 960 450 +48 +48 +0 +48 tile_16
-
+cookmap.xcf?unlock 960 500 +48 +48 +0 +48 unlock
+cookmap.xcf?jump 960 550 +48 +48 +0 +48 jump
+cookmap.xcf?add 960 600 +48 +48 +0 +48 add

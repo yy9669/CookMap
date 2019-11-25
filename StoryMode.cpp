@@ -47,6 +47,9 @@ Sprite const *sprite_item_16 = nullptr;
 Sprite const *sprite_item_17 = nullptr;
 Sprite const *sprite_item_18 = nullptr;
 Sprite const *sprite_item_19 = nullptr;
+Sprite const *sprite_item_20 = nullptr;
+Sprite const *sprite_item_21 = nullptr;
+Sprite const *sprite_item_22 = nullptr;
 Sprite const *sprite_item_question = nullptr;
 
 Sprite const *sprite_dish_0 = nullptr;
@@ -55,6 +58,11 @@ Sprite const *sprite_dish_2 = nullptr;
 Sprite const *sprite_dish_3 = nullptr;
 Sprite const *sprite_dish_4 = nullptr;
 Sprite const *sprite_dish_5 = nullptr;
+Sprite const *sprite_dish_6 = nullptr;
+Sprite const *sprite_dish_7 = nullptr;
+Sprite const *sprite_dish_8 = nullptr;
+Sprite const *sprite_dish_9 = nullptr;
+
 
 Sprite const *sprite_npc[npc_total];
 Sprite const *sprite_npc_idle[npc_total];
@@ -107,6 +115,9 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_item_17 = &ret->lookup("item_17");
     sprite_item_18 = &ret->lookup("item_18");
     sprite_item_19 = &ret->lookup("item_19");
+    sprite_item_20 = &ret->lookup("item_20");
+    sprite_item_21 = &ret->lookup("item_21");
+    sprite_item_22 = &ret->lookup("item_22");
 
     sprite_dish_0 = &ret->lookup("waste");
     sprite_dish_1 = &ret->lookup("dish_1");
@@ -114,6 +125,10 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_dish_3 = &ret->lookup("dish_3"); 
     sprite_dish_4 = &ret->lookup("dish_4"); 
     sprite_dish_5 = &ret->lookup("dish_5"); 
+    sprite_dish_6 = &ret->lookup("dish_6"); 
+    sprite_dish_7 = &ret->lookup("dish_7"); 
+    sprite_dish_8 = &ret->lookup("dish_8"); 
+    sprite_dish_9 = &ret->lookup("dish_9");
 
     for (int i = 0; i < npc_total; ++i) {
         sprite_npc[i] = &ret->lookup(string("guard_") + to_string(i+1));
@@ -202,14 +217,51 @@ bool load_map_file(const string& filename, StoryMode* mode) {
                 case 'g': case 'w': case 'l': case 'r': case 'z': case 'x': case 'c': case 'v':
                     part = new Ground(s[x]);
                     break;
-                case '*':
+                case '~':
                     part = new Goal();
+                    break;
+                case '1': case '2': case '3': case '4': 
+                case '5': case '6': case '7': case '8': case '9': 
+                    part = new Ingredient((ingredient_type)(s[x] - '1'));
+                    break;
+                case '0':
+                    part = new Ingredient((ingredient_type)(9));
                     break;
                 case '!':
                     part = new Ingredient((ingredient_type)(10));
                     break;
-                case '1': case '2': case '3':case '4': case '5': case '6': case '8':
-                    part = new Ingredient((ingredient_type)(s[x] - '1'));
+                case '@':
+                    part = new Ingredient((ingredient_type)(11));
+                    break;
+                case '#':
+                    part = new Ingredient((ingredient_type)(12));
+                    break;
+                case '$':
+                    part = new Ingredient((ingredient_type)(13));
+                    break;
+                case '%':
+                    part = new Ingredient((ingredient_type)(14));
+                    break;
+                case '^':
+                    part = new Ingredient((ingredient_type)(15));
+                    break;
+                case '&':
+                    part = new Ingredient((ingredient_type)(16));
+                    break;
+                case '*':
+                    part = new Ingredient((ingredient_type)(17));
+                    break;
+                case '(':
+                    part = new Ingredient((ingredient_type)(18));
+                    break;
+                case ')':
+                    part = new Ingredient((ingredient_type)(19));
+                    break;
+                case '[':
+                    part = new Ingredient((ingredient_type)(20));
+                    break;
+                 case ']':
+                    part = new Ingredient((ingredient_type)(21));
                     break;
                 default:
                     cerr << "Error: map type " << s[x] << " unrecognized" << endl;
