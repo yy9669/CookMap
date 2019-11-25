@@ -16,6 +16,7 @@
 #include "Dish.hpp"
 #include "DrawSprites.hpp"
 #include "Sprite.hpp"
+#include <string>
 #include <map>
 #include <vector>
 
@@ -41,6 +42,7 @@ struct StoryMode : Mode {
 	void resolve_collision(glm::vec2 &position, glm::vec2 radius, 
     	glm::vec2 box, glm::vec2 box_radius, glm::vec2 &velocity);
 	void draw_instruction(DrawSprites& draw);
+	void draw_tmp_instruction(DrawSprites& draw);
 	void draw_recipe(DrawSprites& draw);
     void draw_pot(DrawSprites& draw);
 
@@ -135,6 +137,11 @@ struct StoryMode : Mode {
 	bool dish_drag = false, ingre_drag = false, drag_from_backpack;
 	dish_type dragged_dish;		// Currently dragged dish
 	bool show_instruction = true, show_recipe = false, show_pot = false;
+	bool NPC_instruction = false;
+	bool COOK_instruction = false;
+	float tmp_instruction_time = 0.0f;
+	std::string tmp_instruction;
+
 
 	glm::vec2 dish_drag_pos = glm::vec2(0,0);
 	glm::vec2 ingre_drag_pos = glm::vec2(0,0);
@@ -167,7 +174,7 @@ struct StoryMode : Mode {
     	int help_y=10;
     	float stealcd=0;
 
-    int scene_num = 1, scene_target = 1;
+    int scene_num = 0, scene_target = 0;
     float scene_transition = 10.f;
     int restarting = 0;
 
