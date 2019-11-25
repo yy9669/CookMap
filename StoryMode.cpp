@@ -181,10 +181,6 @@ Load< Sound::Sample > icon_clonk(LoadTagDefault, []() -> Sound::Sample *{
     return new Sound::Sample(data);
 });
 
-Load< Sound::Sample > music_cold_dunes(LoadTagDefault, []() -> Sound::Sample * {
-	return new Sound::Sample(data_path("cold-dunes.opus"));
-});
-
 Load< Sound::Sample > music_collision(LoadTagDefault, []() -> Sound::Sample * {
     return new Sound::Sample(data_path("collision.opus"));
 });
@@ -372,7 +368,7 @@ StoryMode::StoryMode() {
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
         {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
 
-    load_map_file(data_path("map_1.txt"), this);
+    load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
     gettimeofday(&last_time, NULL);
     save_state(this);
 }
@@ -409,20 +405,20 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
 	if (evt.type == SDL_KEYDOWN || evt.type == SDL_KEYUP) {
 		if (evt.key.keysym.scancode == SDL_SCANCODE_A) {
 			controls.left = (evt.type == SDL_KEYDOWN);
-			res=true;
-		} else if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
+			res = true;
+		}
+		if (evt.key.keysym.scancode == SDL_SCANCODE_D) {
 			controls.right = (evt.type == SDL_KEYDOWN);
-			return true;
-		} else if (evt.key.keysym.scancode == SDL_SCANCODE_W ||
+			res = true;
+		}
+		if (evt.key.keysym.scancode == SDL_SCANCODE_W ||
 		           evt.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-
             if (player.state != Left_jump && player.state != Right_jump) {
                 if(controls.up==false && evt.type == SDL_KEYDOWN)
                     Sound::play(*music_jump,0.2);
                 controls.up = (evt.type == SDL_KEYDOWN);
 			    res=true;
             }
-
 		}
 	}
 
@@ -694,6 +690,10 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.left) shove.x -= 28.0f;
 		if (controls.right) shove.x += 28.0f;
         jump_interval = max(0.f, jump_interval - elapsed);
+        if (player.state != Left_jump && player.state != Right_jump && jumping) {
+            jump_interval = 0.2f;
+            jumping = false;
+        }
 		if (controls.up && abs(velocity.y) < 1e-4 && jump_interval == 0.f) {
             if (player.big_jump) {
                 // Super jump
@@ -705,8 +705,8 @@ void StoryMode::enter_scene(float elapsed) {
             } else {
                 shove.y += 40.5f;
             }
+            jumping = true;
             controls.up = false;
-            jump_interval = 1.2f;  // allow jump after 1.2 secs
 		}
 		shove *= 10.0f;
 
@@ -826,11 +826,10 @@ void StoryMode::enter_scene(float elapsed) {
 
                     case part_goal_type:
                         if (!lose) {
-                            if (scene_num + 1 < SCENE_TOTAL) {
-                                save_state(this);
-                                scene_num++;
-                                restart(this);
-                            } else {
+                            if (scene_num + 1 < SCENE_TOTAL && scene_transition == 3.f) {
+                                scene_target = scene_num + 1;
+                                scene_transition = 0.f;
+                            } else if (scene_num + 1 == SCENE_TOTAL){
                                 winning = true;
                             }
                         }
@@ -866,11 +865,11 @@ void StoryMode::enter_scene(float elapsed) {
                         }
 						break;
 
-                    case part_goal_type:
-                        if (!lose && scene_num + 1 == SCENE_TOTAL) {
-                            winning = true;
-                        }
-                        break;
+//                    case part_goal_type:
+//                        if (!lose && scene_num + 1 == SCENE_TOTAL) {
+//                            winning = true;
+//                        }
+//                        break;
 
 					default:
 						break;
@@ -956,6 +955,8 @@ void StoryMode::enter_scene(float elapsed) {
             }
         }
     }
+
+    scene_transition = min(3.f, scene_transition + elapsed);
 }
 
 
@@ -1129,6 +1130,25 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             if(ingre_drag){
                 draw.draw(ingredient_map[dragging_ingre_type] , ingre_drag_pos);
             }
+
+            if (scene_transition < 0.5f) {
+                draw.draw(*sprite_black, bl, 1.0f,
+                          glm::u8vec4(0xff, 0xff, 0xff, (unsigned char)(255.f*scene_transition/0.5f)));
+            } else if (scene_transition < 2.5f) {
+                draw.draw(*sprite_black, bl);
+            } else if (scene_transition < 3.f){
+                draw.draw(*sprite_black, bl, 1.0f,
+                          glm::u8vec4(0xff, 0xff, 0xff, (unsigned char)(255.f*(3.f-scene_transition)/0.5f)));
+            }
+            if (scene_transition >1.5f && scene_num != scene_target) {
+                save_state(this);
+                scene_num = scene_target;
+                restart(this);
+            }
+            if (scene_transition < 3.f) {
+                draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
+            }
+
 		} else {
             // cooking
 		}

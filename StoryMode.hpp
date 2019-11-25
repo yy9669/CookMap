@@ -88,15 +88,16 @@ struct StoryMode : Mode {
 	bool proto_cook = false;
 	bool winning = false, lose = false;
 	float jump_interval = 0.f;
+	bool jumping = false;
 
 	std::vector<Recipe> recipes = {
 		{{Item11, Item2}, {true, true}, Dish2, 5},  // bread, sausage => hot dog
 	    {{Item4, Item5, Item8}, {true, true, true}, Dish3, 5},  // apple, dragon fruit,tamato => juice
         {{Item6, Item7, Item9}, {true, true, false}, Dish3, 5},  // grape, orange, kiwi => juice
         {{Item1, Item2, Item3}, {true, true, false}, Dish1, 5},  // flour, sausage, pepper => pizza
-	    {{Item12, Item15, Item14,}, {true, true, false}, Dish4, 5},  // broccoli, egg, avocado => salad
+	    {{Item12, Item15, Item14}, {true, true, false}, Dish4, 5},  // broccoli, egg, avocado => salad
 	    {{Item12, Item15, Item8}, {true, true, false}, Dish4, 5},  // broccoli, egg, tomato => salad
-	    {{Item16,Item17, Item3}, {true, false, false}, Dish5, 5},  // twig, meat, pepper => bbq
+	    {{Item16, Item17, Item3}, {true, false, false}, Dish5, 5},  // twig, meat, pepper => bbq
 	    {{Item17, Item18, Item19}, {true, false, false}, Dish6, 5},  // meat, mushroom, onion => steak
 	    {{Item19, Item21}, {true, false}, Dish7, 5},  // onion, water => onion soup
 	    {{Item21, Item20, Item10}, {false, false, false}, Dish8, 5},  // water => steamed fish
@@ -163,7 +164,8 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
-    int scene_num = 0;
+    int scene_num = 0, scene_target = 0;
+    float scene_transition = 10.f;
 
 	// backup state
 	Chef player_b;
