@@ -688,10 +688,50 @@ void StoryMode::enter_scene(float elapsed) {
                             && position_i.y - init_position_i.y > 100.0f) {
                             velocity_i.y = -velocity_i.y;
                         }
+                    } else {
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.x <= init_position_i.x) {
+                            position_i.x = init_position_i.x;
+                            velocity_i.x = -velocity_i.x;
+                        } else if (position_i.x > init_position_i.x 
+                            && position_i.x - init_position_i.x > 80.0f) {
+                            velocity_i.x = -velocity_i.x;
+                        }
+                        position_i.y = init_position_i.y;
                     }
                     break;
                 case npc2:
+                    break;
                 case npc3:
+                    break;
+                case npc4:
+                    if (npcs[i]->eat) {
+                        velocity_i.x = 0;
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.y <= init_position_i.y) {
+                            position_i.y = init_position_i.y;
+                            velocity_i.y = -velocity_i.y;
+                        } else if (position_i.y > init_position_i.y 
+                            && position_i.y - init_position_i.y > 100.0f) {
+                            velocity_i.y = -velocity_i.y;
+                        }
+                    } else {
+                        if (velocity_i.x > 0) {
+                            velocity_i.x = 140.0f;
+                        } else {
+                            velocity_i.x = -90.0f;
+                        }
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.x <= init_position_i.x - 900.0f) {
+                            position_i.x = init_position_i.x - 900.0f;
+                            velocity_i.x = -velocity_i.x;
+                        } else if (position_i.x - init_position_i.x > 170.0f) {
+                            position_i.x = init_position_i.x + 170.0f;
+                            velocity_i.x = -velocity_i.x;
+                        }
+                        position_i.y = init_position_i.y;
+                    }
+                    break;
                 default:
                     break;
             }
