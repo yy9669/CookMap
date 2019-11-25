@@ -1207,8 +1207,11 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
         pos = glm::vec2(885.f-216, 631-60.f*i)+view_min;
         draw.draw(dish_map[recipes[i].dish], pos);
         draw.draw(*sprite_add, pos+glm::vec2(60, 0), 0.5);      
-        for (int k = health_map[recipes[i].dish]; k > 0; --k) {
-            draw.draw(*sprite_health_box, pos+glm::vec2(96, 0)+glm::vec2(43-k*4, 2), 0.4);
+        if(power_map.count(recipes[i].dish)!=0 ){}
+
+        else{
+            for (int k = health_map[recipes[i].dish]; k > 0; --k) 
+                draw.draw(*sprite_health_box, pos+glm::vec2(96, 0)+glm::vec2(43-k*4, 2), 0.4);
         }
     }
 }
