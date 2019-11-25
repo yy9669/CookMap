@@ -694,7 +694,7 @@ void StoryMode::enter_scene(float elapsed) {
                             position_i.x = init_position_i.x;
                             velocity_i.x = -velocity_i.x;
                         } else if (position_i.x > init_position_i.x 
-                            && position_i.x - init_position_i.x > 40.0f) {
+                            && position_i.x - init_position_i.x > 30.0f) {
                             velocity_i.x = -velocity_i.x;
                         }
                         position_i.y = init_position_i.y;
@@ -761,7 +761,7 @@ void StoryMode::enter_scene(float elapsed) {
                         }
                     } else {
                         if (velocity_i.x > 0) {
-                            velocity_i.x = 140.0f;
+                            velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
                         } else {
                             velocity_i.x = -90.0f;
                         }
