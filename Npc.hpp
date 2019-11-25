@@ -16,6 +16,9 @@ public:
         init_position = glm::vec2(x, y);
         favorates = {npc_dish_};
         attack = 2 * (int)type + 2;
+        if (type == npc4) {
+            velocity = glm::vec2(-90.0f, 60.0f);
+        }
     }
 	virtual ~Npc() {}
 

@@ -371,8 +371,7 @@ StoryMode::StoryMode() {
         {Item19,*sprite_item_19}, {Item20,*sprite_item_20}, {Item21,*sprite_item_21}, {Item22,*sprite_item_22}
     }); 
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
-        {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}, {Dish6, *sprite_dish_6}, {Dish7, *sprite_dish_7}, 
-        {Dish8, *sprite_dish_8}, {Dish9, *sprite_dish_9}});
+        {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
 
     load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
     gettimeofday(&last_time, NULL);
@@ -689,6 +688,16 @@ void StoryMode::enter_scene(float elapsed) {
                             && position_i.y - init_position_i.y > 100.0f) {
                             velocity_i.y = -velocity_i.y;
                         }
+                    } else {
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.x <= init_position_i.x) {
+                            position_i.x = init_position_i.x;
+                            velocity_i.x = -velocity_i.x;
+                        } else if (position_i.x > init_position_i.x 
+                            && position_i.x - init_position_i.x > 30.0f) {
+                            velocity_i.x = -velocity_i.x;
+                        }
+                        position_i.y = init_position_i.y;
                     }
                     break;
                 case npc2:
@@ -739,6 +748,34 @@ void StoryMode::enter_scene(float elapsed) {
                         position_i.y = init_position_i.y;
                     }
                     break;
+                case npc4:
+                    if (npcs[i]->eat) {
+                        velocity_i.x = 0;
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.y <= init_position_i.y) {
+                            position_i.y = init_position_i.y;
+                            velocity_i.y = -velocity_i.y;
+                        } else if (position_i.y > init_position_i.y 
+                            && position_i.y - init_position_i.y > 100.0f) {
+                            velocity_i.y = -velocity_i.y;
+                        }
+                    } else {
+                        if (velocity_i.x > 0) {
+                            velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
+                        } else {
+                            velocity_i.x = -90.0f;
+                        }
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.x <= init_position_i.x - 900.0f) {
+                            position_i.x = init_position_i.x - 900.0f;
+                            velocity_i.x = -velocity_i.x;
+                        } else if (position_i.x - init_position_i.x > 170.0f) {
+                            position_i.x = init_position_i.x + 170.0f;
+                            velocity_i.x = -velocity_i.x;
+                        }
+                        position_i.y = init_position_i.y;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -755,7 +792,7 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.right) shove.x += 28.0f;
         jump_interval = max(0.f, jump_interval - elapsed);
         if (player.state != Left_jump && player.state != Right_jump && jumping) {
-            jump_interval = 0.1f;
+            jump_interval = 0.2f;
             jumping = false;
         }
 		if (controls.up && abs(velocity.y) < 1e-4 && jump_interval == 0.f) {
@@ -858,12 +895,6 @@ void StoryMode::enter_scene(float elapsed) {
 //                player.health = max(0,player.health);
 
                 Sound::play(*music_collision,0.5);
-                
-                // some npc will steal your items or dishes
-                if(npcs[i]->type==npc2 && dishes.size()>0)
-                    dishes.erase(dishes.begin());
-                if(npcs[i]->type==npc3 && backpack.size()>0)
-                    backpack.erase(backpack.begin());          
                 if (position.x <= npcs[i]->position.x)
                     velocity.x = -200.0f;
                 else
@@ -1240,7 +1271,7 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
         }
     }
     draw.draw_text(
-            "a,d   to   move,  w or space to jump\n"
+            "a,d   to   move,   w, space to jump\n"
             "click   to   open   the recipe\n"
             "open   pot   and   drag   items   i n\n"
             "click   fire   to   cook\n"
@@ -1287,9 +1318,9 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
             auto pos = glm::vec2(677-216+60.f*j, 631-60.f*i)+view_min;
             if (recipes[i].show[j]) {
                 draw.draw(ingredient_map[recipes[i].ingredients[j]], pos);
-                for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
-                    draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
-                }
+                // for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
+                //     draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
+                // }
             } else {
                 draw.draw(*sprite_item_question, pos);
             }
