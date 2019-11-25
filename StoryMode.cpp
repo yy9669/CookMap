@@ -661,6 +661,7 @@ void StoryMode::enter_scene(float elapsed) {
             glm::vec2 &position_i = npcs[i]->position;
             glm::vec2 &init_position_i = npcs[i]->init_position;
             glm::vec2 &velocity_i = npcs[i]->velocity;
+            float left_bound = 20;
             switch (npcs[i]->type)
             {
                 //TODO: add different motions for npc
@@ -775,9 +776,10 @@ void StoryMode::enter_scene(float elapsed) {
                         } else {
                             velocity_i.x = -90.0f;
                         }
+                        left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
                         position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= init_position_i.x - 900.0f) {
-                            position_i.x = init_position_i.x - 900.0f;
+                        if (position_i.x <= left_bound) {
+                            position_i.x = left_bound;
                             velocity_i.x = -velocity_i.x;
                         } else if (position_i.x - init_position_i.x > 170.0f) {
                             position_i.x = init_position_i.x + 170.0f;
@@ -1162,7 +1164,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             for (unsigned i = 0; i < backpack.size(); i++) {
                 draw.draw(ingredient_map[backpack[i]], backpack_pos[i]+view_min);
                 for (int j = ingre_cost[backpack[i]]; j > 0; --j) {
-                    draw.draw(*sprite_health_box, backpack_pos[i]+view_min+glm::vec2(43-j*8, 4), 0.4);
+                    draw.draw(*sprite_health_box, backpack_pos[i]+view_min+glm::vec2(42-j*9, 4), 0.6);
                 }
             }
 
@@ -1302,7 +1304,7 @@ void StoryMode::draw_pot(DrawSprites& draw) {
         auto pos = glm::vec2(pot_x, 643-60.f*i)+view_min;
         draw.draw(ingredient_map[pots[i]], pos);
         for (int j = ingre_cost[pots[i]]; j > 0; --j) {
-            draw.draw(*sprite_health_box, glm::vec2(pot_x, 643-60.f*i)+view_min+glm::vec2(43-j*8, 4), 0.4);
+            draw.draw(*sprite_health_box, glm::vec2(pot_x, 643-60.f*i)+view_min+glm::vec2(42-j*9, 4), 0.6);
         }
     }
 }
@@ -1321,7 +1323,7 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
             if (recipes[i].show[j]) {
                 draw.draw(ingredient_map[recipes[i].ingredients[j]], pos);
                 for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
-                    draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
+                    draw.draw(*sprite_health_box, pos+glm::vec2(42-k*9, 4), 0.6);
                 }
             } else {
                 draw.draw(*sprite_item_question, pos);
@@ -1340,7 +1342,7 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
         }
         else{
             for (int k = health_map[recipes[i].dish]; k > 0; --k) 
-                draw.draw(*sprite_health_box, pos+glm::vec2(96, 0)+glm::vec2(43-k*4, 2), 0.4);
+                draw.draw(*sprite_health_box, pos+glm::vec2(96, 0)+glm::vec2(43-k*5, 4), 0.6);
         }
     }
 }
