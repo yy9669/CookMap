@@ -243,6 +243,14 @@ Load< Sound::Sample > music_win(LoadTagDefault, []() -> Sound::Sample * {
     return new Sound::Sample(data_path("win.opus"));
 });
 
+Load< Sound::Sample > music_scream(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("scream.opus"));
+});
+
+Load< Sound::Sample > music_deny(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("deny.opus"));
+});
+
 ///////////////////////////////////////////////////// map//////////////////////////////////////
 
 
@@ -475,7 +483,6 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=263 && evt.button.y<=311 &&
                    show_pot && pot_time_left == 0.f && pots.size()) {
-            Sound::play(*icon_click);
             pot_time_left = 500.f;
         }
         res=true;
@@ -980,7 +987,9 @@ void StoryMode::enter_scene(float elapsed) {
             velocity.x = 0.0f;
         }
         // restart if fall down
+
         if (position.y < 0) {
+            Sound::play(*music_scream);
             restart(this);
             return;
         }
@@ -1029,6 +1038,7 @@ void StoryMode::enter_scene(float elapsed) {
                 Sound::play(*music_pot_cook);
                 pots.clear();
             } else {
+                Sound::play(*music_deny);
                 pot_time_left=0;
             }
         }
