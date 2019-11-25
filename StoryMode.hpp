@@ -66,11 +66,13 @@ struct StoryMode : Mode {
     std::vector<ingredient_type> pots;
     float pot_time_left = 0;
     dish_type pot_dish;
-	struct timeval curt_time, last_time;
+	struct timeval curt_time, last_time, power_time;
 
     std::unordered_map<ingredient_type, Sprite> ingredient_map;
     std::unordered_map<dish_type, Sprite> dish_map;
     std::unordered_map<dish_type, int> health_map={{Dish1,4},{Dish2,2},{Dish3,1},{Dish4,10},{Dish5,3},{Dish0,-1}};
+	// 1 => unlock a recipe, 2 => big jump
+	std::unordered_map<dish_type, int> power_map={{Dish1,1},{Dish2,2}};
 	// std::unordered_map<dish_type, int> npc_map=
 	//Current control signals:
 	struct {
@@ -161,13 +163,15 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
-    int scene_num = 0;
+    int scene_num = 0, scene_target = 0;
+    float scene_transition = 10.f;
 
 	// backup state
 	Chef player_b;
 	std::vector<ingredient_type> backpack_b;
 	std::vector<dish_type> dishes_b;
     std::vector<ingredient_type> pots_b;
+	std::unordered_map<dish_type, int> power_map_b={{Dish1,1},{Dish2,2}};
 	void save_state(StoryMode* mode);
 	void load_state(StoryMode* mode);
 
