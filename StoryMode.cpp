@@ -30,6 +30,15 @@ Sprite const *sprite_chef_right_walk1 = nullptr;
 Sprite const *sprite_chef_right_walk2 = nullptr;
 Sprite const *sprite_chef_right_jump = nullptr;
 
+Sprite const *sprite_chef_left_stand_super = nullptr;
+Sprite const *sprite_chef_left_walk1_super = nullptr;
+Sprite const *sprite_chef_left_walk2_super = nullptr;
+Sprite const *sprite_chef_left_jump_super = nullptr;
+Sprite const *sprite_chef_right_stand_super = nullptr;
+Sprite const *sprite_chef_right_walk1_super = nullptr;
+Sprite const *sprite_chef_right_walk2_super = nullptr;
+Sprite const *sprite_chef_right_jump_super = nullptr;
+
 Sprite const *sprite_item_1 = nullptr;
 Sprite const *sprite_item_2 = nullptr;
 Sprite const *sprite_item_3 = nullptr;
@@ -99,6 +108,15 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_chef_right_walk1 = &ret->lookup("chef_rwalk1");
     sprite_chef_right_walk2 = &ret->lookup("chef_rwalk2");
     sprite_chef_right_jump = &ret->lookup("chef_rjump");
+
+    sprite_chef_left_stand_super = &ret->lookup("chef_lstand_super");
+    sprite_chef_left_walk1_super = &ret->lookup("chef_lwalk1_super");
+    sprite_chef_left_walk2_super = &ret->lookup("chef_lwalk2_super");
+    sprite_chef_left_jump_super = &ret->lookup("chef_ljump_super");
+    sprite_chef_right_stand_super = &ret->lookup("chef_rstand_super");
+    sprite_chef_right_walk1_super = &ret->lookup("chef_rwalk1_super");
+    sprite_chef_right_walk2_super = &ret->lookup("chef_rwalk2_super");
+    sprite_chef_right_jump_super = &ret->lookup("chef_rjump_super");
 
     sprite_item_1 = &ret->lookup("item_1");
     sprite_item_2 = &ret->lookup("item_2");
@@ -393,23 +411,32 @@ StoryMode::~StoryMode() {
 
 void StoryMode::save_state(StoryMode* mode) {
     mode->player_b.health = mode->player.health;
+    mode->player_b.position = mode->player.position;
     mode->backpack_b = mode->backpack;
     mode->dishes_b = mode->dishes;
     mode->pots_b = mode->pots;
+    mode->npcs_b.clear();
+    for (auto npc : mode->npcs) {
+        mode->npcs_b[npc] = *npc;
+    }
+    mode->power_map_b = mode->power_map;
 }
 
 void StoryMode::load_state(StoryMode* mode) {
     mode->player.health = mode->player_b.health;
+    mode->player.position = mode->player_b.position;
     mode->backpack = mode->backpack_b;
     mode->dishes = mode->dishes_b;
     mode->pots = mode->pots_b;
+    for (auto npc : mode->npcs) {
+        *npc = mode->npcs_b[npc];
+    }
+    mode->power_map = mode->power_map_b;
 }
 
 void StoryMode::restart(StoryMode* mode) {
-    load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), mode);
     last_time = timepoint;
     load_state(mode);
-    mode->power_map = mode->power_map_b;
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -541,6 +568,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                             Sound::play(*music_pleasure);
                             npcs[i]->eat=true;
                             eaten = true;
+                            save_state(this);
                             break;
                         }
                     }
@@ -761,7 +789,7 @@ void StoryMode::enter_scene(float elapsed) {
                 // Super jump
                 shove.y += 60.5f;
                 curt_time = timepoint;
-                if (curt_time - power_time >= 5.f) {
+                if (curt_time - power_time >= 5.5f) {
                     player.big_jump = false;
                 }
             } else {
@@ -1127,28 +1155,60 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
             switch (player.state) {
                 case Left_stand:
-                    draw.draw(*sprite_chef_left_stand, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_left_stand_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_left_stand, player.position);
+                    }
                     break;
                 case Left_walk1:
-                    draw.draw(*sprite_chef_left_walk1, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_left_walk1_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_left_walk1, player.position);
+                    }
                     break;
                 case Left_walk2:
-                    draw.draw(*sprite_chef_left_walk2, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_left_walk2_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_left_walk2, player.position);   
+                    }
                     break;
                 case Left_jump:
-                    draw.draw(*sprite_chef_left_jump, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_left_jump_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_left_jump, player.position);   
+                    }
                     break;
                 case Right_stand:
-                    draw.draw(*sprite_chef_right_stand, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_right_stand_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_right_stand, player.position);   
+                    }
                     break;
                 case Right_walk1:
-                    draw.draw(*sprite_chef_right_walk1, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_right_walk1_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_right_walk1, player.position);   
+                    }
                     break;
                 case Right_walk2:
-                    draw.draw(*sprite_chef_right_walk2, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_right_walk2_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_right_walk2, player.position);   
+                    }
                     break;
                 case Right_jump:
-                    draw.draw(*sprite_chef_right_jump, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_right_jump_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_right_jump, player.position);   
+                    }
                     break;
             }
             
@@ -1202,11 +1262,12 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.5f && scene_num != scene_target) {
                 player.health = 10;
-                save_state(this);
                 background_music->stop();
                 scene_num = scene_target;
                 Sound::play(*music_win);
-                restart(this);
+                load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
+                save_state(this);
+                last_time = timepoint;
             }
             if (scene_transition < 3.f) {
                 draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
