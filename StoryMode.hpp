@@ -101,7 +101,7 @@ struct StoryMode : Mode {
 	    {{Item18, Item17, Item19}, {true, false, false}, Dish6, 5},  // mushroom, meat, onion => steak
 	    {{Item19, Item21}, {true, false}, Dish7, 5},  // onion, water => onion soup
 	    {{Item21, Item20, Item10}, {true, false, false}, Dish8, 5},  // water, fish, lemon => steamed fish
-	    {{Item15, Item21, Item7}, {false, false, false}, Dish9, 5},  // egg, milk, orange  => orange ice cream
+	    {{Item15, Item22, Item7}, {false, false, false}, Dish9, 5},  // egg, milk, orange  => orange ice cream
 	};
 	Recipe *cooking_recipe;   // Currently cooked recipe
 	dish_type cooking_dish;   // Currently cooked recipe
@@ -164,7 +164,7 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
-    int scene_num = 0, scene_target = 0;
+    int scene_num = 2, scene_target = 2;
     float scene_transition = 10.f;
 
 	// backup state
