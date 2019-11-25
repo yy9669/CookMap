@@ -8,7 +8,6 @@ else
 endif
 
 ../dist/oh_no.opus : oh_no.wav
-	$(OPUSENC) --vbr --bitrate 128 cold-dunes.wav ../dist/cold-dunes.opus
 	$(OPUSENC) --vbr --bitrate 128 collision.wav ../dist/collision.opus
 	$(OPUSENC) --vbr --bitrate 128 eat.wav ../dist/eat.opus
 	$(OPUSENC) --vbr --bitrate 128 jump.wav ../dist/jump.opus

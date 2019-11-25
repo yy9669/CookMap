@@ -181,10 +181,6 @@ Load< Sound::Sample > icon_clonk(LoadTagDefault, []() -> Sound::Sample *{
     return new Sound::Sample(data);
 });
 
-Load< Sound::Sample > music_cold_dunes(LoadTagDefault, []() -> Sound::Sample * {
-	return new Sound::Sample(data_path("cold-dunes.opus"));
-});
-
 Load< Sound::Sample > music_collision(LoadTagDefault, []() -> Sound::Sample * {
     return new Sound::Sample(data_path("collision.opus"));
 });
