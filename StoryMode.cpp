@@ -915,7 +915,7 @@ void StoryMode::enter_scene(float elapsed) {
                 num[i]++;
                 health_cost += ingre_cost[i];
             }
-            if (player.health >= health_cost) {
+            if (player.health >= health_cost && dishes.size() < 2) {
                 player.health -= health_cost;
                 for (auto &recipe : recipes) {
                     auto num2 = num;
@@ -936,21 +936,24 @@ void StoryMode::enter_scene(float elapsed) {
                 }
                 Sound::play(*music_pot_cook);
                 pots.clear();
+            } else {
+                pot_time_left=0;
             }
         }
-        pot_time_left -= elapsed;
-        if (pot_time_left <= 0.f) {
-            if(cooking_dish!=Dish0)
-                Sound::play(*music_pot_finish);
-            else
-                Sound::play(*music_oh_no);
-            dishes.push_back(cooking_dish);
-            pot_time_left = 0.f;
-            if(cooking_dish!=Dish0){
-                for(auto show:cooking_recipe->show)
-                    show=true;
+        if (pot_time_left!=0) {
+            pot_time_left -= elapsed;
+            if (pot_time_left <= 0.f) {
+                if(cooking_dish!=Dish0)
+                    Sound::play(*music_pot_finish);
+                else
+                    Sound::play(*music_oh_no);
+                dishes.push_back(cooking_dish);
+                pot_time_left = 0.f;
+                if(cooking_dish!=Dish0){
+                    for(auto show:cooking_recipe->show)
+                        show=true;
+                }
             }
-
         }
     }
 }
