@@ -1212,10 +1212,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                           glm::u8vec4(0xff, 0xff, 0xff, (unsigned char)(255.f*(3.f-scene_transition)/0.5f)));
             }
             if (scene_transition >1.5f && scene_num != scene_target) {
+                player.health = 10;
                 save_state(this);
                 background_music->stop();
                 player.health = 10;
-
                 scene_num = scene_target;
                 restart(this);
             }

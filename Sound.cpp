@@ -9,7 +9,9 @@
 #include <exception>
 #include <iostream>
 #include <algorithm>
-
+#include <fstream>
+#include <unordered_map>
+#include "data_path.hpp"
 //local (to this file) data used by the audio system:
 namespace {
 
@@ -35,7 +37,60 @@ void mix_audio(void *, Uint8 *buffer_, int len);
 
 //------------------------ public-facing --------------------------------
 
+/* Sound cache file
+    filename_length filename data_length data ...
+*/
+const std::string SOUND_CACHE_FILENAME = "sound_cache.bin";
+std::unordered_map<std::string, std::vector<float>*> cache_data;
+bool getSoundData(std::string const &filename2, std::vector<float>* data) {
+    std::string filename = filename2.substr(filename2.find_last_of("/")+1);
+    if (cache_data.count(filename)) {
+        *data = *cache_data[filename];
+        return true;
+    }
+    std::ifstream f(data_path(SOUND_CACHE_FILENAME), std::ios_base::binary);
+    if (!f) {
+        return false;
+    }
+    f.seekg(0, std::ios_base::end);
+    int totallength = f.tellg();
+    f.seekg(0, std::ios_base::beg);
+
+    cache_data.clear();
+    int length;
+    char *fn;
+    while (f.tellg() < totallength) {
+        f.read((char*)&length, 4);
+        fn = new char[length];
+        f.read(fn, length);
+        f.read((char*)&length, 4);
+        std::vector<float> *v = new std::vector<float>;
+        v->resize(length);
+        f.read((char*)&v->front(), length* sizeof(float));
+        cache_data[fn] = v;
+    }
+    if (cache_data.count(filename)) {
+        *data = *cache_data[filename];
+        return true;
+    }
+    return false;
+}
+
+void saveSoundData(std::string const &filename2, std::vector<float>* data) {
+    std::string filename = filename2.substr(filename2.find_last_of("/")+1);
+    std::fstream f(data_path(SOUND_CACHE_FILENAME), std::ios_base::binary | std::ios_base::app);
+    int length = filename.size() + 1;
+    f.write((char*)&length, 4);
+    f.write(filename.c_str(), length);
+    length = data->size();
+    f.write((char*)&length, 4);
+    f.write((char*)&data->front(), length* sizeof(float));
+}
+
 Sound::Sample::Sample(std::string const &filename) {
+    if (getSoundData(filename, &data)) {
+        return;
+    }
 	if (filename.size() >= 4 && filename.substr(filename.size()-4) == ".wav") {
 		load_wav(filename, &data);
 	} else if (filename.size() >= 5 && filename.substr(filename.size()-5) == ".opus") {
@@ -43,6 +98,7 @@ Sound::Sample::Sample(std::string const &filename) {
 	} else {
 		throw std::runtime_error("Sample '" + filename + "' doesn't end in either \".png\" or \".opus\" -- unsure how to load.");
 	}
+    saveSoundData(filename, &data);
 }
 
 Sound::Sample::Sample(std::vector< float > const &data_) : data(data_) {
