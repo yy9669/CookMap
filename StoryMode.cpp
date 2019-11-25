@@ -662,135 +662,84 @@ void StoryMode::enter_scene(float elapsed) {
             glm::vec2 &init_position_i = npcs[i]->init_position;
             glm::vec2 &velocity_i = npcs[i]->velocity;
             float left_bound = 20;
-            switch (npcs[i]->type)
+            if (npcs[i]->eat) {
+                        velocity_i.x = 0;
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.y  > 2000.0f) {
+                            velocity_i.y = 0;
+                        }
+            }else{
+                            switch (npcs[i]->type)
             {
-                //TODO: add different motions for npc
-                case npc0:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                    //TODO: add different motions for npc
+                    case npc0:
+                            position_i = position_i + velocity_i * elapsed;
+                            if (position_i.x <= init_position_i.x) {
+                                position_i.x = init_position_i.x;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x > init_position_i.x 
+                                && position_i.x - init_position_i.x > 140.0f) {
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 240.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= init_position_i.x) {
-                            position_i.x = init_position_i.x;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x > init_position_i.x 
-                            && position_i.x - init_position_i.x > 140.0f) {
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                case npc1:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                        break;
+                    case npc1:
+                            position_i = position_i + velocity_i * elapsed;
+                            if (position_i.x <= init_position_i.x) {
+                                position_i.x = init_position_i.x;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x > init_position_i.x 
+                                && position_i.x - init_position_i.x > 30.0f) {
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 100.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= init_position_i.x) {
-                            position_i.x = init_position_i.x;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x > init_position_i.x 
-                            && position_i.x - init_position_i.x > 30.0f) {
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                case npc2:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                        break;
+                    case npc2:
+                            position_i = position_i + velocity_i * elapsed;
+                            velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
+                            if (position_i.x >= init_position_i.x) {
+                                position_i.x = init_position_i.x;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x < init_position_i.x 
+                                && init_position_i.x - position_i.x > 200.0f) {
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 240.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        position_i = position_i + velocity_i * elapsed;
-                        velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
-                        if (position_i.x >= init_position_i.x) {
-                            position_i.x = init_position_i.x;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x < init_position_i.x 
-                            && init_position_i.x - position_i.x > 200.0f) {
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                case npc3:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                        break;
+                    case npc3:
+                            position_i = position_i + velocity_i * elapsed;
+                            velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
+                            if (position_i.x <= init_position_i.x) {
+                                position_i.x = init_position_i.x;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x > init_position_i.x 
+                                && position_i.x - init_position_i.x  > 200.0f) {
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 240.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        position_i = position_i + velocity_i * elapsed;
-                        velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
-                        if (position_i.x <= init_position_i.x) {
-                            position_i.x = init_position_i.x;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x > init_position_i.x 
-                            && position_i.x - init_position_i.x  > 200.0f) {
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                case npc4:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                        break;
+                    case npc4:
+                            if (velocity_i.x > 0) {
+                                velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
+                            } else {
+                                velocity_i.x = -90.0f;
+                            }
+                            left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
+                            position_i = position_i + velocity_i * elapsed;
+                            if (position_i.x <= left_bound) {
+                                position_i.x = left_bound;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x - init_position_i.x > 170.0f) {
+                                position_i.x = init_position_i.x + 170.0f;
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 100.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        if (velocity_i.x > 0) {
-                            velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
-                        } else {
-                            velocity_i.x = -90.0f;
-                        }
-                        left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= left_bound) {
-                            position_i.x = left_bound;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x - init_position_i.x > 170.0f) {
-                            position_i.x = init_position_i.x + 170.0f;
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    default:
+                        break;
+                }
             }
+
         }
 
 		//player motion:
@@ -902,6 +851,11 @@ void StoryMode::enter_scene(float elapsed) {
 //                player.health = max(0,player.health);
 
                 Sound::play(*music_collision,0.5);
+                // some npc will steal your items or dishes
+                if(npcs[i]->type==npc2 && dishes.size()>0)
+                    dishes.erase(dishes.begin());
+                if(npcs[i]->type==npc3 && backpack.size()>0)
+                    backpack.erase(backpack.begin());       
                 if (position.x <= npcs[i]->position.x)
                     velocity.x = -200.0f;
                 else
