@@ -98,9 +98,9 @@ struct StoryMode : Mode {
 	    {{Item12, Item15, Item14}, {true, true, false}, Dish4, 5},  // broccoli, egg, avocado => salad
 	    {{Item12, Item15, Item8}, {true, true, false}, Dish4, 5},  // broccoli, egg, tomato => salad
 	    {{Item16, Item17, Item3}, {true, false, false}, Dish5, 5},  // twig, meat, pepper => bbq
-	    {{Item17, Item18, Item19}, {true, false, false}, Dish6, 5},  // meat, mushroom, onion => steak
+	    {{Item18, Item17, Item19}, {true, false, false}, Dish6, 5},  // mushroom, meat, onion => steak
 	    {{Item19, Item21}, {true, false}, Dish7, 5},  // onion, water => onion soup
-	    {{Item21, Item20, Item10}, {false, false, false}, Dish8, 5},  // water => steamed fish
+	    {{Item21, Item20, Item10}, {true, false, false}, Dish8, 5},  // water, fish, lemon => steamed fish
 	    {{Item15, Item21, Item7}, {false, false, false}, Dish9, 5},  // egg, milk, orange  => orange ice cream
 	};
 	Recipe *cooking_recipe;   // Currently cooked recipe
