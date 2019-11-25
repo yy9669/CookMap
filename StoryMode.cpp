@@ -804,7 +804,8 @@ void StoryMode::enter_scene(float elapsed) {
                     player.big_jump = false;
                 }
             } else {
-                shove.y += 40.5f;
+                // shove.y += 40.5f;
+                shove.y += 60.5f;
             }
             jumping = true;
             controls.up = false;
@@ -1248,6 +1249,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 background_music->stop();
                 player.health = 10;
                 scene_num = scene_target;
+                Sound::play(*music_win);
                 restart(this);
             }
             if (scene_transition < 3.f) {

@@ -7,7 +7,7 @@ else
 	OPUSENC = ../../nest-libs/macos/opus-tools/bin/opusenc
 endif
 
-../dist/oh_no.opus : oh_no.wav
+../dist/jump.opus : jump.wav
 	$(OPUSENC) --vbr --bitrate 128 collision.wav ../dist/collision.opus
 	$(OPUSENC) --vbr --bitrate 128 eat.wav ../dist/eat.opus
 	$(OPUSENC) --vbr --bitrate 128 jump.wav ../dist/jump.opus
