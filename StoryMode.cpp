@@ -523,7 +523,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
             show_recipe = !show_recipe;
             if(show_recipe){
                 tmp_instruction_time=5.0f;
-                tmp_instruction="WHICH  INGREDIENTS  DO  YOU  NEED?\nUNLOCK  MORE  RECIPES  IN  YOUR\nADVENTURE.";
+                tmp_instruction="WONDERING  WHAT  TO  COOK?\nJUST  GUESS  AND  TRY !\nINGREDIENTS  WILL  GROW  BACK";
             }
             show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
@@ -819,14 +819,14 @@ void StoryMode::enter_scene(float elapsed) {
 
         if(position.x>20*48 && !COOK_instruction){
                 COOK_instruction=true;
-                tmp_instruction_time=10.0f;
-                tmp_instruction="COOK  SOME  INGREDIENTS  COST  ENERGY\nEAT  DISHES  TO  REVIVE  ENERGE,\nOR  EVEN  GET  SUPERPOWERS!";
+                tmp_instruction_time=20.0f;
+                tmp_instruction="COOKING  COSTS  ENERGY\nDRAG  DISHES  TO  SELF  TO  RESTORE  ENERGY,\nAND  GET  EVEN  SUPERPOWERS!";
         }
 
         if(position.x>40*48 && !NPC_instruction){
                 NPC_instruction=true;
                 tmp_instruction_time=10.0f;
-                tmp_instruction="THERE  IS  AN  ALIEN !\nDRAG  DISHES  TO  BRIBE?\nSOME  ALIENS  HAVE  SUPERPOWERS!";
+                tmp_instruction="THERE  IS  AN  ALIEN !\nDRAG  DISHES  TO  BRIBE?\nSOME  ALIENS  CAN  STEAL";
         }
 		glm::vec2 shove = glm::vec2(0.0f);
 		if (controls.left) shove.x -= 28.0f;
@@ -1376,29 +1376,31 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
 void StoryMode::draw_instruction(DrawSprites& draw) {
     for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 5; ++j) {
+        for (int j = 0; j < 3; ++j) {
             draw.draw(*sprite_instruction_panel,
-                    glm::vec2(draw_length-7-item_size*(i+1), 615-item_size*j)+view_min);
+                    glm::vec2(draw_length-7-item_size*(i+1), 650-item_size*j)+view_min);
         }
     }
     draw.draw_text(
             "a,d   to   move,   w, space to jump\n"
-            "click   to   open   the recipe\n"
+            "click   to   open   the   recipe\n"
             "open   pot   and   drag   items   i n\n"
-            "click   fire   to   cook\n"
-            "drag   dish   to   enemy   to   bribe\n"
-            "drag   dish   to   self   to   heal\n"
             "click   bulb   to   close   help",
-            glm::vec2(draw_length-item_size*9, 630)+view_min, 0.068);
+            glm::vec2(draw_length-item_size*9, 660)+view_min, 0.068);
 }
 
 void StoryMode::draw_tmp_instruction(DrawSprites& draw) {
-    for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 3; ++j) 
-            draw.draw(*sprite_instruction_panel,
-                    glm::vec2(10+item_size*i, 650-item_size*j)+view_min);
-    }
-    draw.draw_text(tmp_instruction, glm::vec2(10, 650)+view_min, 0.068);
+    glm::vec2  anchor_out = glm::vec2(0.0f,0.0f);
+    draw.draw_text(tmp_instruction, glm::vec2(10, 650)+view_min, 0.068, glm::u8vec4(0xff, 0xff, 0xff, 0xff), &anchor_out);
+    glm::vec2 anchor_in=glm::vec2(10, 650)+view_min;
+    float delta_x=anchor_out.x-anchor_in.x;
+    float delta_y=anchor_in.y-anchor_out.y;
+
+    for (int i = 0; i < int(delta_x/48)+1; ++i) {
+        for (int j = 0; j < int(delta_y/48)+2; ++j) 
+            draw.draw(*sprite_instruction_panel, glm::vec2(10+item_size*i, 650-item_size*j)+view_min);
+    } 
+    draw.draw_text(tmp_instruction, glm::vec2(10, 650)+view_min, 0.068);   
 }
 
 void StoryMode::draw_pot(DrawSprites& draw) {
