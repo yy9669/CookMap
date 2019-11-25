@@ -90,14 +90,17 @@ struct StoryMode : Mode {
 	float jump_interval = 0.f;
 
 	std::vector<Recipe> recipes = {
-		{{Item11, Item2}, {true, true}, Dish2, 4},  // bread, sausage => hot dog
-	    {{Item1, Item2, Item3}, {true, true, true}, Dish1, 5},  // flour, sausage, pepper => pizza
-	    {{Item4, Item5}, {true, false}, Dish3, 3},  // apple, dragon fruit => juice
-        {{Item5, Item6}, {true, false}, Dish3, 3},  // dragon fruit, grape => juice
-        {{Item6, Item4}, {true, false}, Dish3, 3},  // grape, apple => juice
-	    {{Item12, Item14,Item15}, {true, false, true}, Dish4, 2},  // broccoli, avocado, egg => salad
-	    {{Item12, Item8,Item15}, {true, false, true}, Dish4, 2},  // broccoli, tomato, egg => salad
-	    {{Item16,Item17, Item18}, {false, false, false}, Dish5, 6},  // twig, steak, mushroom => bbq
+		{{Item11, Item2}, {true, true}, Dish2, 5},  // bread, sausage => hot dog
+	    {{Item4, Item5, Item8}, {true, true, true}, Dish3, 5},  // apple, dragon fruit,tamato => juice
+        {{Item6, Item7, Item9}, {true, true, false}, Dish3, 5},  // grape, orange, kiwi => juice
+        {{Item1, Item2, Item3}, {true, true, false}, Dish1, 5},  // flour, sausage, pepper => pizza
+	    {{Item12, Item15, Item14,}, {true, true, false}, Dish4, 5},  // broccoli, egg, avocado => salad
+	    {{Item12, Item15, Item8}, {true, true, false}, Dish4, 5},  // broccoli, egg, tomato => salad
+	    {{Item16,Item17, Item3}, {true, false, false}, Dish5, 5},  // twig, meat, pepper => bbq
+	    {{Item17, Item18, Item19}, {true, false, false}, Dish6, 5},  // meat, mushroom, onion => steak
+	    {{Item19, Item21}, {true, false}, Dish7, 5},  // onion, water => onion soup
+	    {{Item21, Item20, Item10}, {false, false, false}, Dish8, 5},  // water => steamed fish
+	    {{Item15, Item21, Item7}, {false, false, false}, Dish9, 5},  // egg, milk, orange  => orange ice cream
 	};
 	Recipe *cooking_recipe;   // Currently cooked recipe
 	dish_type cooking_dish;   // Currently cooked recipe
@@ -119,7 +122,7 @@ struct StoryMode : Mode {
         {Item14, 1},  // avocado
         {Item15, 1},  // egg
         {Item16, 1},  // twig
-        {Item17, 2},  // steak
+        {Item17, 2},  // meat
         {Item18, 1},  // mushroom
         {Item19, 1},  // onion
         {Item20, 1},  // fish
@@ -160,6 +163,7 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
+    int scene_num = 0;
 
 	// backup state
 	Chef player_b;

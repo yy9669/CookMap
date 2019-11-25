@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 enum npc_type {
-    npc0, npc1, npc2, npc3
+    npc0, npc1, npc2, npc3, npc4, npc_total
 };
 
 class Npc {
@@ -15,20 +15,7 @@ public:
         position = glm::vec2(x, y);
         init_position = glm::vec2(x, y);
         favorates = {npc_dish_};
-        switch (type) {
-            case npc0:
-                attack = 2;
-                break;
-            case npc1:
-                attack = 4;
-                break;
-            case npc2:
-                attack = 6;
-                break;
-            case npc3:
-                attack = 8;
-                break;
-        }
+        attack = 2 * (int)type + 2;
     }
 	virtual ~Npc() {}
 
