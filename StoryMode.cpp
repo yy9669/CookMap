@@ -817,13 +817,13 @@ void StoryMode::enter_scene(float elapsed) {
         glm::vec2 &velocity = player.velocity;
         glm::vec2 &radius = player.radius;
 
-        if(position.x>20*48 && !COOK_instruction){
+        if(position.x>20*48 && !COOK_instruction  && scene_num==0){
                 COOK_instruction=true;
                 tmp_instruction_time=20.0f;
                 tmp_instruction="COOKING  COSTS  ENERGY\nDRAG  DISHES  TO  SELF  TO  RESTORE  ENERGY,\nAND  GET  EVEN  SUPERPOWERS!";
         }
 
-        if(position.x>40*48 && !NPC_instruction){
+        if(position.x>40*48 && !NPC_instruction  && scene_num==0){
                 NPC_instruction=true;
                 tmp_instruction_time=10.0f;
                 tmp_instruction="THERE  IS  AN  ALIEN !\nDRAG  DISHES  TO  BRIBE?\nSOME  ALIENS  CAN  STEAL";
