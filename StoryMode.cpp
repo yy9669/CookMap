@@ -80,7 +80,9 @@ Sprite const *sprite_pot_normal = nullptr;
 Sprite const *sprite_pot_cooking = nullptr;
 Sprite const *sprite_fire = nullptr;
 Sprite const *sprite_black = nullptr;
-
+Sprite const *sprite_add = nullptr;
+Sprite const *sprite_unlock = nullptr;
+Sprite const *sprite_jump = nullptr;
 
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("cookmap"));
@@ -152,6 +154,9 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_fire = &ret->lookup("bonfire");
     sprite_item_question = &ret->lookup("question");
     sprite_black = &ret->lookup("black");
+    sprite_add = &ret->lookup("add");
+    sprite_unlock = &ret->lookup("unlock");
+    sprite_jump = &ret->lookup("jump");
 	return ret;
 });
 
@@ -1178,31 +1183,32 @@ void StoryMode::draw_pot(DrawSprites& draw) {
 }
 
 void StoryMode::draw_recipe(DrawSprites& draw) {
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 8; ++i) {
         for (unsigned j = 0; j < 1.3* recipes.size(); ++j) {
             draw.draw(*sprite_instruction_panel,
-                      glm::vec2(665-120+item_size*i, 645-item_size*j)+view_min);
+                      glm::vec2(665-216+item_size*i, 645-item_size*j)+view_min);
         }
     }
 
     for (unsigned i = 0; i < recipes.size(); ++i) {
         for (unsigned j = 0; j < recipes[i].ingredients.size(); ++j) {
-            auto pos = glm::vec2(677-120+60.f*j, 631-60.f*i)+view_min;
+            auto pos = glm::vec2(677-216+60.f*j, 631-60.f*i)+view_min;
             if (recipes[i].show[j]) {
                 draw.draw(ingredient_map[recipes[i].ingredients[j]], pos);
-                for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
-                    draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
-                }
+                // for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
+                //     draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
+                // }
             } else {
                 draw.draw(*sprite_item_question, pos);
             }
         }
-        auto pos = glm::vec2(865.f-120, 631-60.f*i)+view_min;
+        auto pos = glm::vec2(865.f-216, 631-60.f*i)+view_min;
         draw.draw(*sprite_tile[scene_num][0], pos, glm::vec2(0.05f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
-        pos = glm::vec2(885.f-120, 631-60.f*i)+view_min;
+        pos = glm::vec2(885.f-216, 631-60.f*i)+view_min;
         draw.draw(dish_map[recipes[i].dish], pos);
+        draw.draw(*sprite_add, pos+glm::vec2(60, 0), 0.5);      
         for (int k = health_map[recipes[i].dish]; k > 0; --k) {
-            draw.draw(*sprite_health_box, pos+glm::vec2(43-k*4, 2), 0.4);
+            draw.draw(*sprite_health_box, pos+glm::vec2(96, 0)+glm::vec2(43-k*4, 2), 0.4);
         }
     }
 }
