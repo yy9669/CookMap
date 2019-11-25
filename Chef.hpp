@@ -21,4 +21,5 @@ public:
     glm::vec2 radius = glm::vec2(38.0f, 78.0f);
     chef_state state = Right_stand;
     int health = 10;
+    bool big_jump = false;
 };

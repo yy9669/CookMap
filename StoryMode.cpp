@@ -398,6 +398,7 @@ void StoryMode::restart(StoryMode* mode) {
     load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), mode);
     gettimeofday(&mode->last_time, NULL);
     load_state(mode);
+    mode->power_map = mode->power_map_b;
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -486,9 +487,35 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         if (collision(dish_drag_pos, glm::vec2(48,48), player.position, player.radius)) {
             // eat dish
             Sound::play(*music_eat);
-            player.health += health_map[dragged_dish];
-            if (player.health > 10) {
-                player.health = 10;
+            if (power_map.find(dragged_dish) != power_map.end()) {
+                bool unlock_one = false;
+                switch (power_map[dragged_dish])
+                {
+                case 1:
+                    for (unsigned i = 0; i < recipes.size(); ++i) {
+                        for (unsigned j = 0; j < recipes[i].ingredients.size(); ++j) {
+                            if (!recipes[i].show[j]) {
+                                recipes[i].show[j] = true;
+                                unlock_one = true;
+                                break;
+                            }
+                        }
+                        if (unlock_one)
+                            break;
+                    }
+                    break;
+                case 2:
+                    player.big_jump = true;
+                    gettimeofday(&power_time, NULL);
+                default:
+                    break;
+                }
+                power_map.erase(dragged_dish);
+            } else {
+                player.health += health_map[dragged_dish];
+                if (player.health > 10) {
+                    player.health = 10;
+                }
             }
         } else if (dish_drag_pos.x >= garbage_x+view_min.x && dish_drag_pos.x <= garbage_x+item_size+view_min.x  &&
             (draw_width-dish_drag_pos.y) >= garbage_y+view_min.y && (draw_width-dish_drag_pos.y) <= garbage_y+item_size+view_min.y) {
@@ -668,9 +695,16 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.right) shove.x += 28.0f;
         jump_interval = max(0.f, jump_interval - elapsed);
 		if (controls.up && abs(velocity.y) < 1e-4 && jump_interval == 0.f) {
-//		    shove.y += 40.5f;
-            // Super jump
-             shove.y += 60.5f;
+            if (player.big_jump) {
+                // Super jump
+                shove.y += 60.5f;
+                gettimeofday(&curt_time, NULL);
+                if (curt_time.tv_sec - power_time.tv_sec >= 5) {
+                    player.big_jump = false;
+                }
+            } else {
+                shove.y += 40.5f;
+            }
             controls.up = false;
             jump_interval = 1.2f;  // allow jump after 1.2 secs
 		}
