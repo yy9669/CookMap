@@ -371,7 +371,8 @@ StoryMode::StoryMode() {
         {Item19,*sprite_item_19}, {Item20,*sprite_item_20}, {Item21,*sprite_item_21}, {Item22,*sprite_item_22}
     }); 
     dish_map.insert ( {{Dish0, *sprite_dish_0},{Dish1, *sprite_dish_1},{Dish2, *sprite_dish_2},{Dish3, *sprite_dish_3},
-        {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}} ); 
+        {Dish4, *sprite_dish_4},{Dish5, *sprite_dish_5}, {Dish6, *sprite_dish_6}, {Dish7, *sprite_dish_7}, 
+        {Dish8, *sprite_dish_8}, {Dish9, *sprite_dish_9}});
 
     load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
     gettimeofday(&last_time, NULL);
@@ -1231,9 +1232,9 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
             auto pos = glm::vec2(677-216+60.f*j, 631-60.f*i)+view_min;
             if (recipes[i].show[j]) {
                 draw.draw(ingredient_map[recipes[i].ingredients[j]], pos);
-                // for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
-                //     draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
-                // }
+                for (int k = ingre_cost[recipes[i].ingredients[j]]; k > 0; --k) {
+                    draw.draw(*sprite_health_box, pos+glm::vec2(43-k*8, 4), 0.4);
+                }
             } else {
                 draw.draw(*sprite_item_question, pos);
             }
