@@ -709,7 +709,7 @@ void StoryMode::enter_scene(float elapsed) {
 		if (controls.right) shove.x += 28.0f;
         jump_interval = max(0.f, jump_interval - elapsed);
         if (player.state != Left_jump && player.state != Right_jump && jumping) {
-            jump_interval = 0.2f;
+            jump_interval = 0.1f;
             jumping = false;
         }
 		if (controls.up && abs(velocity.y) < 1e-4 && jump_interval == 0.f) {
@@ -1160,6 +1160,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.5f && scene_num != scene_target) {
                 save_state(this);
+                player.health = 10;
                 background_music->stopped=true;
                 scene_num = scene_target;
                 restart(this);
@@ -1185,7 +1186,7 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
         }
     }
     draw.draw_text(
-            "a,d   to   move,   w, space to jump\n"
+            "a,d   to   move,  w or space to jump\n"
             "click   to   open   the recipe\n"
             "open   pot   and   drag   items   i n\n"
             "click   fire   to   cook\n"
