@@ -468,28 +468,36 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         if (evt.button.x>= dish_start_x && evt.button.x<=dish_start_x+item_inteval*(dish_num-1)+item_size &&
            (evt.button.x-dish_start_x)%item_inteval<item_size && evt.button.y>=dish_start_y && evt.button.y<=dish_start_y+item_size &&
            int((evt.button.x-dish_start_x)/item_inteval) <int(dishes.size() ) ) {
-            dragged_dish=dishes[(evt.button.x-dish_start_x)/item_inteval];
-            dishes.erase(dishes.begin() + (evt.button.x-dish_start_x)/item_inteval );
+            int index=(evt.button.x-dish_start_x)/item_inteval;
+            dragged_dish=dishes[index];
+            dishes.erase(dishes.begin() + index);
             dish_drag = true;
             dish_drag_pos = glm::vec2(evt.button.x,draw_width-evt.button.y)+view_min;
+            drag_offset = glm::vec2(evt.button.x-dish_start_x-index*item_inteval,dish_start_y+item_size-evt.button.y);
         } else if (evt.button.x>= item_start_x && evt.button.x<=item_start_x+item_inteval*(item_num-1)+item_size &&
                    (evt.button.x-item_start_x)%item_inteval<item_size && evt.button.y>=item_start_y && evt.button.y<=item_start_y+item_size &&
                    int((evt.button.x-item_start_x)/item_inteval) <int(backpack.size() ) ) {
             // drag from backpack
-            dragging_ingre_type = backpack[(evt.button.x-item_start_x)/item_inteval];
-            backpack.erase(backpack.begin() + (evt.button.x-item_start_x)/item_inteval );
+            int index=(evt.button.x-item_start_x)/item_inteval;
+            dragging_ingre_type = backpack[index];
+            backpack.erase(backpack.begin() + index );
             ingre_drag = true;
             drag_from_backpack = true;
+            ingre_drag_pos = glm::vec2(item_start_x+index*item_inteval,draw_width-item_start_y-item_size)+view_min;
             ingre_drag_pos = glm::vec2(evt.button.x,draw_width-evt.button.y)+view_min;
+            drag_offset = glm::vec2(evt.button.x-item_start_x-index*item_inteval,item_start_y+item_size-evt.button.y);
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size &&
                    (evt.button.y-77)%60<item_size && evt.button.y>=77 && evt.button.y<=245 &&
                    int((evt.button.y-77)/60) <int(pots.size() ) ) {
             // drag from pot
-            dragging_ingre_type = pots[(evt.button.y-77)/60];
-            pots.erase(pots.begin() + (evt.button.y-77)/60 );
+            int index = (evt.button.y-77)/60;
+            dragging_ingre_type = pots[index];
+            pots.erase(pots.begin() + index );
             ingre_drag = true;
             drag_from_backpack = false;
+            //ingre_drag_pos = glm::vec2(pot_x+item_start_x*item_inteval,draw_width-item_start_y-item_size)+view_min;
             ingre_drag_pos = glm::vec2(evt.button.x,draw_width-evt.button.y)+view_min;
+            drag_offset = glm::vec2(evt.button.x-pot_x,77+index*60+48-evt.button.y);
         } else if (evt.button.x>= help_x && evt.button.x<=help_x+item_size &&
                    evt.button.y>=help_y && evt.button.y<=help_y+item_size) {
 
@@ -1244,11 +1252,11 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
 
             if(dish_drag){
-                draw.draw(dish_map[dragged_dish], dish_drag_pos);
+                draw.draw(dish_map[dragged_dish], dish_drag_pos-drag_offset);
             }
 
             if(ingre_drag){
-                draw.draw(ingredient_map[dragging_ingre_type] , ingre_drag_pos);
+                draw.draw(ingredient_map[dragging_ingre_type] , ingre_drag_pos-drag_offset);
             }
 
             if (scene_transition < 0.5f) {
