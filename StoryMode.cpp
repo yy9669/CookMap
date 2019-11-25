@@ -654,6 +654,7 @@ void StoryMode::enter_scene(float elapsed) {
             glm::vec2 &position_i = npcs[i]->position;
             glm::vec2 &init_position_i = npcs[i]->init_position;
             glm::vec2 &velocity_i = npcs[i]->velocity;
+            float left_bound = 20;
             switch (npcs[i]->type)
             {
                 //TODO: add different motions for npc
@@ -768,9 +769,10 @@ void StoryMode::enter_scene(float elapsed) {
                         } else {
                             velocity_i.x = -90.0f;
                         }
+                        left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
                         position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= init_position_i.x - 900.0f) {
-                            position_i.x = init_position_i.x - 900.0f;
+                        if (position_i.x <= left_bound) {
+                            position_i.x = left_bound;
                             velocity_i.x = -velocity_i.x;
                         } else if (position_i.x - init_position_i.x > 170.0f) {
                             position_i.x = init_position_i.x + 170.0f;
