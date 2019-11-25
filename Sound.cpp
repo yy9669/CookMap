@@ -53,7 +53,7 @@ bool getSoundData(std::string const &filename2, std::vector<float>* data) {
         return false;
     }
     f.seekg(0, std::ios_base::end);
-    int totallength = f.tellg();
+    std::streamoff totallength = f.tellg();
     f.seekg(0, std::ios_base::beg);
 
     cache_data.clear();
