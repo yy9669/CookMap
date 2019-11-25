@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <algorithm>
 
 using namespace std;
 
@@ -375,7 +376,7 @@ StoryMode::StoryMode() {
         ,{Dish8, *sprite_dish_8}, {Dish9, *sprite_dish_9}} ); 
 
     load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
-    gettimeofday(&last_time, NULL);
+    last_time = timepoint;
     save_state(this);
 }
 
@@ -398,7 +399,7 @@ void StoryMode::load_state(StoryMode* mode) {
 
 void StoryMode::restart(StoryMode* mode) {
     load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), mode);
-    gettimeofday(&mode->last_time, NULL);
+    last_time = timepoint;
     load_state(mode);
     mode->power_map = mode->power_map_b;
 }
@@ -508,7 +509,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                     break;
                 case 2:
                     player.big_jump = true;
-                    gettimeofday(&power_time, NULL);
+                    power_time = timepoint;
                 default:
                     break;
                 }
@@ -646,6 +647,7 @@ void StoryMode::resolve_collision(glm::vec2 &position, glm::vec2 radius,
 }
 
 void StoryMode::enter_scene(float elapsed) {
+    timepoint += elapsed;
 	{
         //Npc motion:
         for (unsigned i = 0; i < npcs.size(); i++) {
@@ -800,8 +802,8 @@ void StoryMode::enter_scene(float elapsed) {
             if (player.big_jump) {
                 // Super jump
                 shove.y += 60.5f;
-                gettimeofday(&curt_time, NULL);
-                if (curt_time.tv_sec - power_time.tv_sec >= 5) {
+                curt_time = timepoint;
+                if (curt_time - power_time >= 5.f) {
                     player.big_jump = false;
                 }
             } else {
@@ -828,9 +830,8 @@ void StoryMode::enter_scene(float elapsed) {
             velocity = glm::vec2(velocity.x, -500.0f);
         }
 
-        gettimeofday(&curt_time, NULL);
-        auto time_since_last = (curt_time.tv_sec - last_time.tv_sec) * 1000 
-            + (curt_time.tv_usec - last_time.tv_usec) / 1000;
+        curt_time = timepoint;
+        auto time_since_last = (curt_time - last_time) * 1000;
         // change player state to draw animations
         if (velocity.y > 0.0f || velocity.y <= -16.0f) {
             if (velocity.x < 0.0f || player.state == Left_stand) {
@@ -852,14 +853,12 @@ void StoryMode::enter_scene(float elapsed) {
                 if (player.state == Right_walk1) {
                     if (time_since_last > 300) {
                         player.state = Right_walk2;
-                        last_time.tv_sec = curt_time.tv_sec;
-                        last_time.tv_usec = curt_time.tv_usec;
+                        last_time = timepoint;
                     } 
                 } else {
                     if (time_since_last > 300) {
                         player.state = Right_walk1;
-                        last_time.tv_sec = curt_time.tv_sec;
-                        last_time.tv_usec = curt_time.tv_usec;
+                        last_time = timepoint;
                     }
                 }
             } else if (velocity.x < 0.0f && velocity.x > -20.0f) {
@@ -868,14 +867,12 @@ void StoryMode::enter_scene(float elapsed) {
                 if (player.state == Left_walk1) {
                     if (time_since_last > 300) {
                         player.state = Left_walk2;
-                        last_time.tv_sec = curt_time.tv_sec;
-                        last_time.tv_usec = curt_time.tv_usec;
+                        last_time = timepoint;
                     }
                 } else {
                     if (time_since_last > 300) {
                         player.state = Left_walk1;
-                        last_time.tv_sec = curt_time.tv_sec;
-                        last_time.tv_usec = curt_time.tv_usec;
+                        last_time = timepoint;
                     }
                 }
             }
