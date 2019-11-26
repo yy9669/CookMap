@@ -521,11 +521,19 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                    evt.button.y>=recipe_y && evt.button.y<=recipe_y+item_size) {
                 Sound::play(*icon_click);
             show_recipe = !show_recipe;
+            if(show_recipe){
+                tmp_instruction_time=5.0f;
+                tmp_instruction="WHICH  INGREDIENTS  DO  YOU  NEED?\nUNLOCK  MORE  RECIPES  IN  YOUR\nADVENTURE.";
+            }
             show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=pot_y && evt.button.y<=pot_y+item_size) {
                 Sound::play(*icon_click);      
             show_pot = !show_pot;
+            if(show_pot){
+                tmp_instruction_time=5.0f;
+                tmp_instruction="DRAG  INGREDIENT  TO  THE  POT\nCLICK  THE  FIRE  TO  COOK";
+            }
             show_instruction = false;
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=263 && evt.button.y<=311 &&
@@ -809,6 +817,17 @@ void StoryMode::enter_scene(float elapsed) {
         glm::vec2 &velocity = player.velocity;
         glm::vec2 &radius = player.radius;
 
+        if(position.x>20*48 && !COOK_instruction){
+                COOK_instruction=true;
+                tmp_instruction_time=10.0f;
+                tmp_instruction="COOK  SOME  INGREDIENTS  COST  ENERGY\nEAT  DISHES  TO  REVIVE  ENERGE,\nOR  EVEN  GET  SUPERPOWERS!";
+        }
+
+        if(position.x>40*48 && !NPC_instruction){
+                NPC_instruction=true;
+                tmp_instruction_time=10.0f;
+                tmp_instruction="THERE  IS  AN  ALIEN !\nDRAG  DISHES  TO  BRIBE?\nSOME  ALIENS  HAVE  SUPERPOWERS!";
+        }
 		glm::vec2 shove = glm::vec2(0.0f);
 		if (controls.left) shove.x -= 28.0f;
 		if (controls.right) shove.x += 28.0f;
@@ -899,10 +918,15 @@ void StoryMode::enter_scene(float elapsed) {
 
         position = position + velocity * elapsed * (float)0.5;
 
-        //---- collision handling ----
-        // Npc detection
+        // update cd 
         stealcd-=elapsed;
         stealcd=max(0.0f,stealcd);
+        tmp_instruction_time-=elapsed;
+        tmp_instruction_time=max(0.0f,tmp_instruction_time);
+
+        //---- collision handling ----
+        // Npc detection
+
         for (unsigned i = 0; i < npcs.size(); i++) {
             glm::vec2 box = npcs[i]->position;
             glm::vec2 box_radius = npcs[i]->radius;
@@ -1068,6 +1092,8 @@ void StoryMode::enter_scene(float elapsed) {
                 pots.clear();
             } else {
                 Sound::play(*music_deny);
+                tmp_instruction_time=1.0f;
+                tmp_instruction="WE  NEED  MORE  ENERGY  TO  COOK  IT";
                 pot_time_left=0;
             }
         }
@@ -1280,9 +1306,11 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 winned=true;
             }
 
-            if (show_instruction) {
+            if (show_instruction)
                 draw_instruction(draw);
-            }
+
+            if (tmp_instruction_time>0.0f)
+                draw_tmp_instruction(draw);
 
             if (show_recipe) {
                 draw_recipe(draw);
@@ -1362,6 +1390,15 @@ void StoryMode::draw_instruction(DrawSprites& draw) {
             "drag   dish   to   self   to   heal\n"
             "click   bulb   to   close   help",
             glm::vec2(draw_length-item_size*9, 630)+view_min, 0.068);
+}
+
+void StoryMode::draw_tmp_instruction(DrawSprites& draw) {
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 3; ++j) 
+            draw.draw(*sprite_instruction_panel,
+                    glm::vec2(10+item_size*i, 650-item_size*j)+view_min);
+    }
+    draw.draw_text(tmp_instruction, glm::vec2(10, 650)+view_min, 0.068);
 }
 
 void StoryMode::draw_pot(DrawSprites& draw) {
