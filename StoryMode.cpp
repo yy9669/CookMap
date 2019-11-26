@@ -723,8 +723,8 @@ void StoryMode::enter_scene(float elapsed) {
                         break;
                     case npc1:
                             position_i = position_i + velocity_i * elapsed;
-                            if (position_i.x <= init_position_i.x) {
-                                position_i.x = init_position_i.x;
+                            if (position_i.x <= init_position_i.x - 20.0f) {
+                                position_i.x = init_position_i.x - 20.0f;
                                 velocity_i.x = -velocity_i.x;
                             } else if (position_i.x > init_position_i.x 
                                 && position_i.x - init_position_i.x > 30.0f) {
