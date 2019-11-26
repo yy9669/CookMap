@@ -70,9 +70,10 @@ struct StoryMode : Mode {
 
     std::unordered_map<ingredient_type, Sprite> ingredient_map;
     std::unordered_map<dish_type, Sprite> dish_map;
-    std::unordered_map<dish_type, int> health_map={{Dish1,4},{Dish2,2},{Dish3,1},{Dish4,10},{Dish5,3},{Dish0,-1}};
+    std::unordered_map<dish_type, int> health_map=
+    {{Dish1,5},{Dish2,3},{Dish3,2},{Dish4,4}, {Dish5,4},  {Dish6,5}, {Dish7, 2}, {Dish8, 6}, {Dish9, 6}, {Dish0,-1}};
 	// 1 => unlock a recipe, 2 => big jump
-	std::unordered_map<dish_type, int> power_map={{Dish1,1},{Dish2,2}};
+	std::unordered_map<dish_type, int> power_map={{Dish1,1}, {Dish2,2}, {Dish5, 2}, {Dish6, 1}, {Dish7,1}};
 	// std::unordered_map<dish_type, int> npc_map=
 	//Current control signals:
 	struct {
@@ -116,18 +117,18 @@ struct StoryMode : Mode {
         {Item7, 0},  // orange
         {Item8, 0},  // tomato
         {Item9, 0},  // kiwi
-        {Item10, 0},  // lemon
+        {Item10, 1},  // lemon
         {Item11, 1},  // bread
         {Item12, 1},  // broccoli
         {Item13, 1},  // almond
-        {Item14, 1},  // avocado
+        {Item14, 0},  // avocado
         {Item15, 1},  // egg
         {Item16, 1},  // twig
         {Item17, 2},  // meat
         {Item18, 1},  // mushroom
-        {Item19, 1},  // onion
-        {Item20, 1},  // fish
-        {Item21, 1},  // water
+        {Item19, 0},  // onion
+        {Item20, 3},  // fish
+        {Item21, 0},  // water
         {Item22, 1},  // milk
 	};
 
@@ -164,8 +165,9 @@ struct StoryMode : Mode {
     	int garbage_y=10;
     	int help_x=965;
     	int help_y=10;
+    	int stealcd=0;
 
-    int scene_num = 2, scene_target = 2;
+    int scene_num = 1, scene_target = 1;
     float scene_transition = 10.f;
     int restarting = 0;
 
