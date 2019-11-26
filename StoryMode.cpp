@@ -891,7 +891,7 @@ void StoryMode::enter_scene(float elapsed) {
         //---- collision handling ----
         // Npc detection
         stealcd-=elapsed;
-        stealcd=max(0,stealcd);
+        stealcd=max(0.0f,stealcd);
         for (unsigned i = 0; i < npcs.size(); i++) {
             glm::vec2 box = npcs[i]->position;
             glm::vec2 box_radius = npcs[i]->radius;
@@ -904,11 +904,11 @@ void StoryMode::enter_scene(float elapsed) {
 
                 Sound::play(*music_collision,0.5);
                 // some npc will steal your items or dishes
-                if(npcs[i]->type==npc2 && dishes.size()>0 && stealcd<=0){
+                if(npcs[i]->type==npc2 && dishes.size()>0 && stealcd<=0.0f){
                     dishes.erase(dishes.begin());
                     stealcd=5;
                 }
-                if(npcs[i]->type==npc3 && backpack.size()>0){
+                if(npcs[i]->type==npc3 && backpack.size()>0 && stealcd<=0.0f){
                     backpack.erase(backpack.begin());       
                     stealcd=5;
                 }
