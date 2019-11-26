@@ -30,6 +30,15 @@ Sprite const *sprite_chef_right_walk1 = nullptr;
 Sprite const *sprite_chef_right_walk2 = nullptr;
 Sprite const *sprite_chef_right_jump = nullptr;
 
+Sprite const *sprite_chef_left_stand_super = nullptr;
+Sprite const *sprite_chef_left_walk1_super = nullptr;
+Sprite const *sprite_chef_left_walk2_super = nullptr;
+Sprite const *sprite_chef_left_jump_super = nullptr;
+Sprite const *sprite_chef_right_stand_super = nullptr;
+Sprite const *sprite_chef_right_walk1_super = nullptr;
+Sprite const *sprite_chef_right_walk2_super = nullptr;
+Sprite const *sprite_chef_right_jump_super = nullptr;
+
 Sprite const *sprite_item_1 = nullptr;
 Sprite const *sprite_item_2 = nullptr;
 Sprite const *sprite_item_3 = nullptr;
@@ -99,6 +108,15 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_chef_right_walk1 = &ret->lookup("chef_rwalk1");
     sprite_chef_right_walk2 = &ret->lookup("chef_rwalk2");
     sprite_chef_right_jump = &ret->lookup("chef_rjump");
+
+    sprite_chef_left_stand_super = &ret->lookup("chef_lstand_super");
+    sprite_chef_left_walk1_super = &ret->lookup("chef_lwalk1_super");
+    sprite_chef_left_walk2_super = &ret->lookup("chef_lwalk2_super");
+    sprite_chef_left_jump_super = &ret->lookup("chef_ljump_super");
+    sprite_chef_right_stand_super = &ret->lookup("chef_rstand_super");
+    sprite_chef_right_walk1_super = &ret->lookup("chef_rwalk1_super");
+    sprite_chef_right_walk2_super = &ret->lookup("chef_rwalk2_super");
+    sprite_chef_right_jump_super = &ret->lookup("chef_rjump_super");
 
     sprite_item_1 = &ret->lookup("item_1");
     sprite_item_2 = &ret->lookup("item_2");
@@ -241,6 +259,14 @@ Load< Sound::Sample > music_trash(LoadTagDefault, []() -> Sound::Sample * {
 
 Load< Sound::Sample > music_win(LoadTagDefault, []() -> Sound::Sample * {
     return new Sound::Sample(data_path("win.opus"));
+});
+
+Load< Sound::Sample > music_scream(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("scream.opus"));
+});
+
+Load< Sound::Sample > music_deny(LoadTagDefault, []() -> Sound::Sample * {
+    return new Sound::Sample(data_path("deny.opus"));
 });
 
 ///////////////////////////////////////////////////// map//////////////////////////////////////
@@ -484,7 +510,6 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size  &&
                    evt.button.y>=263 && evt.button.y<=311 &&
                    show_pot && pot_time_left == 0.f && pots.size()) {
-            Sound::play(*icon_click);
             pot_time_left = 500.f;
         }
         res=true;
@@ -664,6 +689,7 @@ void StoryMode::enter_scene(float elapsed) {
             glm::vec2 &position_i = npcs[i]->position;
             glm::vec2 &init_position_i = npcs[i]->init_position;
             glm::vec2 &velocity_i = npcs[i]->velocity;
+            float left_bound = 20;
             switch (npcs[i]->type)
             {
                 //TODO: add different motions for npc
@@ -778,9 +804,10 @@ void StoryMode::enter_scene(float elapsed) {
                         } else {
                             velocity_i.x = -90.0f;
                         }
+                        left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
                         position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= init_position_i.x - 900.0f) {
-                            position_i.x = init_position_i.x - 900.0f;
+                        if (position_i.x <= left_bound) {
+                            position_i.x = left_bound;
                             velocity_i.x = -velocity_i.x;
                         } else if (position_i.x - init_position_i.x > 170.0f) {
                             position_i.x = init_position_i.x + 170.0f;
@@ -813,7 +840,7 @@ void StoryMode::enter_scene(float elapsed) {
                 // Super jump
                 shove.y += 60.5f;
                 curt_time = timepoint;
-                if (curt_time - power_time >= 5.f) {
+                if (curt_time - power_time >= 5.5f) {
                     player.big_jump = false;
                 }
             } else {
@@ -990,7 +1017,9 @@ void StoryMode::enter_scene(float elapsed) {
             velocity.x = 0.0f;
         }
         // restart if fall down
+
         if (position.y < 0) {
+            Sound::play(*music_scream);
             restart(this);
             return;
         }
@@ -1039,6 +1068,7 @@ void StoryMode::enter_scene(float elapsed) {
                 Sound::play(*music_pot_cook);
                 pots.clear();
             } else {
+                Sound::play(*music_deny);
                 pot_time_left=0;
             }
         }
@@ -1171,28 +1201,60 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
             switch (player.state) {
                 case Left_stand:
-                    draw.draw(*sprite_chef_left_stand, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_left_stand_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_left_stand, player.position);
+                    }
                     break;
                 case Left_walk1:
-                    draw.draw(*sprite_chef_left_walk1, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_left_walk1_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_left_walk1, player.position);
+                    }
                     break;
                 case Left_walk2:
-                    draw.draw(*sprite_chef_left_walk2, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_left_walk2_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_left_walk2, player.position);   
+                    }
                     break;
                 case Left_jump:
-                    draw.draw(*sprite_chef_left_jump, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_left_jump_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_left_jump, player.position);   
+                    }
                     break;
                 case Right_stand:
-                    draw.draw(*sprite_chef_right_stand, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_right_stand_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_right_stand, player.position);   
+                    }
                     break;
                 case Right_walk1:
-                    draw.draw(*sprite_chef_right_walk1, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_right_walk1_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_right_walk1, player.position);   
+                    }
                     break;
                 case Right_walk2:
-                    draw.draw(*sprite_chef_right_walk2, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_right_walk2_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_right_walk2, player.position);   
+                    }
                     break;
                 case Right_jump:
-                    draw.draw(*sprite_chef_right_jump, player.position);
+                    if (player.big_jump) {
+                        draw.draw(*sprite_chef_right_jump_super, player.position);
+                    } else {
+                        draw.draw(*sprite_chef_right_jump, player.position);   
+                    }
                     break;
             }
             
