@@ -801,7 +801,7 @@ void StoryMode::enter_scene(float elapsed) {
                 // Super jump
                 shove.y += 60.5f;
                 curt_time = timepoint;
-                if (curt_time - power_time >= 5.5f) {
+                if (curt_time - power_time >= 6.5f) {
                     player.big_jump = false;
                 }
             } else {
@@ -1016,9 +1016,11 @@ void StoryMode::enter_scene(float elapsed) {
             cooking_dish=Dish0;
             unordered_map<ingredient_type, int> num;
             int health_cost = 0;
+            int ingre_count = 0;
             for (auto i : pots) {
                 num[i]++;
                 health_cost += ingre_cost[i];
+                ingre_count++;
             }
             if (player.health >= health_cost && dishes.size() < 2) {
                 player.health -= health_cost;
@@ -1031,8 +1033,9 @@ void StoryMode::enter_scene(float elapsed) {
                             break;
                         }
                         num2[i]--;
+                        ingre_count--;
                     }
-                    if (ok) {
+                    if (ok && ingre_count == 0) {
                         cooking_recipe=&recipe;
                         cooking_dish = recipe.dish;
                         pot_time_left = recipe.cost;
