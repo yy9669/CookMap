@@ -723,8 +723,8 @@ void StoryMode::enter_scene(float elapsed) {
                         break;
                     case npc1:
                             position_i = position_i + velocity_i * elapsed;
-                            if (position_i.x <= init_position_i.x) {
-                                position_i.x = init_position_i.x;
+                            if (position_i.x <= init_position_i.x - 20.0f) {
+                                position_i.x = init_position_i.x - 20.0f;
                                 velocity_i.x = -velocity_i.x;
                             } else if (position_i.x > init_position_i.x 
                                 && position_i.x - init_position_i.x > 30.0f) {
@@ -880,6 +880,8 @@ void StoryMode::enter_scene(float elapsed) {
 
         //---- collision handling ----
         // Npc detection
+        stealcd-=elapsed;
+        stealcd=max(0,stealcd);
         for (unsigned i = 0; i < npcs.size(); i++) {
             glm::vec2 box = npcs[i]->position;
             glm::vec2 box_radius = npcs[i]->radius;
@@ -892,10 +894,14 @@ void StoryMode::enter_scene(float elapsed) {
 
                 Sound::play(*music_collision,0.5);
                 // some npc will steal your items or dishes
-                if(npcs[i]->type==npc2 && dishes.size()>0)
+                if(npcs[i]->type==npc2 && dishes.size()>0 && stealcd<=0){
                     dishes.erase(dishes.begin());
-                if(npcs[i]->type==npc3 && backpack.size()>0)
+                    stealcd=5;
+                }
+                if(npcs[i]->type==npc3 && backpack.size()>0){
                     backpack.erase(backpack.begin());       
+                    stealcd=5;
+                }
                 if (position.x <= npcs[i]->position.x)
                     velocity.x = -200.0f;
                 else
