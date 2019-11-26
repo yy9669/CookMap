@@ -439,6 +439,16 @@ void StoryMode::load_state(StoryMode* mode) {
 void StoryMode::restart(StoryMode* mode) {
     last_time = timepoint;
     load_state(mode);
+    Ingredient *ingre;
+    for (unsigned i = 0; i < parts.size(); i++) {
+        for (unsigned j = 0; j < parts[i].size(); j++) {
+            if (parts[i][j]->id() == part_ingredient_type) {
+                ingre = reinterpret_cast<Ingredient*>(parts[i][j]);
+                ingre->obtained = false;
+                ingre->grow_count = 0;
+            }
+        }
+    }
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -881,7 +891,7 @@ void StoryMode::enter_scene(float elapsed) {
         //---- collision handling ----
         // Npc detection
         stealcd-=elapsed;
-        stealcd=max(0,stealcd);
+        stealcd=max(0.0f,stealcd);
         for (unsigned i = 0; i < npcs.size(); i++) {
             glm::vec2 box = npcs[i]->position;
             glm::vec2 box_radius = npcs[i]->radius;
@@ -894,11 +904,11 @@ void StoryMode::enter_scene(float elapsed) {
 
                 Sound::play(*music_collision,0.5);
                 // some npc will steal your items or dishes
-                if(npcs[i]->type==npc2 && dishes.size()>0 && stealcd<=0){
+                if(npcs[i]->type==npc2 && dishes.size()>0 && stealcd<=0.0f){
                     dishes.erase(dishes.begin());
                     stealcd=5;
                 }
-                if(npcs[i]->type==npc3 && backpack.size()>0){
+                if(npcs[i]->type==npc3 && backpack.size()>0 && stealcd<=0.0f){
                     backpack.erase(backpack.begin());       
                     stealcd=5;
                 }
@@ -1302,7 +1312,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.f && restarting==1) {
                 restarting = 2;
-                scene_transition = 2.f;
+                scene_transition = 2.3f;
                 restart(this);
                 background_music->stop();
                 last_time = timepoint;
@@ -1311,10 +1321,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 if (!restarting) {
                     draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
                 } else {
-                    draw.draw_text("RESTARTING", glm::vec2(220.0f, 330.0f)+view_min, 0.25);
+                    draw.draw_text("LOADING    FROM", glm::vec2(205.0f, 395.0f)+view_min, 0.2);
+                    draw.draw_text("LAST    CHECKPOINT", glm::vec2(155.0f, 285.0f)+view_min, 0.2);
                 }
             }
-
 		} else {
             // cooking
 		}
@@ -1349,12 +1359,16 @@ void StoryMode::draw_pot(DrawSprites& draw) {
                       glm::vec2(pot_x+item_size*i, 645-item_size*j)+view_min);
         }
     }
-    draw.draw(*sprite_tile[scene_num][0], glm::vec2(pot_x, 510.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+    draw.draw(*sprite_tile[0][0], glm::vec2(pot_x, 520.f)+view_min, glm::vec2(1.f, 0.05f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+
+    draw.draw(*sprite_tile[0][0], glm::vec2(pot_x, 578.f)+view_min, glm::vec2(1.f, 0.02f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+    draw.draw(*sprite_tile[0][0], glm::vec2(pot_x, 638.f)+view_min, glm::vec2(1.f, 0.02f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
+
     if (pot_time_left > 0.f) {
         string tmp = std::to_string(int(pot_time_left+0.999f));
-        draw.draw_text(tmp, glm::vec2(pot_x+15, 461.f)+view_min, 0.07);
+        draw.draw_text(tmp, glm::vec2(pot_x+15, 463.f)+view_min, 0.07);
     } else {
-        draw.draw(*sprite_fire, glm::vec2(pot_x, 457.f)+view_min);
+        draw.draw(*sprite_fire, glm::vec2(pot_x, 459.f)+view_min);
     }
 
     for (unsigned i = 0; i < pots.size(); ++i) {
