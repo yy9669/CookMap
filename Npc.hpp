@@ -31,4 +31,5 @@ public:
     std::vector<dish_type> favorates;
     int attack;
     bool eat = false;
+    bool charge = false;
 };

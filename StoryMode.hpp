@@ -137,6 +137,7 @@ struct StoryMode : Mode {
 
 	glm::vec2 dish_drag_pos = glm::vec2(0,0);
 	glm::vec2 ingre_drag_pos = glm::vec2(0,0);
+	glm::vec2 drag_offset  = glm::vec2(0,0);
     	ingredient_type dragging_ingre_type;
 
     	//-----draw position ----
@@ -164,7 +165,7 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
-    int scene_num = 1, scene_target = 1;
+    int scene_num = 2, scene_target = 2;
     float scene_transition = 10.f;
     int restarting = 0;
 
