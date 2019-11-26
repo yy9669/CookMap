@@ -1052,6 +1052,7 @@ void StoryMode::enter_scene(float elapsed) {
                 player.health -= health_cost;
                 for (auto &recipe : recipes) {
                     auto num2 = num;
+                    auto ingre_count2 = ingre_count;
                     bool ok = true;
                     for (auto i : recipe.ingredients) {
                         if (num2.count(i) == 0 || num2[i] == 0) {
@@ -1059,9 +1060,9 @@ void StoryMode::enter_scene(float elapsed) {
                             break;
                         }
                         num2[i]--;
-                        ingre_count--;
+                        ingre_count2--;
                     }
-                    if (ok && ingre_count == 0) {
+                    if (ok && ingre_count2 == 0) {
                         cooking_recipe=&recipe;
                         cooking_dish = recipe.dish;
                         pot_time_left = recipe.cost;
