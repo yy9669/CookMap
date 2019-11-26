@@ -385,23 +385,32 @@ StoryMode::~StoryMode() {
 
 void StoryMode::save_state(StoryMode* mode) {
     mode->player_b.health = mode->player.health;
+    mode->player_b.position = mode->player.position;
     mode->backpack_b = mode->backpack;
     mode->dishes_b = mode->dishes;
     mode->pots_b = mode->pots;
+    mode->npcs_b.clear();
+    for (auto npc : mode->npcs) {
+        mode->npcs_b[npc] = *npc;
+    }
+    mode->power_map_b = mode->power_map;
 }
 
 void StoryMode::load_state(StoryMode* mode) {
     mode->player.health = mode->player_b.health;
+    mode->player.position = mode->player_b.position;
     mode->backpack = mode->backpack_b;
     mode->dishes = mode->dishes_b;
     mode->pots = mode->pots_b;
+    for (auto npc : mode->npcs) {
+        *npc = mode->npcs_b[npc];
+    }
+    mode->power_map = mode->power_map_b;
 }
 
 void StoryMode::restart(StoryMode* mode) {
-    load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), mode);
     last_time = timepoint;
     load_state(mode);
-    mode->power_map = mode->power_map_b;
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -534,6 +543,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                             Sound::play(*music_pleasure);
                             npcs[i]->eat=true;
                             eaten = true;
+                            save_state(this);
                             break;
                         }
                     }
@@ -1236,11 +1246,12 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.5f && scene_num != scene_target) {
                 player.health = 10;
-                save_state(this);
                 background_music->stop();
                 scene_num = scene_target;
                 Sound::play(*music_win);
-                restart(this);
+                load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
+                save_state(this);
+                last_time = timepoint;
             }
             if (scene_transition < 3.f) {
                 draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);

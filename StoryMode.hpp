@@ -173,6 +173,7 @@ struct StoryMode : Mode {
 	std::vector<dish_type> dishes_b;
     std::vector<ingredient_type> pots_b;
 	std::unordered_map<dish_type, int> power_map_b={{Dish1,1},{Dish2,2}};
+	std::unordered_map<Npc*, Npc> npcs_b;
 	void save_state(StoryMode* mode);
 	void load_state(StoryMode* mode);
 

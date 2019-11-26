@@ -10,6 +10,7 @@ enum npc_type {
 
 class Npc {
 public:
+    Npc() {}
     Npc(npc_type type_, float x, float y, dish_type npc_dish_) {
         type = type_;
         position = glm::vec2(x, y);
