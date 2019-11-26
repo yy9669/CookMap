@@ -165,6 +165,7 @@ struct StoryMode : Mode {
     	int garbage_y=10;
     	int help_x=965;
     	int help_y=10;
+    	float stealcd=0;
 
     int scene_num = 0, scene_target = 0;
     float scene_transition = 10.f;
