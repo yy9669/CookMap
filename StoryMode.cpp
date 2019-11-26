@@ -413,23 +413,32 @@ StoryMode::~StoryMode() {
 
 void StoryMode::save_state(StoryMode* mode) {
     mode->player_b.health = mode->player.health;
+    mode->player_b.position = mode->player.position;
     mode->backpack_b = mode->backpack;
     mode->dishes_b = mode->dishes;
     mode->pots_b = mode->pots;
+    mode->npcs_b.clear();
+    for (auto npc : mode->npcs) {
+        mode->npcs_b[npc] = *npc;
+    }
+    mode->power_map_b = mode->power_map;
 }
 
 void StoryMode::load_state(StoryMode* mode) {
     mode->player.health = mode->player_b.health;
+    mode->player.position = mode->player_b.position;
     mode->backpack = mode->backpack_b;
     mode->dishes = mode->dishes_b;
     mode->pots = mode->pots_b;
+    for (auto npc : mode->npcs) {
+        *npc = mode->npcs_b[npc];
+    }
+    mode->power_map = mode->power_map_b;
 }
 
 void StoryMode::restart(StoryMode* mode) {
-    load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), mode);
     last_time = timepoint;
     load_state(mode);
-    mode->power_map = mode->power_map_b;
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -561,6 +570,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                             Sound::play(*music_pleasure);
                             npcs[i]->eat=true;
                             eaten = true;
+                            save_state(this);
                             break;
                         }
                     }
@@ -682,137 +692,84 @@ void StoryMode::enter_scene(float elapsed) {
             glm::vec2 &init_position_i = npcs[i]->init_position;
             glm::vec2 &velocity_i = npcs[i]->velocity;
             float left_bound = 20;
-            switch (npcs[i]->type)
+            if (npcs[i]->eat) {
+                        velocity_i.x = 0;
+                        position_i = position_i + velocity_i * elapsed;
+                        if (position_i.y  > 2000.0f) {
+                            velocity_i.y = 0;
+                        }
+            }else{
+                            switch (npcs[i]->type)
             {
-                //TODO: add different motions for npc
-                case npc0:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                    //TODO: add different motions for npc
+                    case npc0:
+                            position_i = position_i + velocity_i * elapsed;
+                            if (position_i.x <= init_position_i.x) {
+                                position_i.x = init_position_i.x;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x > init_position_i.x 
+                                && position_i.x - init_position_i.x > 140.0f) {
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 240.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= init_position_i.x) {
-                            position_i.x = init_position_i.x;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x > init_position_i.x 
-                            && position_i.x - init_position_i.x > 140.0f) {
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                case npc1:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                        break;
+                    case npc1:
+                            position_i = position_i + velocity_i * elapsed;
+                            if (position_i.x <= init_position_i.x) {
+                                position_i.x = init_position_i.x;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x > init_position_i.x 
+                                && position_i.x - init_position_i.x > 30.0f) {
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 100.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= init_position_i.x) {
-                            position_i.x = init_position_i.x;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x > init_position_i.x 
-                            && position_i.x - init_position_i.x > 30.0f) {
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                case npc2:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                        break;
+                    case npc2:
+                            position_i = position_i + velocity_i * elapsed;
+                            velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
+                            if (position_i.x >= init_position_i.x) {
+                                position_i.x = init_position_i.x;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x < init_position_i.x 
+                                && init_position_i.x - position_i.x > 200.0f) {
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 240.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        position_i = position_i + velocity_i * elapsed;
-                        velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
-                        if (position_i.x >= init_position_i.x) {
-                            position_i.x = init_position_i.x;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x < init_position_i.x 
-                            && init_position_i.x - position_i.x > 200.0f) {
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                case npc3:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                        break;
+                    case npc3:
+                            position_i = position_i + velocity_i * elapsed;
+                            velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
+                            if (position_i.x <= init_position_i.x) {
+                                position_i.x = init_position_i.x;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x > init_position_i.x 
+                                && position_i.x - init_position_i.x  > 200.0f) {
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 240.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        position_i = position_i + velocity_i * elapsed;
-                        velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x));
-                        if (position_i.x <= init_position_i.x) {
-                            position_i.x = init_position_i.x;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x > init_position_i.x 
-                            && position_i.x - init_position_i.x  > 200.0f) {
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                case npc4:
-                    if (npcs[i]->eat) {
-                        velocity_i.x = 0;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.y <= init_position_i.y) {
+                        break;
+                    case npc4:
+                            if (velocity_i.x > 0) {
+                                velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
+                            } else {
+                                velocity_i.x = -90.0f;
+                            }
+                            left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
+                            position_i = position_i + velocity_i * elapsed;
+                            if (position_i.x <= left_bound) {
+                                position_i.x = left_bound;
+                                velocity_i.x = -velocity_i.x;
+                            } else if (position_i.x - init_position_i.x > 170.0f) {
+                                position_i.x = init_position_i.x + 170.0f;
+                                velocity_i.x = -velocity_i.x;
+                            }
                             position_i.y = init_position_i.y;
-                            velocity_i.y = -velocity_i.y;
-                        } else if (position_i.y > init_position_i.y 
-                            && position_i.y - init_position_i.y > 100.0f) {
-                            velocity_i.y = -velocity_i.y;
-                        }
-                    } else {
-                        if (velocity_i.x > 0) {
-                            npcs[i]->charge = true;
-                            velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
-                        } else {
-                            npcs[i]->charge = false;
-                            velocity_i.x = -90.0f;
-                        }
-                        left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
-                        position_i = position_i + velocity_i * elapsed;
-                        if (position_i.x <= left_bound) {
-                            position_i.x = left_bound;
-                            velocity_i.x = -velocity_i.x;
-                        } else if (position_i.x - init_position_i.x > 170.0f) {
-                            position_i.x = init_position_i.x + 170.0f;
-                            velocity_i.x = -velocity_i.x;
-                        }
-                        position_i.y = init_position_i.y;
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    default:
+                        break;
+                }
             }
+
         }
 
 		//player motion:
@@ -924,6 +881,11 @@ void StoryMode::enter_scene(float elapsed) {
 //                player.health = max(0,player.health);
 
                 Sound::play(*music_collision,0.5);
+                // some npc will steal your items or dishes
+                if(npcs[i]->type==npc2 && dishes.size()>0)
+                    dishes.erase(dishes.begin());
+                if(npcs[i]->type==npc3 && backpack.size()>0)
+                    backpack.erase(backpack.begin());       
                 if (position.x <= npcs[i]->position.x)
                     velocity.x = -200.0f;
                 else
@@ -1310,11 +1272,12 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.5f && scene_num != scene_target) {
                 player.health = 10;
-                save_state(this);
                 background_music->stop();
                 scene_num = scene_target;
                 Sound::play(*music_win);
-                restart(this);
+                load_map_file(data_path("map_" + to_string(scene_num+1) + ".txt"), this);
+                save_state(this);
+                last_time = timepoint;
             }
             if (scene_transition < 3.f) {
                 draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);

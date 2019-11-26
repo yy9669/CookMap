@@ -164,7 +164,7 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
-    int scene_num = 2, scene_target = 2;
+    int scene_num = 0, scene_target = 0;
     float scene_transition = 10.f;
 
 	// backup state
@@ -173,6 +173,7 @@ struct StoryMode : Mode {
 	std::vector<dish_type> dishes_b;
     std::vector<ingredient_type> pots_b;
 	std::unordered_map<dish_type, int> power_map_b={{Dish1,1},{Dish2,2}};
+	std::unordered_map<Npc*, Npc> npcs_b;
 	void save_state(StoryMode* mode);
 	void load_state(StoryMode* mode);
 
