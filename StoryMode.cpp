@@ -758,8 +758,10 @@ void StoryMode::enter_scene(float elapsed) {
                         break;
                     case npc4:
                             if (velocity_i.x > 0) {
+                                npcs[i]->charge = true;
                                 velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
                             } else {
+                                npcs[i]->charge = false;
                                 velocity_i.x = -90.0f;
                             }
                             left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
