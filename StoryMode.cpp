@@ -781,14 +781,9 @@ void StoryMode::enter_scene(float elapsed) {
                                 right_bound = init_position_i.x + 170.0f;
                             }
                             else {
-                                if (velocity_i.x > 0) {
-                                    npcs[i]->charge = false;
-                                    velocity_i.x = 90.0f;
-                                } else {
-                                    npcs[i]->charge = true;
-                                    velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
-                                }
-                                left_bound = left_bound > init_position_i.x - 220.0f ? left_bound : init_position_i.x - 220.0f;
+
+                                npcs[i]->charge = false;
+                                left_bound = left_bound > init_position_i.x - 180.0f ? left_bound : init_position_i.x - 180.0f;
                                 right_bound = init_position_i.x;
                             }
                             position_i = position_i + velocity_i * elapsed;
