@@ -1401,7 +1401,7 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
         draw.draw(*sprite_tile[scene_num][0], pos, glm::vec2(0.05f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
         pos = glm::vec2(885.f-216, 631-60.f*i)+view_min;
         draw.draw(dish_map[recipes[i].dish], pos);
-        draw.draw(*sprite_add, pos+glm::vec2(60, 0), 0.5);      
+        draw.draw(*sprite_add, pos+glm::vec2(60, 12), 0.5);
         if(power_map.count(recipes[i].dish)!=0 ){
             if(power_map[recipes[i].dish]==1)
                 draw.draw(*sprite_unlock, pos+glm::vec2(96, 0));
@@ -1409,8 +1409,10 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
                 draw.draw(*sprite_jump, pos+glm::vec2(96, 0));                
         }
         else{
-            for (int k = health_map[recipes[i].dish]; k > 0; --k) 
-                draw.draw(*sprite_health_box, pos+glm::vec2(96, 0)+glm::vec2(43-k*5, 4), 0.6);
+            int health_num = health_map[recipes[i].dish];
+            int offset = (health_num - 1) / 2 * 8;
+            for (int k = health_num; k > 0; --k)
+                draw.draw(*sprite_health_box, pos+glm::vec2(82+offset, 12)+glm::vec2(43-k*8, 4), 0.6);
         }
     }
 }
