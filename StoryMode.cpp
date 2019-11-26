@@ -1293,7 +1293,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
             if (scene_transition >1.f && restarting==1) {
                 restarting = 2;
-                scene_transition = 2.f;
+                scene_transition = 2.3f;
                 restart(this);
                 background_music->stop();
                 last_time = timepoint;
@@ -1302,10 +1302,10 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 if (!restarting) {
                     draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
                 } else {
-                    draw.draw_text("RESTARTING", glm::vec2(220.0f, 330.0f)+view_min, 0.25);
+                    draw.draw_text("LOADING    FROM", glm::vec2(205.0f, 395.0f)+view_min, 0.2);
+                    draw.draw_text("LAST    CHECKPOINT", glm::vec2(155.0f, 285.0f)+view_min, 0.2);
                 }
             }
-
 		} else {
             // cooking
 		}
