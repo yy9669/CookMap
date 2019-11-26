@@ -880,7 +880,7 @@ void StoryMode::enter_scene(float elapsed) {
 
         //---- collision handling ----
         // Npc detection
-        stealcd-=elapsed
+        stealcd-=elapsed;
         stealcd=max(0,stealcd);
         for (unsigned i = 0; i < npcs.size(); i++) {
             glm::vec2 box = npcs[i]->position;
