@@ -77,6 +77,7 @@ Sprite const *sprite_dish_9 = nullptr;
 
 Sprite const *sprite_npc[npc_total];
 Sprite const *sprite_npc_idle[npc_total];
+Sprite const *sprite_npc5_charge;
 
 Sprite const *sprite_thinking = nullptr;
 
@@ -156,6 +157,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
         sprite_npc[i] = &ret->lookup(string("guard_") + to_string(i+1));
         sprite_npc_idle[i] = &ret->lookup(string("guard_") + to_string(i+1) + "_idle");
     }
+    sprite_npc5_charge = &ret->lookup("guard_5_charge");
     sprite_thinking = &ret->lookup("thinking");
 
     sprite_health_box = &ret->lookup("health_box");
@@ -468,28 +470,36 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
         if (evt.button.x>= dish_start_x && evt.button.x<=dish_start_x+item_inteval*(dish_num-1)+item_size &&
            (evt.button.x-dish_start_x)%item_inteval<item_size && evt.button.y>=dish_start_y && evt.button.y<=dish_start_y+item_size &&
            int((evt.button.x-dish_start_x)/item_inteval) <int(dishes.size() ) ) {
-            dragged_dish=dishes[(evt.button.x-dish_start_x)/item_inteval];
-            dishes.erase(dishes.begin() + (evt.button.x-dish_start_x)/item_inteval );
+            int index=(evt.button.x-dish_start_x)/item_inteval;
+            dragged_dish=dishes[index];
+            dishes.erase(dishes.begin() + index);
             dish_drag = true;
             dish_drag_pos = glm::vec2(evt.button.x,draw_width-evt.button.y)+view_min;
+            drag_offset = glm::vec2(evt.button.x-dish_start_x-index*item_inteval,dish_start_y+item_size-evt.button.y);
         } else if (evt.button.x>= item_start_x && evt.button.x<=item_start_x+item_inteval*(item_num-1)+item_size &&
                    (evt.button.x-item_start_x)%item_inteval<item_size && evt.button.y>=item_start_y && evt.button.y<=item_start_y+item_size &&
                    int((evt.button.x-item_start_x)/item_inteval) <int(backpack.size() ) ) {
             // drag from backpack
-            dragging_ingre_type = backpack[(evt.button.x-item_start_x)/item_inteval];
-            backpack.erase(backpack.begin() + (evt.button.x-item_start_x)/item_inteval );
+            int index=(evt.button.x-item_start_x)/item_inteval;
+            dragging_ingre_type = backpack[index];
+            backpack.erase(backpack.begin() + index );
             ingre_drag = true;
             drag_from_backpack = true;
+            ingre_drag_pos = glm::vec2(item_start_x+index*item_inteval,draw_width-item_start_y-item_size)+view_min;
             ingre_drag_pos = glm::vec2(evt.button.x,draw_width-evt.button.y)+view_min;
+            drag_offset = glm::vec2(evt.button.x-item_start_x-index*item_inteval,item_start_y+item_size-evt.button.y);
         } else if (evt.button.x>= pot_x && evt.button.x<=pot_x+item_size &&
                    (evt.button.y-77)%60<item_size && evt.button.y>=77 && evt.button.y<=245 &&
                    int((evt.button.y-77)/60) <int(pots.size() ) ) {
             // drag from pot
-            dragging_ingre_type = pots[(evt.button.y-77)/60];
-            pots.erase(pots.begin() + (evt.button.y-77)/60 );
+            int index = (evt.button.y-77)/60;
+            dragging_ingre_type = pots[index];
+            pots.erase(pots.begin() + index );
             ingre_drag = true;
             drag_from_backpack = false;
+            //ingre_drag_pos = glm::vec2(pot_x+item_start_x*item_inteval,draw_width-item_start_y-item_size)+view_min;
             ingre_drag_pos = glm::vec2(evt.button.x,draw_width-evt.button.y)+view_min;
+            drag_offset = glm::vec2(evt.button.x-pot_x,77+index*60+48-evt.button.y);
         } else if (evt.button.x>= help_x && evt.button.x<=help_x+item_size &&
                    evt.button.y>=help_y && evt.button.y<=help_y+item_size) {
 
@@ -748,8 +758,10 @@ void StoryMode::enter_scene(float elapsed) {
                         break;
                     case npc4:
                             if (velocity_i.x > 0) {
+                                npcs[i]->charge = true;
                                 velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
                             } else {
+                                npcs[i]->charge = false;
                                 velocity_i.x = -90.0f;
                             }
                             left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
@@ -919,6 +931,7 @@ void StoryMode::enter_scene(float elapsed) {
                             if (scene_num + 1 < SCENE_TOTAL && scene_transition == 3.f) {
                                 scene_target = scene_num + 1;
                                 scene_transition = 0.f;
+                                restarting = 0;
                             } else if (scene_num + 1 == SCENE_TOTAL){
                                 winning = true;
                             }
@@ -972,9 +985,10 @@ void StoryMode::enter_scene(float elapsed) {
         }
         // restart if fall down
 
-        if (position.y < 0) {
+        if (position.y < 0 && scene_transition == 3.f) {
             Sound::play(*music_scream);
-            restart(this);
+            scene_transition = 0.f;
+            restarting = 1;
             return;
         }
 	}
@@ -1132,9 +1146,17 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
 
             for (unsigned i = 0; i < npcs.size(); i++) {
-                if (npcs[i]->eat)
+                if (npcs[i]->eat) {
                     draw.draw(*sprite_npc_idle[npcs[i]->type], npcs[i]->position);
-                else{
+                }
+                else if (npcs[i]->charge) {
+                    draw.draw(*sprite_npc5_charge, npcs[i]->position);
+                    draw.draw(*sprite_thinking,
+                              glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
+                    draw.draw(dish_map[npcs[i]->favorates[0]],
+                              glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
+                }
+                else {
                     draw.draw(*sprite_npc[npcs[i]->type], npcs[i]->position);
                     draw.draw(*sprite_thinking,
                               glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
@@ -1244,11 +1266,11 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
 
             if(dish_drag){
-                draw.draw(dish_map[dragged_dish], dish_drag_pos);
+                draw.draw(dish_map[dragged_dish], dish_drag_pos-drag_offset);
             }
 
             if(ingre_drag){
-                draw.draw(ingredient_map[dragging_ingre_type] , ingre_drag_pos);
+                draw.draw(ingredient_map[dragging_ingre_type] , ingre_drag_pos-drag_offset);
             }
 
             if (scene_transition < 0.5f) {
@@ -1269,8 +1291,19 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 save_state(this);
                 last_time = timepoint;
             }
+            if (scene_transition >1.f && restarting==1) {
+                restarting = 2;
+                scene_transition = 2.f;
+                restart(this);
+                background_music->stop();
+                last_time = timepoint;
+            }
             if (scene_transition < 3.f) {
-                draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
+                if (!restarting) {
+                    draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
+                } else {
+                    draw.draw_text("RESTARTING", glm::vec2(220.0f, 330.0f)+view_min, 0.25);
+                }
             }
 
 		} else {
