@@ -439,6 +439,16 @@ void StoryMode::load_state(StoryMode* mode) {
 void StoryMode::restart(StoryMode* mode) {
     last_time = timepoint;
     load_state(mode);
+    Ingredient *ingre;
+    for (unsigned i = 0; i < parts.size(); i++) {
+        for (unsigned j = 0; j < parts[i].size(); j++) {
+            if (parts[i][j]->id() == part_ingredient_type) {
+                ingre = reinterpret_cast<Ingredient*>(parts[i][j]);
+                ingre->obtained = false;
+                ingre->grow_count = 0;
+            }
+        }
+    }
 }
 
 bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
