@@ -73,7 +73,7 @@ struct StoryMode : Mode {
     std::unordered_map<dish_type, int> health_map=
     {{Dish1,5},{Dish2,3},{Dish3,2},{Dish4,4}, {Dish5,4},  {Dish6,5}, {Dish7, 2}, {Dish8, 6}, {Dish9, 6}, {Dish0,-1}};
 	// 1 => unlock a recipe, 2 => big jump
-	std::unordered_map<dish_type, int> power_map={{Dish1,1}, {Dish2,2}, {Dish5, 2}, {Dish6, 1}, {Dish7,1}};
+	std::unordered_map<dish_type, int> power_map={{Dish1,1}, {Dish2,2}, {Dish5, 2}, {Dish6, 1}, {Dish8,1}, {Dish9, 2}};
 	// std::unordered_map<dish_type, int> npc_map=
 	//Current control signals:
 	struct {
@@ -127,9 +127,9 @@ struct StoryMode : Mode {
         {Item17, 2},  // meat
         {Item18, 1},  // mushroom
         {Item19, 0},  // onion
-        {Item20, 3},  // fish
+        {Item20, 2},  // fish
         {Item21, 0},  // water
-        {Item22, 1},  // milk
+        {Item22, 3},  // milk
 	};
 
 	bool dish_drag = false, ingre_drag = false, drag_from_backpack;
@@ -166,7 +166,7 @@ struct StoryMode : Mode {
     	int help_x=965;
     	int help_y=10;
 
-    int scene_num = 2, scene_target = 2;
+    int scene_num = 0, scene_target = 0;
     float scene_transition = 10.f;
     int restarting = 0;
 
