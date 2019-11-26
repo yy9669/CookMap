@@ -919,6 +919,7 @@ void StoryMode::enter_scene(float elapsed) {
                             if (scene_num + 1 < SCENE_TOTAL && scene_transition == 3.f) {
                                 scene_target = scene_num + 1;
                                 scene_transition = 0.f;
+                                restarting = 0;
                             } else if (scene_num + 1 == SCENE_TOTAL){
                                 winning = true;
                             }
@@ -972,9 +973,10 @@ void StoryMode::enter_scene(float elapsed) {
         }
         // restart if fall down
 
-        if (position.y < 0) {
+        if (position.y < 0 && scene_transition == 3.f) {
             Sound::play(*music_scream);
-            restart(this);
+            scene_transition = 0.f;
+            restarting = 1;
             return;
         }
 	}
@@ -1269,8 +1271,19 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
                 save_state(this);
                 last_time = timepoint;
             }
+            if (scene_transition >1.f && restarting==1) {
+                restarting = 2;
+                scene_transition = 2.f;
+                restart(this);
+                background_music->stop();
+                last_time = timepoint;
+            }
             if (scene_transition < 3.f) {
-                draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
+                if (!restarting) {
+                    draw.draw_text("ENTERING   LEVEL   " + to_string(scene_target+1), glm::vec2(130.0f, 350.0f)+view_min, 0.2);
+                } else {
+                    draw.draw_text("RESTARTING", glm::vec2(220.0f, 330.0f)+view_min, 0.25);
+                }
             }
 
 		} else {

@@ -166,6 +166,7 @@ struct StoryMode : Mode {
 
     int scene_num = 1, scene_target = 1;
     float scene_transition = 10.f;
+    int restarting = 0;
 
 	// backup state
 	Chef player_b;
