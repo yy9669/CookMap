@@ -77,6 +77,7 @@ Sprite const *sprite_dish_9 = nullptr;
 
 Sprite const *sprite_npc[npc_total];
 Sprite const *sprite_npc_idle[npc_total];
+Sprite const *sprite_npc5_charge;
 
 Sprite const *sprite_thinking = nullptr;
 
@@ -156,6 +157,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
         sprite_npc[i] = &ret->lookup(string("guard_") + to_string(i+1));
         sprite_npc_idle[i] = &ret->lookup(string("guard_") + to_string(i+1) + "_idle");
     }
+    sprite_npc5_charge = &ret->lookup("guard_5_charge");
     sprite_thinking = &ret->lookup("thinking");
 
     sprite_health_box = &ret->lookup("health_box");
@@ -790,8 +792,10 @@ void StoryMode::enter_scene(float elapsed) {
                         }
                     } else {
                         if (velocity_i.x > 0) {
+                            npcs[i]->charge = true;
                             velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
                         } else {
+                            npcs[i]->charge = false;
                             velocity_i.x = -90.0f;
                         }
                         left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
@@ -1168,9 +1172,17 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
             }
 
             for (unsigned i = 0; i < npcs.size(); i++) {
-                if (npcs[i]->eat)
+                if (npcs[i]->eat) {
                     draw.draw(*sprite_npc_idle[npcs[i]->type], npcs[i]->position);
-                else{
+                }
+                else if (npcs[i]->charge) {
+                    draw.draw(*sprite_npc5_charge, npcs[i]->position);
+                    draw.draw(*sprite_thinking,
+                              glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
+                    draw.draw(dish_map[npcs[i]->favorates[0]],
+                              glm::vec2(npcs[i]->position.x-35, npcs[i]->position.y+145));
+                }
+                else {
                     draw.draw(*sprite_npc[npcs[i]->type], npcs[i]->position);
                     draw.draw(*sprite_thinking,
                               glm::vec2(npcs[i]->position.x-50, npcs[i]->position.y+120));
