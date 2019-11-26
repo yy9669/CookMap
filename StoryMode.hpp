@@ -167,7 +167,7 @@ struct StoryMode : Mode {
     	int help_y=10;
     	float stealcd=0;
 
-    int scene_num = 1, scene_target = 1;
+    int scene_num = 2, scene_target = 2;
     float scene_transition = 10.f;
     int restarting = 0;
 
