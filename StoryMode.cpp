@@ -710,6 +710,7 @@ void StoryMode::enter_scene(float elapsed) {
             glm::vec2 &init_position_i = npcs[i]->init_position;
             glm::vec2 &velocity_i = npcs[i]->velocity;
             float left_bound = 20;
+            float right_bound = 0;
             if (npcs[i]->eat) {
                         velocity_i.x = 0;
                         position_i = position_i + velocity_i * elapsed;
@@ -767,20 +768,35 @@ void StoryMode::enter_scene(float elapsed) {
                             position_i.y = init_position_i.y;
                         break;
                     case npc4:
-                            if (velocity_i.x > 0) {
-                                npcs[i]->charge = true;
-                                velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
-                            } else {
-                                npcs[i]->charge = false;
-                                velocity_i.x = -90.0f;
+                            
+                            if (scene_num == 1) {
+                                if (velocity_i.x > 0) {
+                                    npcs[i]->charge = true;
+                                    velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
+                                } else {
+                                    npcs[i]->charge = false;
+                                    velocity_i.x = -90.0f;
+                                }
+                                left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
+                                right_bound = init_position_i.x + 170.0f;
                             }
-                            left_bound = left_bound > init_position_i.x - 900.0f ? left_bound : init_position_i.x - 900.0f;
+                            else {
+                                if (velocity_i.x > 0) {
+                                    npcs[i]->charge = false;
+                                    velocity_i.x = 90.0f;
+                                } else {
+                                    npcs[i]->charge = true;
+                                    velocity_i.x=velocity_i.x/abs(velocity_i.x)*(50+abs(position_i.x-init_position_i.x-800.0f));
+                                }
+                                left_bound = left_bound > init_position_i.x - 220.0f ? left_bound : init_position_i.x - 220.0f;
+                                right_bound = init_position_i.x;
+                            }
                             position_i = position_i + velocity_i * elapsed;
                             if (position_i.x <= left_bound) {
                                 position_i.x = left_bound;
                                 velocity_i.x = -velocity_i.x;
-                            } else if (position_i.x - init_position_i.x > 170.0f) {
-                                position_i.x = init_position_i.x + 170.0f;
+                            } else if (position_i.x >= right_bound) {
+                                position_i.x = right_bound;
                                 velocity_i.x = -velocity_i.x;
                             }
                             position_i.y = init_position_i.y;
@@ -1404,7 +1420,7 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
         draw.draw(*sprite_tile[scene_num][0], pos, glm::vec2(0.05f, 1.0f), glm::u8vec4(0x00, 0x00, 0x00, 0xff));
         pos = glm::vec2(885.f-216, 631-60.f*i)+view_min;
         draw.draw(dish_map[recipes[i].dish], pos);
-        draw.draw(*sprite_add, pos+glm::vec2(60, 0), 0.5);      
+        draw.draw(*sprite_add, pos+glm::vec2(60, 12), 0.5);
         if(power_map.count(recipes[i].dish)!=0 ){
             if(power_map[recipes[i].dish]==1)
                 draw.draw(*sprite_unlock, pos+glm::vec2(96, 0));
@@ -1412,8 +1428,10 @@ void StoryMode::draw_recipe(DrawSprites& draw) {
                 draw.draw(*sprite_jump, pos+glm::vec2(96, 0));                
         }
         else{
-            for (int k = health_map[recipes[i].dish]; k > 0; --k) 
-                draw.draw(*sprite_health_box, pos+glm::vec2(96, 0)+glm::vec2(43-k*5, 4), 0.6);
+            int health_num = health_map[recipes[i].dish];
+            int offset = (health_num - 1) / 2 * 8;
+            for (int k = health_num; k > 0; --k)
+                draw.draw(*sprite_health_box, pos+glm::vec2(82+offset, 12)+glm::vec2(43-k*8, 4), 0.6);
         }
     }
 }
