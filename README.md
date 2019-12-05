@@ -2,6 +2,8 @@
 
 Author: Xuyang Fang, Zihao He, Junjie Wang, Haomin Wang
 
+Website: [https://git.hzh0512.com/p/cookmap](https://git.hzh0512.com/p/cookmap)
+
 Design: This is a 2D adventure game where player has to collect ingredients, try out different recipes and find the ultimate delicacy.
 
 Screen Shot:
