@@ -522,7 +522,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                 Sound::play(*icon_click);
             show_recipe = !show_recipe;
             if(show_recipe){
-                tmp_instruction_time=5.0f;
+                tmp_instruction_time=4.0f;
                 tmp_instruction="WONDERING  WHAT  TO  COOK?\nJUST  GUESS  AND  TRY !\nINGREDIENTS  WILL  GROW  BACK";
             }
             show_instruction = false;
@@ -531,7 +531,7 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                 Sound::play(*icon_click);      
             show_pot = !show_pot;
             if(show_pot){
-                tmp_instruction_time=5.0f;
+                tmp_instruction_time=4.0f;
                 tmp_instruction="DRAG  INGREDIENT  TO  THE  POT\nCLICK  THE  FIRE  TO  COOK";
             }
             show_instruction = false;
@@ -1093,7 +1093,7 @@ void StoryMode::enter_scene(float elapsed) {
             } else {
                 Sound::play(*music_deny);
                 tmp_instruction_time=1.0f;
-                tmp_instruction="WE  NEED  MORE  ENERGY  TO  COOK  IT";
+                tmp_instruction="NEED  MORE  ENERGY, COOK  SOMETHING  FREE?";
                 pot_time_left=0;
             }
         }

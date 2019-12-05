@@ -73,7 +73,7 @@ struct StoryMode : Mode {
     std::unordered_map<ingredient_type, Sprite> ingredient_map;
     std::unordered_map<dish_type, Sprite> dish_map;
     std::unordered_map<dish_type, int> health_map=
-    {{Dish1,5},{Dish2,3},{Dish3,2},{Dish4,4}, {Dish5,4},  {Dish6,5}, {Dish7, 2}, {Dish8, 6}, {Dish9, 6}, {Dish0,-1}};
+    {{Dish1,5},{Dish2,3},{Dish3,2},{Dish4,4}, {Dish5,4},  {Dish6,5}, {Dish7, 3}, {Dish8, 6}, {Dish9, 6}, {Dish0,-1}};
 	// 1 => unlock a recipe, 2 => big jump
 	std::unordered_map<dish_type, int> power_map={{Dish1,1}, {Dish2,2}, {Dish5, 2}, {Dish6, 1}, {Dish8,1}, {Dish9, 2}};
 	// std::unordered_map<dish_type, int> npc_map=
@@ -98,9 +98,9 @@ struct StoryMode : Mode {
 	    {{Item4, Item5, Item8}, {true, true, true}, Dish3, 5},  // apple, dragon fruit,tamato => juice
         {{Item6, Item7, Item9}, {true, true, false}, Dish3, 5},  // grape, orange, kiwi => juice
         {{Item1, Item2, Item3}, {true, true, false}, Dish1, 5},  // flour, sausage, pepper => pizza
-	    {{Item12, Item15, Item14}, {true, true, false}, Dish4, 5},  // broccoli, egg, avocado => salad
+	    {{Item12, Item15, Item14}, {true, true, true}, Dish4, 5},  // broccoli, egg, avocado => salad
 	    {{Item12, Item15, Item8}, {true, true, false}, Dish4, 5},  // broccoli, egg, tomato => salad
-	    {{Item16, Item17, Item3}, {true, false, false}, Dish5, 5},  // twig, meat, pepper => bbq
+	    {{Item16, Item17, Item3}, {true, true, false}, Dish5, 5},  // twig, meat, pepper => bbq
 	    {{Item18, Item17, Item19}, {true, false, false}, Dish6, 5},  // mushroom, meat, onion => steak
 	    {{Item19, Item21}, {true, false}, Dish7, 5},  // onion, water => onion soup
 	    {{Item21, Item20, Item10}, {true, false, false}, Dish8, 5},  // water, fish, lemon => steamed fish
