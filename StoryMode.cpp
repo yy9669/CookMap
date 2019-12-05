@@ -710,6 +710,18 @@ void StoryMode::resolve_collision(glm::vec2 &position, glm::vec2 radius,
 }
 
 void StoryMode::enter_scene(float elapsed) {
+    std::vector< MenuMode::Item > items;
+    glm::vec2 at(20.0f, view_max.y - 30.0f);
+    auto add_text = [&items,&at](std::string text) {
+        items.emplace_back(text, nullptr, 0.8f, nullptr, at);
+        at.y -= 20.0f;
+    };
+
+    auto add_choice = [&items,&at](std::string text, std::function< void(MenuMode::Item const &) > const &fn) {
+        items.emplace_back(text, nullptr, 0.8f, fn, at + glm::vec2(8.0f, 0.0f));
+        at.y -= 20.0f;
+    };
+
     timepoint += elapsed;
 	{
         //Npc motion:
@@ -1115,6 +1127,17 @@ void StoryMode::enter_scene(float elapsed) {
     }
 
     scene_transition = min(3.f, scene_transition + elapsed);
+
+    std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >(items);
+    menu->atlas2 = sprites;
+    menu->atlas=  new SpriteAtlas(data_path("the-planet"));
+    menu->left_select = sprite_left_select;
+    menu->right_select = sprite_right_select;
+    menu->view_min = view_min;
+    menu->view_max = view_max;
+    menu->background = shared_from_this();
+    Mode::current = menu;
+    
 }
 
 
