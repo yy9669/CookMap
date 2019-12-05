@@ -38,6 +38,15 @@ struct StoryMode : Mode {
 	void restart(StoryMode* mode);
 	//called to create menu for current scene:
 	void enter_scene(float elapsed);
+
+	enum {
+		mainmenu,
+		website,
+		credit,
+		gamescene
+	} location = mainmenu;
+
+
 	bool collision(glm::vec2 pos1, glm::vec2 radius1, glm::vec2 pos2, glm::vec2 radius2);
 	void resolve_collision(glm::vec2 &position, glm::vec2 radius, 
     	glm::vec2 box, glm::vec2 box_radius, glm::vec2 &velocity);

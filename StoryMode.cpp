@@ -709,6 +709,8 @@ void StoryMode::resolve_collision(glm::vec2 &position, glm::vec2 radius,
 }
 
 void StoryMode::enter_scene(float elapsed) {
+
+    //////////////////////////////////////////////////  menu staff   /////////////////////////////////////////////////////////////
     std::vector< MenuMode::Item > items;
     glm::vec2 at(20.0f, view_max.y - 30.0f);
     auto add_text = [&items,&at](std::string text) {
@@ -720,6 +722,47 @@ void StoryMode::enter_scene(float elapsed) {
         items.emplace_back(text, nullptr, 0.8f, fn, at + glm::vec2(8.0f, 0.0f));
         at.y -= 20.0f;
     };
+
+    if (location == mainmenu) {
+
+        add_text("Welcome  to  COOKMAP ");
+
+        at.y -= 8.0f; //gap before choices
+        add_choice("Start  Game !", [this](MenuMode::Item const &){
+            location = gamescene;
+            Mode::current = shared_from_this();
+        });
+        add_choice("Go to our website", [this](MenuMode::Item const &){
+            location = website;
+            Mode::current = shared_from_this();
+        });
+        add_choice("Credit", [this](MenuMode::Item const &){
+            location = credit;
+            Mode::current = shared_from_this();
+        });
+    } else if (location == website) {
+        add_text("Welcome  to  Our Website");
+        at.y -= 8.0f; //gap before choices
+        add_choice("BACK", [this](MenuMode::Item const &){
+            location = mainmenu;
+            Mode::current = shared_from_this();
+        });
+    } else if (location == credit) {
+        add_text("Credit to:\n MUSIC: \n https://freepd.com  \n https://freesound.org \n "
+            "IMAGE  ASSET: \n  "
+            "chef character asset is purchased from Unity Asset Store \n "
+            "Enemy and background asset are purchased from Kenney.nl \n "
+            "All icon assets are purchased from flaticon.com \n "
+            );
+        at.y -= 8.0f; //gap before choices
+        add_choice("BACK", [this](MenuMode::Item const &){
+            location = mainmenu;
+            Mode::current = shared_from_this();
+        });
+    }
+
+
+
 
     timepoint += elapsed;
 	{
@@ -1128,7 +1171,6 @@ void StoryMode::enter_scene(float elapsed) {
     scene_transition = min(3.f, scene_transition + elapsed);
 
     std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >(items);
-    menu->atlas2 = sprites;
     menu->atlas=  new SpriteAtlas(data_path("the-planet"));
     menu->left_select = sprite_left_select;
     menu->right_select = sprite_right_select;
