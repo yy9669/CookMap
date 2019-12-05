@@ -562,7 +562,6 @@ bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size
                             if (!recipes[i].show[j]) {
                                 recipes[i].show[j] = true;
                                 unlock_one = true;
-                                break;
                             }
                         }
                         if (unlock_one)
