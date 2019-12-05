@@ -863,8 +863,8 @@ void StoryMode::enter_scene(float elapsed) {
             velocity = glm::vec2(velocity.x, -16.0f);
         }
         // bound the negative velocity to avoid collision error
-        if (velocity.y < -500.0f) {
-            velocity = glm::vec2(velocity.x, -500.0f);
+        if (velocity.y < -460.0f) {
+            velocity = glm::vec2(velocity.x, -460.0f);
         }
 
         curt_time = timepoint;
