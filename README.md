@@ -2,7 +2,7 @@
 
 Author: Xuyang Fang, Zihao He, Junjie Wang, Haomin Wang
 
-Design: This is a 2D adventure game where palyer has to collect ingredients, try out different recipes and find the ultimate delicacy.
+Design: This is a 2D adventure game where player has to collect ingredients, try out different recipes and find the ultimate delicacy.
 
 Screen Shot:
 
