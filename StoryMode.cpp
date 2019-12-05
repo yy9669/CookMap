@@ -17,6 +17,7 @@ using namespace std;
 const int SCENE_TOTAL = 3;
 const int TILE_TOTAL = 8;
 
+Sprite const *sprite_menubackground = nullptr;
 Sprite const *sprite_left_select = nullptr;
 Sprite const *sprite_right_select = nullptr;
 Sprite const *sprite_background[SCENE_TOTAL];
@@ -178,6 +179,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_add = &ret->lookup("add");
     sprite_unlock = &ret->lookup("unlock");
     sprite_jump = &ret->lookup("jump");
+    sprite_menubackground= &ret->lookup("background_0");
 	return ret;
 });
 
@@ -712,48 +714,49 @@ void StoryMode::enter_scene(float elapsed) {
 
     //////////////////////////////////////////////////  menu staff   /////////////////////////////////////////////////////////////
     std::vector< MenuMode::Item > items;
-    glm::vec2 at(20.0f, view_max.y - 30.0f);
+    glm::vec2 at(300.0f, 500.0f);
     auto add_text = [&items,&at](std::string text) {
-        items.emplace_back(text, nullptr, 0.8f, nullptr, at);
-        at.y -= 20.0f;
+        items.emplace_back(text, nullptr, 0.1f, nullptr, at);
+        at.y -= 50.0f;
     };
 
     auto add_choice = [&items,&at](std::string text, std::function< void(MenuMode::Item const &) > const &fn) {
-        items.emplace_back(text, nullptr, 0.8f, fn, at + glm::vec2(8.0f, 0.0f));
-        at.y -= 20.0f;
+        items.emplace_back(text, nullptr, 0.1f, fn, at + glm::vec2(8.0f, 0.0f));
+        at.y -= 50.0f;
     };
 
     if (location == mainmenu) {
 
-        add_text("Welcome  to  COOKMAP ");
+        add_text("WELCOME   TO   COOKMAP ");
 
         at.y -= 8.0f; //gap before choices
-        add_choice("Start  Game !", [this](MenuMode::Item const &){
+        add_choice("START   GAME   !", [this](MenuMode::Item const &){
             location = gamescene;
             Mode::current = shared_from_this();
         });
-        add_choice("Go to our website", [this](MenuMode::Item const &){
+        add_choice("GO   TO   OUR   WEBSITE", [this](MenuMode::Item const &){
             location = website;
             Mode::current = shared_from_this();
         });
-        add_choice("Credit", [this](MenuMode::Item const &){
+        add_choice("CREDIT", [this](MenuMode::Item const &){
             location = credit;
             Mode::current = shared_from_this();
         });
     } else if (location == website) {
-        add_text("Welcome  to  Our Website");
+        add_text("WELCOME   TO   OUR   WEBSITE");
         at.y -= 8.0f; //gap before choices
         add_choice("BACK", [this](MenuMode::Item const &){
             location = mainmenu;
             Mode::current = shared_from_this();
         });
     } else if (location == credit) {
-        add_text("Credit to:\n MUSIC: \n https://freepd.com  \n https://freesound.org \n "
-            "IMAGE  ASSET: \n  "
-            "chef character asset is purchased from Unity Asset Store \n "
-            "Enemy and background asset are purchased from Kenney.nl \n "
-            "All icon assets are purchased from flaticon.com \n "
-            );
+        add_text("CREDIT   TO:");
+        add_text("MUSIC:");
+        add_text("FREEPD.COM    AND   FREESOUND.ORG");
+        add_text("IMAGE   ASSET:");
+        add_text("CHEF   CHARACTER   ASSET   IS   PURCHASED   FROM    UNITY   ASSET   STORE");
+        add_text("ENEMY   AND   BACKGROUND   ASSET   ARE   PURCHASED   FROM   KENNEY.NL");
+        add_text("ALL   ICON   ASSETS   ARE   PURCHASED   FROM   FLATICON.COM");
         at.y -= 8.0f; //gap before choices
         add_choice("BACK", [this](MenuMode::Item const &){
             location = mainmenu;
@@ -1171,7 +1174,7 @@ void StoryMode::enter_scene(float elapsed) {
     scene_transition = min(3.f, scene_transition + elapsed);
 
     std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >(items);
-    menu->atlas=  new SpriteAtlas(data_path("the-planet"));
+    menu->atlas=  sprites;
     menu->left_select = sprite_left_select;
     menu->right_select = sprite_right_select;
     menu->view_min = view_min;
@@ -1198,7 +1201,7 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 	{ //use a DrawSprites to do the drawing:
 		DrawSprites draw(*sprites, view_min, view_max, drawable_size, DrawSprites::AlignSloppy);
 		glm::vec2 bl = glm::vec2(view_min.x, view_min.y);
-
+                                if (location != gamescene)  draw.draw(*sprite_menubackground, glm::vec2(500,500));
 		if (game_mode == Walking) {
             draw.draw(*sprite_background[scene_num], bl);
 

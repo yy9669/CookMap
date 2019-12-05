@@ -6,38 +6,7 @@
 //for easy sprite drawing:
 #include "DrawSprites.hpp"
 
-//for playing movement sounds:
-#include "Sound.hpp"
-
-//for loading:
-#include "Load.hpp"
-
 #include <random>
-
-Load< Sound::Sample > sound_click(LoadTagDefault, []() -> Sound::Sample *{
-	std::vector< float > data(size_t(48000 * 0.2f), 0.0f);
-	for (uint32_t i = 0; i < data.size(); ++i) {
-		float t = i / float(48000);
-		//phase-modulated sine wave (creates some metal-like sound):
-		data[i] = std::sin(3.1415926f * 2.0f * 440.0f * t + std::sin(3.1415926f * 2.0f * 450.0f * t));
-		//quadratic falloff:
-		data[i] *= 0.3f * std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
-	}
-	return new Sound::Sample(data);
-});
-
-Load< Sound::Sample > sound_clonk(LoadTagDefault, []() -> Sound::Sample *{
-	std::vector< float > data(size_t(48000 * 0.2f), 0.0f);
-	for (uint32_t i = 0; i < data.size(); ++i) {
-		float t = i / float(48000);
-		//phase-modulated sine wave (creates some metal-like sound):
-		data[i] = std::sin(3.1415926f * 2.0f * 220.0f * t + std::sin(3.1415926f * 2.0f * 200.0f * t));
-		//quadratic falloff:
-		data[i] *= 0.3f * std::pow(std::max(0.0f, (1.0f - t / 0.2f)), 2.0f);
-	}
-	return new Sound::Sample(data);
-});
-
 
 MenuMode::MenuMode(std::vector< Item > const &items_) : items(items_) {
 
@@ -60,7 +29,6 @@ bool MenuMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			for (uint32_t i = selected - 1; i < items.size(); --i) {
 				if (items[i].on_select) {
 					selected = i;
-					Sound::play(*sound_click);
 					break;
 				}
 			}
@@ -70,14 +38,12 @@ bool MenuMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			for (uint32_t i = selected + 1; i < items.size(); ++i) {
 				if (items[i].on_select) {
 					selected = i;
-					Sound::play(*sound_click);
 					break;
 				}
 			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_RETURN) {
 			if (selected < items.size() && items[selected].on_select) {
-				Sound::play(*sound_clonk);
 				items[selected].on_select(items[selected]);
 				return true;
 			}
@@ -92,8 +58,7 @@ bool MenuMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 
 void MenuMode::update(float elapsed) {
 
-	select_bounce_acc = select_bounce_acc + elapsed / 0.7f;
-	select_bounce_acc -= std::floor(select_bounce_acc);
+	//TODO: selection bounce update
 
 	if (background) {
 		background->update(elapsed);
@@ -117,15 +82,13 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 	//don't use the depth test:
 	glDisable(GL_DEPTH_TEST);
 
-	float bounce = (0.25f - (select_bounce_acc - 0.5f) * (select_bounce_acc - 0.5f)) / 0.25f * select_bounce_amount;
-
 	{ //draw the menu using DrawSprites:
 		assert(atlas && "it is an error to try to draw a menu without an atlas");
 		DrawSprites draw_sprites(*atlas, view_min, view_max, drawable_size, DrawSprites::AlignPixelPerfect);
 
 		for (auto const &item : items) {
 			bool is_selected = (&item == &items[0] + selected);
-			glm::u8vec4 color = (is_selected ? item.selected_tint : item.tint);
+			glm::u8vec4 color = (is_selected ? glm::u8vec4(0xff, 0x00, 0xff, 0xff) : glm::u8vec4(0xff, 0xff, 0xff, 0xff));
 			float left, right;
 			if (!item.sprite) {
 				//draw item.name as text:
@@ -145,10 +108,10 @@ void MenuMode::draw(glm::uvec2 const &drawable_size) {
 			}
 			if (is_selected) {
 				if (left_select) {
-					draw_sprites.draw(*left_select, glm::vec2(left - bounce, item.at.y), item.scale, left_select_tint);
+					draw_sprites.draw(*left_select, glm::vec2(left, item.at.y), item.scale);
 				}
 				if (right_select) {
-					draw_sprites.draw(*right_select, glm::vec2(right + bounce, item.at.y), item.scale, right_select_tint);
+					draw_sprites.draw(*right_select, glm::vec2(right, item.at.y), item.scale);
 				}
 			}
 			
