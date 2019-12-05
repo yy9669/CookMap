@@ -17,6 +17,7 @@ using namespace std;
 const int SCENE_TOTAL = 3;
 const int TILE_TOTAL = 8;
 
+Sprite const *sprite_menubackground = nullptr;
 Sprite const *sprite_left_select = nullptr;
 Sprite const *sprite_right_select = nullptr;
 Sprite const *sprite_background[SCENE_TOTAL];
@@ -178,6 +179,7 @@ Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
     sprite_add = &ret->lookup("add");
     sprite_unlock = &ret->lookup("unlock");
     sprite_jump = &ret->lookup("jump");
+    sprite_menubackground= &ret->lookup("background_0");
 	return ret;
 });
 
@@ -709,6 +711,70 @@ void StoryMode::resolve_collision(glm::vec2 &position, glm::vec2 radius,
 }
 
 void StoryMode::enter_scene(float elapsed) {
+
+    //////////////////////////////////////////////////  menu staff   /////////////////////////////////////////////////////////////
+    if(location!=gamescene){
+        std::vector< MenuMode::Item > items;
+        glm::vec2 at(400.0f, 700.0f);
+
+        auto add_text = [&items,&at](std::string text) {
+            items.emplace_back(text, nullptr, 0.1f, nullptr, at);
+            at.y -= 50.0f;
+        };
+        auto add_text2 = [&items,&at](std::string text) {
+            items.emplace_back(text, nullptr, 0.05f, nullptr, at);
+            at.y -= 50.0f;
+        };
+
+        auto add_choice = [&items,&at](std::string text, std::function< void(MenuMode::Item const &) > const &fn) {
+            items.emplace_back(text, nullptr, 0.1f, fn, at + glm::vec2(8.0f, 0.0f));
+            at.y -= 50.0f;
+        };
+
+        if (location == mainmenu) {
+            at=glm::vec2(300.0f, 500.0f);
+            add_text("WELCOME   TO   COOKMAP ");
+            add_text(" ");
+            at.y -= 8.0f; //gap before choices
+            add_choice("START   GAME   !", [this](MenuMode::Item const &){
+                location = gamescene;
+                Mode::current = shared_from_this();
+            });
+            add_choice("CREDIT", [this](MenuMode::Item const &){
+                location = credit;
+                Mode::current = shared_from_this();
+            });
+        } else if (location == credit) {
+            at=glm::vec2(200.0f, 650.0f);
+            add_text("MUSIC:");
+            add_text2("FREEPD.COM    AND   FREESOUND.ORG");
+            add_text(" ");
+            add_text("IMAGE   ASSET:");
+            add_text2("CHEF   CHARACTER   ASSET   IS  PURCHASED   FROM    UNITY   ASSET   STORE");
+            add_text2("ENEMY   AND   BACKGROUND   ASSET   ARE    PURCHASED   FROM   KENNEY.NL");
+            add_text2("ALL   ICON   ASSETS   ARE   PURCHASED   FROM   FLATICON.COM");
+            add_text(" ");
+            add_text("FONT:");
+            add_text2("SOURCEFORGE.NET   RODS-CUSTOM-FONT-XCF-FILES");
+            add_text(" ");
+            add_choice("BACK", [this](MenuMode::Item const &){
+                location = mainmenu;
+                Mode::current = shared_from_this();
+            });
+        }
+
+        std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >(items);
+        menu->atlas=  sprites;
+        menu->left_select = sprite_left_select;
+        menu->right_select = sprite_right_select;
+        menu->view_min = view_min;
+        menu->view_max = view_max;
+        menu->background = shared_from_this();
+        Mode::current = menu;
+
+}
+
+
     timepoint += elapsed;
 	{
         //Npc motion:
@@ -1114,6 +1180,7 @@ void StoryMode::enter_scene(float elapsed) {
     }
 
     scene_transition = min(3.f, scene_transition + elapsed);
+
 }
 
 
@@ -1132,8 +1199,15 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 
 	{ //use a DrawSprites to do the drawing:
 		DrawSprites draw(*sprites, view_min, view_max, drawable_size, DrawSprites::AlignSloppy);
+
+
 		glm::vec2 bl = glm::vec2(view_min.x, view_min.y);
 
+                                if(location!=gamescene) {
+                                    draw.draw(*sprite_menubackground, glm::vec2(0,0));
+                                    return;
+                                }
+                                
 		if (game_mode == Walking) {
             draw.draw(*sprite_background[scene_num], bl);
 
